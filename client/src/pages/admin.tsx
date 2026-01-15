@@ -77,10 +77,10 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-foreground flex">
       {/* Sidebar */}
-      <aside className="w-64 border-r border-border bg-card/50 backdrop-blur-xl hidden md:flex flex-col">
-        <div className="p-6 border-b border-border">
+      <aside className="w-64 border-r border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl hidden md:flex flex-col">
+        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
           <Link href="/">
             <h1 className="font-display text-2xl font-bold tracking-widest cursor-pointer hover:text-primary transition-colors">
               ADMIN
@@ -98,7 +98,7 @@ export default function AdminPage() {
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-border">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center gap-3 mb-4 px-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
               <User className="h-4 w-4 text-primary" />
@@ -143,7 +143,7 @@ export default function AdminPage() {
             </Dialog>
           </div>
 
-          <Card className="border-border/50 bg-card/30 backdrop-blur-sm">
+          <Card className="border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-4">
                 <div className="relative flex-1">
@@ -158,7 +158,7 @@ export default function AdminPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="rounded-md border border-border overflow-hidden">
+              <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
                 <Table>
                   <TableHeader className="bg-muted/50">
                     <TableRow>
