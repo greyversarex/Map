@@ -92,19 +92,19 @@ export default function MapPage() {
         mapStyle={{
           version: 8,
           sources: {
-            'satellite': {
+            'terrain-tiles': {
               type: 'raster',
-              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+              tiles: ['https://tile.opentopomap.org/{z}/{x}/{y}.png'],
               tileSize: 256,
-              attribution: 'Esri, Maxar, Earthstar Geographics'
+              attribution: 'OpenTopoMap (CC-BY-SA)'
             }
           },
           layers: [{
-            id: 'satellite-layer',
+            id: 'terrain-layer',
             type: 'raster',
-            source: 'satellite',
+            source: 'terrain-tiles',
             minzoom: 0,
-            maxzoom: 19
+            maxzoom: 17
           }]
         }}
         mapLib={maplibregl}
