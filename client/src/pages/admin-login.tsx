@@ -5,8 +5,45 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Eye, EyeOff, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Star, Crown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+const FloatingParticle = ({ delay, x, size }: { delay: number; x: number; size: number }) => (
+  <motion.div
+    initial={{ y: 100, x, opacity: 0, scale: 0 }}
+    animate={{ 
+      y: -200, 
+      opacity: [0, 1, 1, 0],
+      scale: [0, 1, 1, 0.5],
+      rotate: [0, 180, 360]
+    }}
+    transition={{ 
+      delay, 
+      duration: 3,
+      repeat: Infinity,
+      repeatDelay: 1
+    }}
+    className="absolute"
+    style={{ left: `${x}%` }}
+  >
+    <Star className={`text-amber-400`} style={{ width: size, height: size }} />
+  </motion.div>
+);
+
+const PulseRing = ({ delay, size }: { delay: number; size: number }) => (
+  <motion.div
+    initial={{ scale: 0.5, opacity: 0.8 }}
+    animate={{ scale: 2.5, opacity: 0 }}
+    transition={{ 
+      delay,
+      duration: 2,
+      repeat: Infinity,
+      repeatDelay: 0.5
+    }}
+    className="absolute rounded-full border-2 border-amber-400/50"
+    style={{ width: size, height: size }}
+  />
+);
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -42,7 +79,7 @@ export default function AdminLogin() {
         setShowWelcome(true);
         setTimeout(() => {
           setLocation("/admin");
-        }, 4000);
+        }, 5000);
       } else {
         toast({ 
           title: "Ошибка", 
@@ -62,71 +99,133 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 p-4 overflow-hidden">
       <AnimatePresence mode="wait">
         {showWelcome ? (
           <motion.div
             key="welcome"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.8, ease: "easeOut" }}
-            className="text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="relative flex flex-col items-center justify-center"
           >
-            <motion.div
-              initial={{ y: 20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.8 }}
-              className="mb-6"
-            >
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+              <FloatingParticle delay={0} x={10} size={16} />
+              <FloatingParticle delay={0.3} x={25} size={12} />
+              <FloatingParticle delay={0.6} x={40} size={20} />
+              <FloatingParticle delay={0.2} x={55} size={14} />
+              <FloatingParticle delay={0.5} x={70} size={18} />
+              <FloatingParticle delay={0.8} x={85} size={16} />
+              <FloatingParticle delay={0.4} x={95} size={12} />
+            </div>
+
+            <div className="relative flex items-center justify-center mb-8">
+              <PulseRing delay={0} size={120} />
+              <PulseRing delay={0.5} size={120} />
+              <PulseRing delay={1} size={120} />
+              
               <motion.div
-                animate={{ 
-                  rotate: [0, 10, -10, 10, 0],
-                  scale: [1, 1.2, 1]
-                }}
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
                 transition={{ 
-                  duration: 1,
-                  repeat: Infinity,
-                  repeatDelay: 1
+                  type: "spring",
+                  stiffness: 200,
+                  damping: 15,
+                  delay: 0.2
                 }}
-                className="inline-block"
+                className="relative z-10 flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-2xl shadow-amber-300/50"
               >
-                <Sparkles className="h-16 w-16 text-amber-500" />
+                <motion.div
+                  animate={{ 
+                    rotate: [0, 10, -10, 10, 0],
+                  }}
+                  transition={{ 
+                    duration: 2,
+                    repeat: Infinity,
+                    repeatDelay: 0.5
+                  }}
+                >
+                  <Crown className="h-14 w-14 text-white drop-shadow-lg" />
+                </motion.div>
+              </motion.div>
+            </div>
+            
+            <motion.div
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.5, duration: 0.8, type: "spring" }}
+              className="text-center relative z-10"
+            >
+              <motion.h1
+                className="text-4xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gray-800 via-gray-600 to-gray-800 mb-2"
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{
+                  duration: 3,
+                  repeat: Infinity,
+                }}
+                style={{
+                  backgroundSize: "200% 200%",
+                }}
+              >
+                Хуш омадед
+              </motion.h1>
+              
+              <motion.div
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ delay: 0.8, duration: 0.6, type: "spring" }}
+                className="flex items-center justify-center gap-3 mt-2"
+              >
+                <Sparkles className="h-6 w-6 text-amber-500" />
+                <span className="text-3xl md:text-4xl font-bold text-black">
+                  акаи Сарвар!
+                </span>
+                <Sparkles className="h-6 w-6 text-amber-500" />
               </motion.div>
             </motion.div>
             
-            <motion.h1
-              initial={{ y: 30, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-              className="text-4xl md:text-5xl font-bold text-black mb-4"
-            >
-              Хуш омадед акаи Сарвар!
-            </motion.h1>
-            
             <motion.div
-              initial={{ width: 0 }}
-              animate={{ width: "100%" }}
-              transition={{ delay: 1.2, duration: 1.5 }}
-              className="h-1 bg-gradient-to-r from-gray-400 via-gray-600 to-gray-400 rounded-full mx-auto max-w-md"
+              initial={{ scaleX: 0 }}
+              animate={{ scaleX: 1 }}
+              transition={{ delay: 1.2, duration: 1, ease: "easeOut" }}
+              className="w-80 h-1.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent rounded-full mt-8"
             />
             
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 2.0, duration: 0.6 }}
-              className="text-gray-600 mt-4 text-lg"
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.8, duration: 0.6 }}
+              className="mt-8 flex flex-col items-center gap-3"
             >
-              Переход в панель управления...
-            </motion.p>
+              <p className="text-gray-600 text-lg">Переход в панель управления</p>
+              <div className="flex gap-2">
+                {[0, 1, 2].map((i) => (
+                  <motion.div
+                    key={i}
+                    animate={{
+                      scale: [1, 1.5, 1],
+                      opacity: [0.5, 1, 0.5],
+                    }}
+                    transition={{
+                      duration: 0.8,
+                      repeat: Infinity,
+                      delay: i * 0.2,
+                    }}
+                    className="w-3 h-3 rounded-full bg-gray-500"
+                  />
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         ) : (
           <motion.div
             key="login"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            exit={{ opacity: 0, scale: 0.9, y: -50 }}
+            transition={{ duration: 0.4 }}
             className="w-full max-w-md"
           >
             <div className="bg-white rounded-2xl shadow-2xl shadow-gray-300/50 overflow-hidden">
