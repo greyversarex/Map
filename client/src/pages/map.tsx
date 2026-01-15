@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
-import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl } from "react-map-gl/maplibre";
+import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl, Source, Layer } from "react-map-gl/maplibre";
+import type { LineLayer } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
@@ -7,6 +8,7 @@ import { NavUser } from "@/components/nav-user";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, MapPin } from "lucide-react";
 import { type Location } from "@shared/schema";
+import { tajikistanSimpleBorder } from "@/data/tajikistan-border";
 
 const TAJIKISTAN_VIEWSTATE = {
   longitude: 71.2761,
@@ -14,6 +16,17 @@ const TAJIKISTAN_VIEWSTATE = {
   zoom: 6.5,
   pitch: 45,
   bearing: 0
+};
+
+const borderLineLayer: LineLayer = {
+  id: 'tajikistan-border-line',
+  type: 'line',
+  source: 'tajikistan-border',
+  paint: {
+    'line-color': '#dc2626',
+    'line-width': 3,
+    'line-opacity': 1
+  }
 };
 
 export default function MapPage() {
@@ -83,6 +96,10 @@ export default function MapPage() {
         <NavigationControl position="bottom-right" />
         <FullscreenControl position="bottom-right" />
         <ScaleControl position="bottom-left" />
+
+        <Source id="tajikistan-border" type="geojson" data={tajikistanSimpleBorder}>
+          <Layer {...borderLineLayer} />
+        </Source>
 
         {markers}
 
