@@ -5,45 +5,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Eye, EyeOff, Sparkles, Star, MapPin } from "lucide-react";
+import { Eye, EyeOff, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const FloatingParticle = ({ delay, x, size }: { delay: number; x: number; size: number }) => (
-  <motion.div
-    initial={{ y: 100, x, opacity: 0, scale: 0 }}
-    animate={{ 
-      y: -200, 
-      opacity: [0, 1, 1, 0],
-      scale: [0, 1, 1, 0.5],
-      rotate: [0, 180, 360]
-    }}
-    transition={{ 
-      delay, 
-      duration: 3,
-      repeat: Infinity,
-      repeatDelay: 1
-    }}
-    className="absolute"
-    style={{ left: `${x}%` }}
-  >
-    <Star className={`text-amber-400`} style={{ width: size, height: size }} />
-  </motion.div>
-);
-
-const PulseRing = ({ delay, size }: { delay: number; size: number }) => (
-  <motion.div
-    initial={{ scale: 0.5, opacity: 0.8 }}
-    animate={{ scale: 2.5, opacity: 0 }}
-    transition={{ 
-      delay,
-      duration: 2,
-      repeat: Infinity,
-      repeatDelay: 0.5
-    }}
-    className="absolute rounded-full border-2 border-amber-400/50"
-    style={{ width: size, height: size }}
-  />
-);
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -109,20 +73,28 @@ export default function AdminLogin() {
             exit={{ opacity: 0 }}
             className="relative flex flex-col items-center justify-center"
           >
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <FloatingParticle delay={0} x={10} size={16} />
-              <FloatingParticle delay={0.3} x={25} size={12} />
-              <FloatingParticle delay={0.6} x={40} size={20} />
-              <FloatingParticle delay={0.2} x={55} size={14} />
-              <FloatingParticle delay={0.5} x={70} size={18} />
-              <FloatingParticle delay={0.8} x={85} size={16} />
-              <FloatingParticle delay={0.4} x={95} size={12} />
-            </div>
-
             <div className="relative flex items-center justify-center mb-8">
-              <PulseRing delay={0} size={120} />
-              <PulseRing delay={0.5} size={120} />
-              <PulseRing delay={1} size={120} />
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0.8 }}
+                animate={{ scale: 2.5, opacity: 0 }}
+                transition={{ delay: 0, duration: 2, repeat: Infinity, repeatDelay: 0.5 }}
+                className="absolute rounded-full border-2 border-gray-400/50"
+                style={{ width: 120, height: 120 }}
+              />
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0.8 }}
+                animate={{ scale: 2.5, opacity: 0 }}
+                transition={{ delay: 0.5, duration: 2, repeat: Infinity, repeatDelay: 0.5 }}
+                className="absolute rounded-full border-2 border-gray-400/50"
+                style={{ width: 120, height: 120 }}
+              />
+              <motion.div
+                initial={{ scale: 0.5, opacity: 0.8 }}
+                animate={{ scale: 2.5, opacity: 0 }}
+                transition={{ delay: 1, duration: 2, repeat: Infinity, repeatDelay: 0.5 }}
+                className="absolute rounded-full border-2 border-gray-400/50"
+                style={{ width: 120, height: 120 }}
+              />
               
               <motion.div
                 initial={{ scale: 0, rotate: -180 }}
@@ -133,7 +105,7 @@ export default function AdminLogin() {
                   damping: 15,
                   delay: 0.2
                 }}
-                className="relative z-10 flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-amber-400 to-orange-500 shadow-2xl shadow-amber-300/50"
+                className="relative z-10 flex items-center justify-center w-28 h-28 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 shadow-2xl shadow-gray-300/50"
               >
                 <motion.div
                   animate={{ 
@@ -178,11 +150,9 @@ export default function AdminLogin() {
                 transition={{ delay: 0.8, duration: 0.6, type: "spring" }}
                 className="flex items-center justify-center gap-3 mt-2"
               >
-                <Sparkles className="h-6 w-6 text-amber-500" />
                 <span className="text-3xl md:text-4xl font-bold text-black">
                   акаи Сарвар!
                 </span>
-                <Sparkles className="h-6 w-6 text-amber-500" />
               </motion.div>
             </motion.div>
             
@@ -190,7 +160,7 @@ export default function AdminLogin() {
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: 1.2, duration: 1, ease: "easeOut" }}
-              className="w-80 h-1.5 bg-gradient-to-r from-transparent via-amber-500 to-transparent rounded-full mt-8"
+              className="w-80 h-1.5 bg-gradient-to-r from-transparent via-gray-500 to-transparent rounded-full mt-8"
             />
             
             <motion.div
