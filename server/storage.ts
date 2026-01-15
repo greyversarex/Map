@@ -1,38 +1,53 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { db } from "./db";
+import {
+  locations,
+  type CreateLocationRequest,
+  type UpdateLocationRequest,
+  type LocationResponse
+} from "@shared/schema";
+import { eq } from "drizzle-orm";
+import { authStorage, type IAuthStorage } from "./replit_integrations/auth/storage";
 
-// modify the interface with any CRUD methods
-// you might need
-
-export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+export interface IStorage extends IAuthStorage {
+  getLocations(): Promise<LocationResponse[]>;
+  getLocation(id: number): Promise<LocationResponse | undefined>;
+  createLocation(location: CreateLocationRequest): Promise<LocationResponse>;
+  updateLocation(id: number, updates: UpdateLocationRequest): Promise<LocationResponse>;
+  deleteLocation(id: number): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
+export class DatabaseStorage implements IStorage {
+  // Auth Storage Implementation
+  getUser = authStorage.getUser;
+  upsertUser = authStorage.upsertUser;
 
-  constructor() {
-    this.users = new Map();
+  // Location Storage Implementation
+  async getLocations(): Promise<LocationResponse[]> {
+    return await db.select().from(locations);
   }
 
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+  async getLocation(id: number): Promise<LocationResponse | undefined> {
+    const [location] = await db.select().from(locations).where(eq(locations.id, id));
+    return location;
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+  async createLocation(location: CreateLocationRequest): Promise<LocationResponse> {
+    const [newLocation] = await db.insert(locations).values(location).returning();
+    return newLocation;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
-    return user;
+  async updateLocation(id: number, updates: UpdateLocationRequest): Promise<LocationResponse> {
+    const [updated] = await db
+      .update(locations)
+      .set(updates)
+      .where(eq(locations.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteLocation(id: number): Promise<void> {
+    await db.delete(locations).where(eq(locations.id, id));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
