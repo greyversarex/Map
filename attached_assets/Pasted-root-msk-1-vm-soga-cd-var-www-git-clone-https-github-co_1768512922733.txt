@@ -1,0 +1,109 @@
+root@msk-1-vm-soga:~# cd /var/www
+git clone https://github.com/greyversarex/Map.git ecomap
+cd ecomap
+npm install
+Cloning into 'ecomap'...
+remote: Enumerating objects: 440, done.
+remote: Counting objects: 100% (440/440), done.
+remote: Compressing objects: 100% (179/179), done.
+remote: Total 440 (delta 252), reused 440 (delta 252), pack-reused 0 (from 0)
+Receiving objects: 100% (440/440), 1.13 MiB | 5.90 MiB/s, done.
+Resolving deltas: 100% (252/252), done.
+npm warn deprecated node-domexception@1.0.0: Use your platform's native DOMException instead
+
+added 662 packages, and audited 663 packages in 16s
+
+92 packages are looking for funding
+  run `npm fund` for details
+
+3 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+root@msk-1-vm-soga:/var/www/ecomap# nano .env
+root@msk-1-vm-soga:/var/www/ecomap# npm run db:push
+npm run build
+pm2 start dist/index.cjs --name ecomap
+
+> rest-express@1.0.0 db:push
+> drizzle-kit push
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/var/www/ecomap/drizzle.config.ts'
+Using 'pg' driver for database querying
+[✓] Pulling schema from database...
+error: permission denied for schema public
+    at /var/www/ecomap/node_modules/pg-pool/index.js:45:11
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+    at async Object.query (/var/www/ecomap/node_modules/drizzle-kit/bin.cjs:80622:26)
+    at async pgPush (/var/www/ecomap/node_modules/drizzle-kit/bin.cjs:84432:13)
+    at async Object.handler (/var/www/ecomap/node_modules/drizzle-kit/bin.cjs:93871:9)
+    at async run (/var/www/ecomap/node_modules/drizzle-kit/bin.cjs:93117:7) {
+  length: 99,
+  severity: 'ERROR',
+  code: '42501',
+  detail: undefined,
+  hint: undefined,
+  position: '14',
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'aclchk.c',
+  line: '2812',
+  routine: 'aclcheck_error'
+}
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2208 modules transformed.
+
+                        -------------
+
+__/\\\\\\\\\\\\\____/\\\\____________/\\\\____/\\\\\\\\\_____
+ _\/\\\/////////\\\_\/\\\\\\________/\\\\\\__/\\\///////\\\___
+  _\/\\\_______\/\\\_\/\\\//\\\____/\\\//\\\_\///______\//\\\__
+   _\/\\\\\\\\\\\\\/__\/\\\\///\\\/\\\/_\/\\\___________/\\\/___
+    _\/\\\/////////____\/\\\__\///\\\/___\/\\\________/\\\//_____
+     _\/\\\_____________\/\\\____\///_____\/\\\_____/\\\//________
+      _\/\\\_____________\/\\\_____________\/\\\___/\\\/___________
+       _\/\\\_____________\/\\\_____________\/\\\__/\\\\\\\\\\\\\\\_
+        _\///______________\///______________\///__\///////////////__
+
+
+                          Runtime Edition
+
+        PM2 is a Production Process Manager for Node.js applications
+                     with a built-in Load Balancer.
+
+                Start and Daemonize any application:
+                $ pm2 start app.js
+
+                Load Balance 4 instances of api.js:
+                $ pm2 start api.js -i 4
+
+                Monitor in production:
+                $ pm2 monitor
+
+                Make pm2 auto-boot at server restart:
+                $ pm2 startup
+
+                To go further checkout:
+                http://pm2.io/
+
+
+                        -------------
+
+[PM2] Spawning PM2 daemon with pm2_home=/root/.pm2
+[PM2] PM2 Successfully daemonized
+[PM2][ERROR] Script not found: /var/www/ecomap/dist/index.cjs
+root@msk-1-vm-soga:/var/www/ecomap#
