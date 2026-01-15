@@ -4,7 +4,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
@@ -71,6 +71,7 @@ export default function MapPage() {
     fishery: true,
     nursery: true,
   });
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const { t, language } = useLanguage();
 
   const toggleFilter = (type: string) => {
@@ -132,43 +133,57 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* Filter Panel - Left Side */}
-      <div className="absolute left-4 top-24 z-50 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[200px]">
-        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
-          <Filter className="h-4 w-4 text-muted-foreground" />
+      {/* Filter Panel - Top Left, Collapsible */}
+      <div className="absolute left-4 top-20 z-50">
+        <button
+          onClick={() => setFiltersOpen(!filtersOpen)}
+          className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors"
+          data-testid="button-toggle-filters"
+        >
+          <Filter className="h-4 w-4 text-foreground" />
           <span className="text-sm font-medium text-foreground">
             {t("filter.title")}
           </span>
-        </div>
-        <div className="space-y-2">
-          {Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
-            const Icon = config.icon;
-            const count = locations?.filter(l => l.locationType === key).length || 0;
-            return (
-              <label 
-                key={key} 
-                className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 rounded p-1.5 transition-colors"
-                data-testid={`filter-${key}`}
-              >
-                <input 
-                  type="checkbox"
-                  checked={activeFilters[key]}
-                  onChange={() => toggleFilter(key)}
-                  className="h-4 w-4 rounded border-muted-foreground accent-primary cursor-pointer"
-                />
-                <div className={`flex h-5 w-5 items-center justify-center rounded-full ${config.bgColor} border ${config.borderColor}`}>
-                  <Icon className={`h-3 w-3 ${config.color}`} />
-                </div>
-                <span className="text-xs text-foreground flex-1 truncate">
-                  {language === "ru" ? config.labelRu.split(" (")[0] : 
-                   language === "tj" ? config.labelTj.split(" (")[0] : 
-                   config.labelEn.split(" (")[0]}
-                </span>
-                <span className="text-xs text-muted-foreground">({count})</span>
-              </label>
-            );
-          })}
-        </div>
+          {filtersOpen ? (
+            <ChevronUp className="h-4 w-4 text-muted-foreground" />
+          ) : (
+            <ChevronDown className="h-4 w-4 text-muted-foreground" />
+          )}
+        </button>
+        
+        {filtersOpen && (
+          <div className="mt-2 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[220px]">
+            <div className="space-y-2">
+              {Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
+                const Icon = config.icon;
+                const count = locations?.filter(l => l.locationType === key).length || 0;
+                return (
+                  <label 
+                    key={key} 
+                    className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 rounded p-1.5 transition-colors"
+                    data-testid={`filter-${key}`}
+                  >
+                    <input 
+                      type="checkbox"
+                      checked={activeFilters[key]}
+                      onChange={() => toggleFilter(key)}
+                      className="h-4 w-4 rounded border-muted-foreground accent-primary cursor-pointer"
+                    />
+                    <div className={`flex h-5 w-5 items-center justify-center rounded-full ${config.bgColor} border ${config.borderColor}`}>
+                      <Icon className={`h-3 w-3 ${config.color}`} />
+                    </div>
+                    <span className="text-xs text-foreground flex-1 truncate">
+                      {language === "ru" ? config.labelRu.split(" (")[0] : 
+                       language === "tj" ? config.labelTj.split(" (")[0] : 
+                       config.labelEn.split(" (")[0]}
+                    </span>
+                    <span className="text-xs text-muted-foreground">({count})</span>
+                  </label>
+                );
+              })}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Map Style Switcher - Right Side */}
