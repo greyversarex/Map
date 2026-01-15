@@ -43,9 +43,9 @@ const MAP_STYLES = {
 const TAJIKISTAN_VIEWSTATE = {
   longitude: 71.2761,
   latitude: 38.8610,
-  zoom: 6,
-  pitch: 60,
-  bearing: -15
+  zoom: 6.5,
+  pitch: 45,
+  bearing: 0
 };
 
 const borderLineLayer: LineLayer = {
