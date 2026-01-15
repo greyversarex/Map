@@ -1,0 +1,392 @@
+uSistem@Victus MINGW64 ~
+$ ssh root@195.133.25.78
+The authenticity of host '195.133.25.78 (195.133.25.78)' can't be established.
+ED25519 key fingerprint is SHA256:RSEaaA/CXTzjdBUDGbj8fCqOAX0tOg1YL6O1/7bsgkM.
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '195.133.25.78' (ED25519) to the list of known hosts.
+root@195.133.25.78's password:
+Welcome to Ubuntu 24.04.3 LTS (GNU/Linux 6.8.0-90-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/pro
+
+ System information as of Thu Jan 15 21:17:23 UTC 2026
+
+  System load:  0.02               Processes:             101
+  Usage of /:   12.0% of 13.49GB   Users logged in:       0
+  Memory usage: 16%                IPv4 address for eth0: 195.133.25.78
+  Swap usage:   0%                 IPv6 address for eth0: 2a03:6f00:a::1:9382
+
+
+Expanded Security Maintenance for Applications is not enabled.
+
+0 updates can be applied immediately.
+
+Enable ESM Apps to receive additional future security updates.
+See https://ubuntu.com/esm or run: sudo pro status
+
+
+root@msk-1-vm-soga:~# apt update && apt upgrade -y
+Hit:1 http://mirror.timeweb.ru/ubuntu noble InRelease
+Hit:2 http://zabbix.repo.timeweb.ru/ubuntu focal InRelease
+Hit:3 http://archive.ubuntu.com/ubuntu noble InRelease
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates InRelease [126 kB]
+Get:5 http://security.ubuntu.com/ubuntu noble-security InRelease [126 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-backports InRelease [126 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Packages [1694 kB]
+Get:8 http://security.ubuntu.com/ubuntu noble-security/main amd64 Packages [1404 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main Translation-en [313 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 Components [175 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 c-n-f Metadata [15.9 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Packages [1512 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/universe Translation-en [308 kB]
+Get:14 http://security.ubuntu.com/ubuntu noble-security/main Translation-en [228 kB]
+Get:15 http://security.ubuntu.com/ubuntu noble-security/main amd64 Components [21.5 kB]
+Get:16 http://security.ubuntu.com/ubuntu noble-security/main amd64 c-n-f Metadata [9724 B]
+Get:17 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Packages [920 kB]
+Get:18 http://security.ubuntu.com/ubuntu noble-security/universe Translation-en [209 kB]
+Get:19 http://security.ubuntu.com/ubuntu noble-security/universe amd64 Components [71.4 kB]
+Get:20 http://security.ubuntu.com/ubuntu noble-security/universe amd64 c-n-f Metadata [19.7 kB]
+Get:21 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Packages [2302 kB]
+Get:22 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 Components [378 kB]
+Get:23 http://archive.ubuntu.com/ubuntu noble-updates/universe amd64 c-n-f Metadata [31.4 kB]
+Get:24 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Packages [2426 kB]
+Get:25 http://archive.ubuntu.com/ubuntu noble-updates/restricted Translation-en [554 kB]
+Get:26 http://security.ubuntu.com/ubuntu noble-security/restricted Translation-en [527 kB]
+Get:27 http://archive.ubuntu.com/ubuntu noble-updates/restricted amd64 Components [212 B]
+Get:28 http://archive.ubuntu.com/ubuntu noble-updates/multiverse amd64 Components [940 B]
+Get:29 http://archive.ubuntu.com/ubuntu noble-backports/main amd64 Components [7284 B]
+Get:30 http://archive.ubuntu.com/ubuntu noble-backports/universe amd64 Components [10.5 kB]
+Get:31 http://archive.ubuntu.com/ubuntu noble-backports/restricted amd64 Components [216 B]
+Get:32 http://archive.ubuntu.com/ubuntu noble-backports/multiverse amd64 Components [212 B]
+Get:33 http://security.ubuntu.com/ubuntu noble-security/restricted amd64 Components [212 B]
+Get:34 http://security.ubuntu.com/ubuntu noble-security/multiverse amd64 Components [212 B]
+Fetched 13.5 MB in 2s (6173 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+16 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+Calculating upgrade... Done
+The following upgrades have been deferred due to phasing:
+  kpartx multipath-tools
+The following packages will be upgraded:
+  klibc-utils libheif-plugin-aomdec libheif-plugin-aomenc
+  libheif-plugin-libde265 libheif1 libklibc libpng16-16t64
+  libpython3.12-minimal libpython3.12-stdlib libpython3.12t64 libtasn1-6
+  python3-urllib3 python3.12 python3.12-minimal
+14 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+14 standard LTS security updates
+Need to get 9013 kB of archives.
+After this operation, 7168 B of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12t64 amd64 3.12.3-1ubuntu0.10 [2338 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3.12 amd64 3.12.3-1ubuntu0.10 [651 kB]
+Get:3 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-stdlib amd64 3.12.3-1ubuntu0.10 [2069 kB]
+Get:4 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3.12-minimal amd64 3.12.3-1ubuntu0.10 [2335 kB]
+Get:5 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpython3.12-minimal amd64 3.12.3-1ubuntu0.10 [836 kB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libtasn1-6 amd64 4.19.0-3ubuntu0.24.04.2 [44.5 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpng16-16t64 amd64 1.6.43-5ubuntu0.3 [188 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 klibc-utils amd64 2.0.13-4ubuntu0.2 [100 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libklibc amd64 2.0.13-4ubuntu0.2 [47.3 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libheif-plugin-aomdec amd64 1.17.6-1ubuntu4.2 [10.6 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libheif-plugin-aomenc amd64 1.17.6-1ubuntu4.2 [14.7 kB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libheif1 amd64 1.17.6-1ubuntu4.2 [276 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libheif-plugin-libde265 amd64 1.17.6-1ubuntu4.2 [8174 B]
+Get:14 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 python3-urllib3 all 2.0.7-1ubuntu0.6 [95.2 kB]
+Fetched 9013 kB in 1s (17.1 MB/s)
+(Reading database ... 73712 files and directories currently installed.)
+Preparing to unpack .../0-libpython3.12t64_3.12.3-1ubuntu0.10_amd64.deb ...
+Unpacking libpython3.12t64:amd64 (3.12.3-1ubuntu0.10) over (3.12.3-1ubuntu0.9) ...
+Preparing to unpack .../1-python3.12_3.12.3-1ubuntu0.10_amd64.deb ...
+Unpacking python3.12 (3.12.3-1ubuntu0.10) over (3.12.3-1ubuntu0.9) ...
+Preparing to unpack .../2-libpython3.12-stdlib_3.12.3-1ubuntu0.10_amd64.deb ...
+Unpacking libpython3.12-stdlib:amd64 (3.12.3-1ubuntu0.10) over (3.12.3-1ubuntu0.9) ...
+Preparing to unpack .../3-python3.12-minimal_3.12.3-1ubuntu0.10_amd64.deb ...
+Unpacking python3.12-minimal (3.12.3-1ubuntu0.10) over (3.12.3-1ubuntu0.9) ...
+Preparing to unpack .../4-libpython3.12-minimal_3.12.3-1ubuntu0.10_amd64.deb ...
+Unpacking libpython3.12-minimal:amd64 (3.12.3-1ubuntu0.10) over (3.12.3-1ubuntu0.9) ...
+Preparing to unpack .../5-libtasn1-6_4.19.0-3ubuntu0.24.04.2_amd64.deb ...
+Unpacking libtasn1-6:amd64 (4.19.0-3ubuntu0.24.04.2) over (4.19.0-3ubuntu0.24.04.1) ...
+Setting up libtasn1-6:amd64 (4.19.0-3ubuntu0.24.04.2) ...
+(Reading database ... 73712 files and directories currently installed.)
+Preparing to unpack .../0-libpng16-16t64_1.6.43-5ubuntu0.3_amd64.deb ...
+Unpacking libpng16-16t64:amd64 (1.6.43-5ubuntu0.3) over (1.6.43-5ubuntu0.1) ...
+Preparing to unpack .../1-klibc-utils_2.0.13-4ubuntu0.2_amd64.deb ...
+Unpacking klibc-utils (2.0.13-4ubuntu0.2) over (2.0.13-4ubuntu0.1) ...
+Preparing to unpack .../2-libklibc_2.0.13-4ubuntu0.2_amd64.deb ...
+Unpacking libklibc:amd64 (2.0.13-4ubuntu0.2) over (2.0.13-4ubuntu0.1) ...
+Preparing to unpack .../3-libheif-plugin-aomdec_1.17.6-1ubuntu4.2_amd64.deb ...
+Unpacking libheif-plugin-aomdec:amd64 (1.17.6-1ubuntu4.2) over (1.17.6-1ubuntu4.1) ...
+Preparing to unpack .../4-libheif-plugin-aomenc_1.17.6-1ubuntu4.2_amd64.deb ...
+Unpacking libheif-plugin-aomenc:amd64 (1.17.6-1ubuntu4.2) over (1.17.6-1ubuntu4.1) ...
+Preparing to unpack .../5-libheif1_1.17.6-1ubuntu4.2_amd64.deb ...
+Unpacking libheif1:amd64 (1.17.6-1ubuntu4.2) over (1.17.6-1ubuntu4.1) ...
+Preparing to unpack .../6-libheif-plugin-libde265_1.17.6-1ubuntu4.2_amd64.deb ...
+Unpacking libheif-plugin-libde265:amd64 (1.17.6-1ubuntu4.2) over (1.17.6-1ubuntu4.1) ...
+Preparing to unpack .../7-python3-urllib3_2.0.7-1ubuntu0.6_all.deb ...
+Unpacking python3-urllib3 (2.0.7-1ubuntu0.6) over (2.0.7-1ubuntu0.3) ...
+Setting up libpython3.12-minimal:amd64 (3.12.3-1ubuntu0.10) ...
+Setting up libklibc:amd64 (2.0.13-4ubuntu0.2) ...
+Setting up libpng16-16t64:amd64 (1.6.43-5ubuntu0.3) ...
+Setting up python3-urllib3 (2.0.7-1ubuntu0.6) ...
+Setting up klibc-utils (2.0.13-4ubuntu0.2) ...
+Setting up python3.12-minimal (3.12.3-1ubuntu0.10) ...
+Setting up libpython3.12-stdlib:amd64 (3.12.3-1ubuntu0.10) ...
+Setting up python3.12 (3.12.3-1ubuntu0.10) ...
+Setting up libpython3.12t64:amd64 (3.12.3-1ubuntu0.10) ...
+Setting up libheif-plugin-aomdec:amd64 (1.17.6-1ubuntu4.2) ...
+Setting up libheif-plugin-libde265:amd64 (1.17.6-1ubuntu4.2) ...
+Setting up libheif1:amd64 (1.17.6-1ubuntu4.2) ...
+Setting up libheif-plugin-aomenc:amd64 (1.17.6-1ubuntu4.2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
+Processing triggers for systemd (255.4-1ubuntu8.12) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for initramfs-tools (0.142ubuntu25.5) ...
+update-initramfs: Generating /boot/initrd.img-6.8.0-90-generic
+root@msk-1-vm-soga:~# curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt install -y nodejs
+2026-01-15 21:23:19 - Installing pre-requisites
+Hit:1 http://zabbix.repo.timeweb.ru/ubuntu focal InRelease
+Hit:2 http://mirror.timeweb.ru/ubuntu noble InRelease
+Hit:3 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:4 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:6 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+2 packages can be upgraded. Run 'apt list --upgradable' to see them.
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+apt-transport-https is already the newest version (2.8.3).
+ca-certificates is already the newest version (20240203).
+ca-certificates set to manually installed.
+curl is already the newest version (8.5.0-2ubuntu10.6).
+curl set to manually installed.
+gnupg is already the newest version (2.4.4-2ubuntu17.4).
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+Hit:1 http://mirror.timeweb.ru/ubuntu noble InRelease
+Hit:2 http://zabbix.repo.timeweb.ru/ubuntu focal InRelease
+Hit:3 http://security.ubuntu.com/ubuntu noble-security InRelease
+Hit:4 http://archive.ubuntu.com/ubuntu noble InRelease
+Hit:5 http://archive.ubuntu.com/ubuntu noble-updates InRelease
+Hit:6 http://archive.ubuntu.com/ubuntu noble-backports InRelease
+Get:7 https://deb.nodesource.com/node_20.x nodistro InRelease [12.1 kB]
+Get:8 https://deb.nodesource.com/node_20.x nodistro/main amd64 Packages [13.5 kB]
+Fetched 25.6 kB in 1s (43.9 kB/s)
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+2 packages can be upgraded. Run 'apt list --upgradable' to see them.
+2026-01-15 21:23:24 - Repository configured successfully.
+2026-01-15 21:23:24 - To install Node.js, run: apt install nodejs -y
+2026-01-15 21:23:24 - You can use N|solid Runtime as a node.js alternative
+2026-01-15 21:23:24 - To install N|solid Runtime, run: apt install nsolid -y
+
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following NEW packages will be installed:
+  nodejs
+0 upgraded, 1 newly installed, 0 to remove and 2 not upgraded.
+Need to get 32.0 MB of archives.
+After this operation, 197 MB of additional disk space will be used.
+Get:1 https://deb.nodesource.com/node_20.x nodistro/main amd64 nodejs amd64 20.20.0-1nodesource1 [32.0 MB]
+Fetched 32.0 MB in 1s (39.7 MB/s)
+Selecting previously unselected package nodejs.
+(Reading database ... 73712 files and directories currently installed.)
+Preparing to unpack .../nodejs_20.20.0-1nodesource1_amd64.deb ...
+Unpacking nodejs (20.20.0-1nodesource1) ...
+Setting up nodejs (20.20.0-1nodesource1) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+root@msk-1-vm-soga:~# apt install -y postgresql postgresql-contrib
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  libcommon-sense-perl libjson-perl libjson-xs-perl libllvm17t64 libpq5
+  libtypes-serialiser-perl postgresql-16 postgresql-client-16
+  postgresql-client-common postgresql-common ssl-cert
+Suggested packages:
+  postgresql-doc postgresql-doc-16
+The following NEW packages will be installed:
+  libcommon-sense-perl libjson-perl libjson-xs-perl libllvm17t64 libpq5
+  libtypes-serialiser-perl postgresql postgresql-16 postgresql-client-16
+  postgresql-client-common postgresql-common postgresql-contrib ssl-cert
+0 upgraded, 13 newly installed, 0 to remove and 2 not upgraded.
+Need to get 43.6 MB of archives.
+After this operation, 175 MB of additional disk space will be used.
+Get:1 http://mirror.timeweb.ru/ubuntu noble/main amd64 libjson-perl all 4.10000-1 [81.9 kB]
+Get:2 http://mirror.timeweb.ru/ubuntu noble/main amd64 ssl-cert all 1.1.2ubuntu1 [17.8 kB]
+Get:3 http://mirror.timeweb.ru/ubuntu noble/main amd64 libcommon-sense-perl amd64 3.75-3build3 [20.4 kB]
+Get:4 http://mirror.timeweb.ru/ubuntu noble/main amd64 libtypes-serialiser-perl all 1.01-1 [11.6 kB]
+Get:5 http://mirror.timeweb.ru/ubuntu noble/main amd64 libllvm17t64 amd64 1:17.0.6-9ubuntu1 [26.2 MB]
+Get:6 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-client-common all 257build1.1 [36.4 kB]
+Get:7 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-common all 257build1.1 [161 kB]
+Get:8 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libjson-xs-perl amd64 4.040-0ubuntu0.24.04.1 [83.7 kB]
+Get:9 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 libpq5 amd64 16.11-0ubuntu0.24.04.1 [145 kB]
+Get:10 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-client-16 amd64 16.11-0ubuntu0.24.04.1 [1297 kB]
+Get:11 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-16 amd64 16.11-0ubuntu0.24.04.1 [15.6 MB]
+Get:12 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql all 16+257build1.1 [11.6 kB]
+Get:13 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 postgresql-contrib all 16+257build1.1 [11.6 kB]
+Fetched 43.6 MB in 1s (34.2 MB/s)
+Preconfiguring packages ...
+Selecting previously unselected package libjson-perl.
+(Reading database ... 79075 files and directories currently installed.)
+Preparing to unpack .../00-libjson-perl_4.10000-1_all.deb ...
+Unpacking libjson-perl (4.10000-1) ...
+Selecting previously unselected package postgresql-client-common.
+Preparing to unpack .../01-postgresql-client-common_257build1.1_all.deb ...
+Unpacking postgresql-client-common (257build1.1) ...
+Selecting previously unselected package ssl-cert.
+Preparing to unpack .../02-ssl-cert_1.1.2ubuntu1_all.deb ...
+Unpacking ssl-cert (1.1.2ubuntu1) ...
+Selecting previously unselected package postgresql-common.
+Preparing to unpack .../03-postgresql-common_257build1.1_all.deb ...
+Adding 'diversion of /usr/bin/pg_config to /usr/bin/pg_config.libpq-dev by postgresql-common'
+Unpacking postgresql-common (257build1.1) ...
+Selecting previously unselected package libcommon-sense-perl:amd64.
+Preparing to unpack .../04-libcommon-sense-perl_3.75-3build3_amd64.deb ...
+Unpacking libcommon-sense-perl:amd64 (3.75-3build3) ...
+Selecting previously unselected package libtypes-serialiser-perl.
+Preparing to unpack .../05-libtypes-serialiser-perl_1.01-1_all.deb ...
+Unpacking libtypes-serialiser-perl (1.01-1) ...
+Selecting previously unselected package libjson-xs-perl.
+Preparing to unpack .../06-libjson-xs-perl_4.040-0ubuntu0.24.04.1_amd64.deb ...
+Unpacking libjson-xs-perl (4.040-0ubuntu0.24.04.1) ...
+Selecting previously unselected package libllvm17t64:amd64.
+Preparing to unpack .../07-libllvm17t64_1%3a17.0.6-9ubuntu1_amd64.deb ...
+Unpacking libllvm17t64:amd64 (1:17.0.6-9ubuntu1) ...
+Selecting previously unselected package libpq5:amd64.
+Preparing to unpack .../08-libpq5_16.11-0ubuntu0.24.04.1_amd64.deb ...
+Unpacking libpq5:amd64 (16.11-0ubuntu0.24.04.1) ...
+Selecting previously unselected package postgresql-client-16.
+Preparing to unpack .../09-postgresql-client-16_16.11-0ubuntu0.24.04.1_amd64.deb ...
+Unpacking postgresql-client-16 (16.11-0ubuntu0.24.04.1) ...
+Selecting previously unselected package postgresql-16.
+Preparing to unpack .../10-postgresql-16_16.11-0ubuntu0.24.04.1_amd64.deb ...
+Unpacking postgresql-16 (16.11-0ubuntu0.24.04.1) ...
+Selecting previously unselected package postgresql.
+Preparing to unpack .../11-postgresql_16+257build1.1_all.deb ...
+Unpacking postgresql (16+257build1.1) ...
+Selecting previously unselected package postgresql-contrib.
+Preparing to unpack .../12-postgresql-contrib_16+257build1.1_all.deb ...
+Unpacking postgresql-contrib (16+257build1.1) ...
+Setting up postgresql-client-common (257build1.1) ...
+Setting up libpq5:amd64 (16.11-0ubuntu0.24.04.1) ...
+Setting up libcommon-sense-perl:amd64 (3.75-3build3) ...
+Setting up libllvm17t64:amd64 (1:17.0.6-9ubuntu1) ...
+Setting up ssl-cert (1.1.2ubuntu1) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/ssl-cert.service → /usr/lib/systemd/system/ssl-cert.service.
+Setting up libtypes-serialiser-perl (1.01-1) ...
+Setting up libjson-perl (4.10000-1) ...
+Setting up libjson-xs-perl (4.040-0ubuntu0.24.04.1) ...
+Setting up postgresql-client-16 (16.11-0ubuntu0.24.04.1) ...
+update-alternatives: using /usr/share/postgresql/16/man/man1/psql.1.gz to provide /usr/share/man/man1/psql.1.gz (psql.1.gz) in auto mode
+Setting up postgresql-common (257build1.1) ...
+
+Creating config file /etc/postgresql-common/createcluster.conf with new version
+Building PostgreSQL dictionaries from installed myspell/hunspell packages...
+Removing obsolete dictionary files:
+Created symlink /etc/systemd/system/multi-user.target.wants/postgresql.service → /usr/lib/systemd/system/postgresql.service.
+Setting up postgresql-16 (16.11-0ubuntu0.24.04.1) ...
+Creating new PostgreSQL cluster 16/main ...
+/usr/lib/postgresql/16/bin/initdb -D /var/lib/postgresql/16/main --auth-local peer --auth-host scram-sha-256 --no-instructions
+The files belonging to this database system will be owned by user "postgres".
+This user must also own the server process.
+
+The database cluster will be initialized with locale "C.UTF-8".
+The default database encoding has accordingly been set to "UTF8".
+The default text search configuration will be set to "english".
+
+Data page checksums are disabled.
+
+fixing permissions on existing directory /var/lib/postgresql/16/main ... ok
+creating subdirectories ... ok
+selecting dynamic shared memory implementation ... posix
+selecting default max_connections ... 100
+selecting default shared_buffers ... 128MB
+selecting default time zone ... Etc/UTC
+creating configuration files ... ok
+running bootstrap script ... ok
+performing post-bootstrap initialization ... ok
+syncing data to disk ... ok
+Setting up postgresql-contrib (16+257build1.1) ...
+Setting up postgresql (16+257build1.1) ...
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for libc-bin (2.39-0ubuntu8.6) ...
+root@msk-1-vm-soga:~# apt install -y nginx
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+The following additional packages will be installed:
+  nginx-common
+Suggested packages:
+  fcgiwrap nginx-doc
+The following NEW packages will be installed:
+  nginx nginx-common
+0 upgraded, 2 newly installed, 0 to remove and 2 not upgraded.
+Need to get 564 kB of archives.
+After this operation, 1596 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 nginx-common all 1.24.0-2ubuntu7.5 [43.4 kB]
+Get:2 http://archive.ubuntu.com/ubuntu noble-updates/main amd64 nginx amd64 1.24.0-2ubuntu7.5 [520 kB]
+Fetched 564 kB in 0s (1510 kB/s)
+Preconfiguring packages ...
+Selecting previously unselected package nginx-common.
+(Reading database ... 81045 files and directories currently installed.)
+Preparing to unpack .../nginx-common_1.24.0-2ubuntu7.5_all.deb ...
+Unpacking nginx-common (1.24.0-2ubuntu7.5) ...
+Selecting previously unselected package nginx.
+Preparing to unpack .../nginx_1.24.0-2ubuntu7.5_amd64.deb ...
+Unpacking nginx (1.24.0-2ubuntu7.5) ...
+Setting up nginx-common (1.24.0-2ubuntu7.5) ...
+Created symlink /etc/systemd/system/multi-user.target.wants/nginx.service → /usr/lib/systemd/system/nginx.service.
+Setting up nginx (1.24.0-2ubuntu7.5) ...
+ * Upgrading binary nginx                                                [ OK ]
+Processing triggers for man-db (2.12.0-4build2) ...
+Processing triggers for ufw (0.36.2-6) ...
+root@msk-1-vm-soga:~# apt install -y git
+Reading package lists... Done
+Building dependency tree... Done
+Reading state information... Done
+git is already the newest version (1:2.43.0-1ubuntu7.3).
+git set to manually installed.
+0 upgraded, 0 newly installed, 0 to remove and 2 not upgraded.
+root@msk-1-vm-soga:~# npm install -g pm2
+
+added 133 packages in 14s
+
+13 packages are looking for funding
+  run `npm fund` for details
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.7.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+npm notice To update run: npm install -g npm@11.7.0
+npm notice
+root@msk-1-vm-soga:~# npm install -g npm@11.7.0
+
+removed 45 packages, and changed 107 packages in 3s
+
+16 packages are looking for funding
+  run `npm fund` for details
+root@msk-1-vm-soga:~# sudo -u postgres psql
+psql (16.11 (Ubuntu 16.11-0ubuntu0.24.04.1))
+Type "help" for help.
+
+postgres=# CREATE DATABASE ecomap;
+CREATE USER ecomap_user WITH ENCRYPTED PASSWORD 'eco2026';
+GRANT ALL PRIVILEGES ON DATABASE ecomap TO ecomap_user;
+\c ecomap
+GRANT ALL ON SCHEMA public TO ecomap_user;
+\q
+CREATE DATABASE
+CREATE ROLE
+GRANT
+invalid integer value "ON" for connection option "port"
+Previous connection kept
+postgres=#
