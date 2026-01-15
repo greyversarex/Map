@@ -42,7 +42,7 @@ export default function AdminLogin() {
         setShowWelcome(true);
         setTimeout(() => {
           setLocation("/admin");
-        }, 2500);
+        }, 4000);
       } else {
         toast({ 
           title: "Ошибка", 
@@ -70,13 +70,13 @@ export default function AdminLogin() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 1.1 }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
             className="text-center"
           >
             <motion.div
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
+              transition={{ delay: 0.3, duration: 0.8 }}
               className="mb-6"
             >
               <motion.div
@@ -98,7 +98,7 @@ export default function AdminLogin() {
             <motion.h1
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
+              transition={{ delay: 0.6, duration: 0.8 }}
               className="text-4xl md:text-5xl font-bold text-black mb-4"
             >
               Хуш омадед акаи Сарвар!
@@ -107,14 +107,14 @@ export default function AdminLogin() {
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: "100%" }}
-              transition={{ delay: 0.8, duration: 1.2 }}
+              transition={{ delay: 1.2, duration: 1.5 }}
               className="h-1 bg-gradient-to-r from-gray-400 via-gray-600 to-gray-400 rounded-full mx-auto max-w-md"
             />
             
             <motion.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ delay: 1.2, duration: 0.5 }}
+              transition={{ delay: 2.0, duration: 0.6 }}
               className="text-gray-600 mt-4 text-lg"
             >
               Переход в панель управления...
