@@ -1,15 +1,17 @@
 import { useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertLocationSchema } from "@shared/schema";
+import { insertLocationSchema, LOCATION_TYPES } from "@shared/schema";
 import type { Location, InsertLocation } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateLocation, useUpdateLocation } from "@/hooks/use-locations";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, X, Image, Video } from "lucide-react";
+import { LOCATION_TYPE_CONFIG, LocationMarker } from "./location-icons";
 
 interface LocationFormProps {
   location?: Location;
@@ -42,6 +44,7 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
       lng: location?.lng ?? 71.2761,
       imageUrl: location?.imageUrl ?? "",
       videoUrl: location?.videoUrl ?? "",
+      locationType: location?.locationType ?? "kmz",
     },
   });
 
@@ -161,6 +164,37 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
                   className="bg-white border-gray-300 text-black placeholder:text-gray-400"
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="locationType"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-black">Тип локации</FormLabel>
+              <Select onValueChange={field.onChange} value={field.value || "kmz"}>
+                <FormControl>
+                  <SelectTrigger className="bg-white border-gray-300 text-black" data-testid="select-location-type">
+                    <SelectValue placeholder="Выберите тип" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
+                    const Icon = config.icon;
+                    return (
+                      <SelectItem key={key} value={key} data-testid={`option-type-${key}`}>
+                        <div className="flex items-center gap-2">
+                          <Icon className={`h-4 w-4 ${config.color}`} />
+                          <span>{config.labelRu}</span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

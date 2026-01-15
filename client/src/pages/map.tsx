@@ -1,15 +1,15 @@
 import { useState, useMemo } from "react";
 import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl, Source, Layer } from "react-map-gl/maplibre";
-import type { LineLayer } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, MapPin, Map as MapIcon, Layers } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { LocationMarker, getLocationTypeLabel } from "@/components/location-icons";
 
 type MapStyleType = 'osm' | 'minimal';
 
@@ -47,9 +47,9 @@ const TAJIKISTAN_VIEWSTATE = {
   bearing: 0
 };
 
-const borderLineLayer: LineLayer = {
+const borderLineLayer = {
   id: 'tajikistan-border-line',
-  type: 'line',
+  type: 'line' as const,
   source: 'tajikistan-border',
   paint: {
     'line-color': '#dc2626',
@@ -63,7 +63,7 @@ export default function MapPage() {
   const [popupInfo, setPopupInfo] = useState<Location | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const markers = useMemo(() => locations?.map((location) => (
     <Marker
@@ -83,9 +83,7 @@ export default function MapPage() {
         onMouseLeave={() => setPopupInfo(null)}
       >
         <div className="marker-pulse absolute -inset-4 z-0"></div>
-        <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-background shadow-lg border-2 border-primary transition-transform group-hover:scale-110">
-          <MapPin className="h-4 w-4 text-foreground" />
-        </div>
+        <LocationMarker locationType={location.locationType} size="md" />
       </div>
     </Marker>
   )), [locations]);
@@ -179,10 +177,15 @@ export default function MapPage() {
       <Dialog open={!!selectedLocation} onOpenChange={(open) => !open && setSelectedLocation(null)}>
         <DialogContent className="max-w-3xl bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
           <DialogHeader>
-            <DialogTitle className="font-display text-3xl tracking-wide">{selectedLocation?.name}</DialogTitle>
-            <DialogDescription className="text-base text-muted-foreground/80">
-              {t("map.coordinates")}: {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
-            </DialogDescription>
+            <div className="flex items-center gap-3">
+              <LocationMarker locationType={selectedLocation?.locationType} size="lg" />
+              <div>
+                <DialogTitle className="font-display text-3xl tracking-wide">{selectedLocation?.name}</DialogTitle>
+                <DialogDescription className="text-base text-muted-foreground/80">
+                  {getLocationTypeLabel(selectedLocation?.locationType, language)} | {t("map.coordinates")}: {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
+                </DialogDescription>
+              </div>
+            </div>
           </DialogHeader>
           
           <div className="mt-4 space-y-6">

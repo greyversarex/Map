@@ -4,6 +4,16 @@ import { z } from "zod";
 
 export * from "./models/auth";
 
+// Location types
+export const LOCATION_TYPES = {
+  kmz: "kmz",           // КМЗ - Кумитаи Мухити Зист (головное управление)
+  branch: "branch",     // Шуъбахо - филиалы
+  reserve: "reserve",   // Мамнунгох - заповедники
+  glacier: "glacier",   // Пиряххо - ледники
+} as const;
+
+export type LocationType = typeof LOCATION_TYPES[keyof typeof LOCATION_TYPES];
+
 // === TABLE DEFINITIONS ===
 export const locations = pgTable("locations", {
   id: serial("id").primaryKey(),
@@ -13,6 +23,7 @@ export const locations = pgTable("locations", {
   lng: doublePrecision("lng").notNull(),
   imageUrl: text("image_url"),
   videoUrl: text("video_url"),
+  locationType: text("location_type").default("kmz"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

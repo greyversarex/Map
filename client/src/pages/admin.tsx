@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
 import type { Location } from "@shared/schema";
+import { LocationMarker, LOCATION_TYPE_CONFIG } from "@/components/location-icons";
 
 export default function AdminPage() {
   const { isAdmin, user, isLoading: authLoading, logout } = useAdminAuth();
@@ -167,6 +168,7 @@ export default function AdminPage() {
                 <TableHeader>
                   <TableRow className="bg-gray-50 hover:bg-gray-50">
                     <TableHead className="text-black font-semibold">Название</TableHead>
+                    <TableHead className="hidden lg:table-cell text-black font-semibold">Тип</TableHead>
                     <TableHead className="hidden md:table-cell text-black font-semibold">Координаты</TableHead>
                     <TableHead className="hidden sm:table-cell text-black font-semibold">Медиа</TableHead>
                     <TableHead className="text-right text-black font-semibold">Действия</TableHead>
@@ -175,7 +177,7 @@ export default function AdminPage() {
                 <TableBody>
                   {filteredLocations?.length === 0 ? (
                     <TableRow>
-                      <TableCell colSpan={4} className="h-24 text-center text-gray-500">
+                      <TableCell colSpan={5} className="h-24 text-center text-gray-500">
                         Локации не найдены
                       </TableCell>
                     </TableRow>
@@ -183,12 +185,20 @@ export default function AdminPage() {
                     filteredLocations?.map((location) => (
                       <TableRow key={location.id} className="hover:bg-gray-50">
                         <TableCell className="font-medium text-black">
-                          <div className="flex flex-col">
-                            <span>{location.name}</span>
-                            <span className="md:hidden text-xs text-gray-500 mt-0.5">
-                              {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                            </span>
+                          <div className="flex items-center gap-2">
+                            <LocationMarker locationType={location.locationType} size="sm" />
+                            <div className="flex flex-col">
+                              <span>{location.name}</span>
+                              <span className="md:hidden text-xs text-gray-500 mt-0.5">
+                                {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                              </span>
+                            </div>
                           </div>
+                        </TableCell>
+                        <TableCell className="hidden lg:table-cell text-gray-600">
+                          <span className="text-xs">
+                            {LOCATION_TYPE_CONFIG[location.locationType || "kmz"]?.labelRu || "КМЗ"}
+                          </span>
                         </TableCell>
                         <TableCell className="hidden md:table-cell text-gray-600">
                           {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
