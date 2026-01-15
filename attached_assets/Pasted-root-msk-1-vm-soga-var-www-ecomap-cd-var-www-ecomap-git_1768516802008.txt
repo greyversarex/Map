@@ -1,0 +1,119 @@
+root@msk-1-vm-soga:/var/www/ecomap# cd /var/www/ecomap
+git stash
+git pull origin main
+npm install
+
+# Пересобрать сервер
+npx esbuild server/index.ts --bundle --platform=node --packages=external --outfile=dist/index.cjs --format=cjs --external:vite --external:@replit/*
+
+# Пересобрать клиент
+npx vite build
+
+# Скопировать файлы
+mkdir -p dist/public
+cp -r dist/client/* dist/public/ 2>/dev/null || cp -r client/dist/* dist/public/
+cp client/public/favicon.png dist/public/
+
+# Создать папку uploads
+mkdir -p uploads
+chmod 755 uploads
+
+# Запустить PM2
+pm2 start ecosystem.config.cjs
+pm2 save
+Saved working directory and index state WIP on main: 935306c Add a nature-inspired favicon to the website
+From https://github.com/greyversarex/Map
+ * branch            main       -> FETCH_HEAD
+Updating 935306c..0579b2b
+Fast-forward
+ attached_assets/Pasted--TAILING-Tailing-last-15-lines-for-all-processes-change_1768516352920.txt |  38 ++++++++++++++++++++++++++++++++++++++
+ attached_assets/generated_images/transparent_eco_map_favicon.png                                 | Bin 0 -> 307031 bytes
+ attached_assets/image_1768516512830.png                                                          | Bin 0 -> 29665 bytes
+ client/public/favicon.png                                                                        | Bin 309944 -> 307031 bytes
+ client/src/components/location-form.tsx                                                          |  30 +++++++++---------------------
+ client/src/pages/map.tsx                                                                         |   5 ++++-
+ package-lock.json                                                                                | 103 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++----------
+ package.json                                                                                     |   2 ++
+ server/routes.ts                                                                                 |  52 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ 9 files changed, 197 insertions(+), 33 deletions(-)
+ create mode 100644 attached_assets/Pasted--TAILING-Tailing-last-15-lines-for-all-processes-change_1768516352920.txt
+ create mode 100644 attached_assets/generated_images/transparent_eco_map_favicon.png
+ create mode 100644 attached_assets/image_1768516512830.png
+
+added 19 packages, and audited 574 packages in 2s
+
+77 packages are looking for funding
+  run `npm fund` for details
+
+3 high severity vulnerabilities
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    vite.config.ts:13:10:
+      13 │           await import("@replit/vite-plugin-cartographer").then((m) =>
+         ╵           ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    vite.config.ts:16:10:
+      16 │           await import("@replit/vite-plugin-dev-banner").then((m) =>
+         ╵           ~~~~~
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:24:24:
+      24 │       "@": path.resolve(import.meta.dirname, "client", "src"),
+         ╵                         ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:25:30:
+      25 │       "@shared": path.resolve(import.meta.dirname, "shared"),
+         ╵                               ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:26:30:
+      26 │       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+         ╵                               ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:29:21:
+      29 │   root: path.resolve(import.meta.dirname, "client"),
+         ╵                      ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+4 of 5 warnings and all 2 errors shown (disable the message limit with --log-limit=0)
+failed to load config from /var/www/ecomap/vite.config.ts
+error during build:
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite' imported from /var/www/ecomap/node_modules/.vite-temp/vite.config.ts.timestamp-1768516790945-021ed76602d44.mjs
+    at packageResolve (node:internal/modules/esm/resolve:873:9)
+    at moduleResolve (node:internal/modules/esm/resolve:946:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:168:49)
+[PM2][WARN] Applications ecomap not running, starting...
+[PM2] App [ecomap] launched (1 instances)
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ ecomap    │ default     │ 1.0.0   │ fork    │ 13125    │ 0s     │ 0    │ online    │ 0%       │ 16.4mb   │ root     │ disabled │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2] Saving current process list...
+[PM2] Successfully saved in /root/.pm2/dump.pm2
+root@msk-1-vm-soga:/var/www/ecomap#
