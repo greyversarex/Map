@@ -1,0 +1,95 @@
+root@msk-1-vm-soga:/var/www/ecomap# cd /var/www/ecomap
+git pull origin main
+mkdir -p uploads
+chmod 755 uploads
+
+# Пересобрать
+npx esbuild server/index.ts --bundle --platform=node --packages=external --outfile=dist/index.cjs --format=cjs
+npx vite build --outDir client/dist
+cp -r client/dist/* dist/public/
+cp client/public/favicon.png dist/public/
+
+# Добавить UPLOADS_DIR в PM2
+pm2 delete ecomap
+pm2 start dist/index.cjs --name ecomap --
+pm2 save
+remote: Enumerating objects: 39, done.
+remote: Counting objects: 100% (39/39), done.
+remote: Compressing objects: 100% (5/5), done.
+remote: Total 25 (delta 19), reused 25 (delta 19), pack-reused 0 (from 0)
+Unpacking objects: 100% (25/25), 335.11 KiB | 2.01 MiB/s, done.
+From https://github.com/greyversarex/Map
+ * branch            main       -> FETCH_HEAD
+   935306c..0579b2b  main       -> origin/main
+Updating 935306c..0579b2b
+error: Your local changes to the following files would be overwritten by merge:
+        package-lock.json
+        package.json
+Please commit your changes or stash them before you merge.
+Aborting
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    vite.config.ts:13:10:
+      13 │           await import("@replit/vite-plugin-cartographer").then((m) =>
+         ╵           ~~~~~
+
+✘ [ERROR] Top-level await is currently not supported with the "cjs" output format
+
+    vite.config.ts:16:10:
+      16 │           await import("@replit/vite-plugin-dev-banner").then((m) =>
+         ╵           ~~~~~
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:24:24:
+      24 │       "@": path.resolve(import.meta.dirname, "client", "src"),
+         ╵                         ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:25:30:
+      25 │       "@shared": path.resolve(import.meta.dirname, "shared"),
+         ╵                               ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:26:30:
+      26 │       "@assets": path.resolve(import.meta.dirname, "attached_assets"),
+         ╵                               ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+▲ [WARNING] "import.meta" is not available with the "cjs" output format and will be empty [empty-import-meta]
+
+    vite.config.ts:29:21:
+      29 │   root: path.resolve(import.meta.dirname, "client"),
+         ╵                      ~~~~~~~~~~~
+
+  You need to set the output format to "esm" for "import.meta" to work correctly.
+
+4 of 5 warnings and all 2 errors shown (disable the message limit with --log-limit=0)
+failed to load config from /var/www/ecomap/vite.config.ts
+error during build:
+Error [ERR_MODULE_NOT_FOUND]: Cannot find package 'vite' imported from /var/www/ecomap/node_modules/.vite-temp/vite.config.ts.timestamp-1768516746733-2077f7a903404.mjs
+    at packageResolve (node:internal/modules/esm/resolve:873:9)
+    at moduleResolve (node:internal/modules/esm/resolve:946:18)
+    at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+    at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+    at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+    at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+    at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+    at ModuleJob._link (node:internal/modules/esm/module_job:168:49)
+[PM2] Applying action deleteProcessId on app [ecomap](ids: [ 0 ])
+[PM2] [ecomap](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+[PM2][ERROR] File ecosystem.config.js not found
+[PM2] Saving current process list...
+[PM2][WARN] PM2 is not managing any process, skipping save...
+[PM2][WARN] To force saving use: pm2 save --force
+root@msk-1-vm-soga:/var/www/ecomap#
