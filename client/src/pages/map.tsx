@@ -1,6 +1,5 @@
 import { useState, useMemo } from "react";
-import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl, Source, Layer } from "react-map-gl/maplibre";
-import type { FillLayer, LineLayer } from "react-map-gl/maplibre";
+import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
@@ -8,7 +7,6 @@ import { NavUser } from "@/components/nav-user";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, MapPin } from "lucide-react";
 import { type Location } from "@shared/schema";
-import { tajikistanSimpleBorder } from "@/data/tajikistan-border";
 
 const TAJIKISTAN_VIEWSTATE = {
   longitude: 71.2761,
@@ -16,39 +14,6 @@ const TAJIKISTAN_VIEWSTATE = {
   zoom: 6.5,
   pitch: 45,
   bearing: 0
-};
-
-const borderFillLayer: FillLayer = {
-  id: 'tajikistan-fill',
-  type: 'fill',
-  source: 'tajikistan-border',
-  paint: {
-    'fill-color': '#22c55e',
-    'fill-opacity': 0.08
-  }
-};
-
-const borderLineLayer: LineLayer = {
-  id: 'tajikistan-line',
-  type: 'line',
-  source: 'tajikistan-border',
-  paint: {
-    'line-color': '#22c55e',
-    'line-width': 4,
-    'line-opacity': 0.9
-  }
-};
-
-const borderGlowLayer: LineLayer = {
-  id: 'tajikistan-glow',
-  type: 'line',
-  source: 'tajikistan-border',
-  paint: {
-    'line-color': '#22c55e',
-    'line-width': 12,
-    'line-opacity': 0.3,
-    'line-blur': 4
-  }
 };
 
 export default function MapPage() {
@@ -111,19 +76,13 @@ export default function MapPage() {
       <Map
         initialViewState={TAJIKISTAN_VIEWSTATE}
         style={{ width: "100%", height: "100%" }}
-        mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+        mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         mapLib={maplibregl}
         terrain={{ source: 'terrain', exaggeration: 1.5 }}
       >
         <NavigationControl position="bottom-right" />
         <FullscreenControl position="bottom-right" />
         <ScaleControl position="bottom-left" />
-
-        <Source id="tajikistan-border" type="geojson" data={tajikistanSimpleBorder}>
-          <Layer {...borderGlowLayer} />
-          <Layer {...borderFillLayer} />
-          <Layer {...borderLineLayer} />
-        </Source>
 
         {markers}
 
