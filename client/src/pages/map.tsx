@@ -78,8 +78,9 @@ export default function MapPage() {
         style={{ width: "100%", height: "100%" }}
         mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         mapLib={maplibregl}
-        terrain={{ source: 'terrain', exaggeration: 2.5 }}
+        terrain={{ source: 'terrain', exaggeration: 1.2 }}
         maxPitch={85}
+        antialias={false}
       >
         <NavigationControl position="bottom-right" />
         <FullscreenControl position="bottom-right" />
