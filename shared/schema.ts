@@ -10,6 +10,8 @@ export const LOCATION_TYPES = {
   branch: "branch",     // Шуъбахо - филиалы
   reserve: "reserve",   // Мамнунгох - заповедники
   glacier: "glacier",   // Пиряххо - ледники
+  fishery: "fishery",   // Мохипарвари - рыбоводство
+  nursery: "nursery",   // Нихолхона - питомники
 } as const;
 
 export type LocationType = typeof LOCATION_TYPES[keyof typeof LOCATION_TYPES];

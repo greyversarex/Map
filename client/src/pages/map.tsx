@@ -68,6 +68,8 @@ export default function MapPage() {
     branch: true,
     reserve: true,
     glacier: true,
+    fishery: true,
+    nursery: true,
   });
   const { t, language } = useLanguage();
 
@@ -135,7 +137,7 @@ export default function MapPage() {
         <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
           <Filter className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium text-foreground">
-            {language === "ru" ? "Фильтры" : language === "tj" ? "Филтрҳо" : "Filters"}
+            {t("filter.title")}
           </span>
         </div>
         <div className="space-y-2">

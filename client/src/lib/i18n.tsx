@@ -62,6 +62,12 @@ const translations: Translations = {
     tj: "Муфассал",
     en: "View Details",
   },
+  // Filters
+  "filter.title": {
+    ru: "Фильтры",
+    tj: "Филтрҳо",
+    en: "Filters",
+  },
   // Language names
   "lang.ru": {
     ru: "Русский",

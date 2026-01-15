@@ -95,7 +95,7 @@
   opacity: 0.6;
 }
 
-/* Шуъбахо - Branches: Blue steady glow */
+/* Шуъбахо - Branches: Gray steady glow */
 .marker-pulse-branch::before {
   content: '';
   position: absolute;
@@ -103,9 +103,9 @@
   height: calc(100% + 12px); width: calc(100% + 12px);
   border-radius: 50%;
   background: transparent;
-  border: 2px solid #3b82f6;
+  border: 2px solid #9ca3af;
   animation: pulse-glow 2.5s ease-in-out infinite;
-  color: #3b82f6;
+  color: #9ca3af;
 }
 
 /* Мамнунгох - Reserves: Emerald slow wave */
@@ -130,6 +130,31 @@
   background: radial-gradient(circle, #06b6d4 0%, transparent 60%);
   animation: pulse-frost 2s ease-in-out infinite;
   opacity: 0.6;
+}
+
+/* Мохипарвари - Fishery: Blue wave ripple */
+.marker-pulse-fishery::before {
+  content: '';
+  position: absolute;
+  left: -8px; top: -8px;
+  height: calc(100% + 16px); width: calc(100% + 16px);
+  border-radius: 50%;
+  background: radial-gradient(circle, #3b82f6 0%, transparent 70%);
+  animation: pulse-ring-slow 2.5s ease-out infinite;
+  opacity: 0.5;
+}
+
+/* Нихолхона - Nursery: Lime growth pulse */
+.marker-pulse-nursery::before {
+  content: '';
+  position: absolute;
+  left: -6px; top: -6px;
+  height: calc(100% + 12px); width: calc(100% + 12px);
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid #84cc16;
+  animation: pulse-glow 2s ease-in-out infinite;
+  color: #84cc16;
 }
 
 .marker-dot {

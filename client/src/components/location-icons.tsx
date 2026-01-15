@@ -1,4 +1,4 @@
-import { Building2, TreePine, Mountain, Snowflake, Building } from "lucide-react";
+import { Building2, TreePine, Snowflake, Building, Fish, Leaf } from "lucide-react";
 import type { LocationType } from "@shared/schema";
 
 interface LocationTypeConfig {
@@ -25,9 +25,9 @@ export const LOCATION_TYPE_CONFIG: Record<string, LocationTypeConfig> = {
   },
   branch: {
     icon: Building,
-    color: "text-blue-600",
-    bgColor: "bg-blue-100",
-    borderColor: "border-blue-500",
+    color: "text-gray-500",
+    bgColor: "bg-gray-100",
+    borderColor: "border-gray-400",
     pulseClass: "marker-pulse-branch",
     labelRu: "Шуъбахо (Филиалы)",
     labelTj: "Шуъбаҳо",
@@ -52,6 +52,26 @@ export const LOCATION_TYPE_CONFIG: Record<string, LocationTypeConfig> = {
     labelRu: "Пиряххо (Ледники)",
     labelTj: "Пиряххо",
     labelEn: "Glaciers",
+  },
+  fishery: {
+    icon: Fish,
+    color: "text-blue-500",
+    bgColor: "bg-blue-100",
+    borderColor: "border-blue-400",
+    pulseClass: "marker-pulse-fishery",
+    labelRu: "Мохипарвари (Рыбоводство)",
+    labelTj: "Моҳипарварӣ",
+    labelEn: "Fish farms",
+  },
+  nursery: {
+    icon: Leaf,
+    color: "text-lime-600",
+    bgColor: "bg-lime-100",
+    borderColor: "border-lime-500",
+    pulseClass: "marker-pulse-nursery",
+    labelRu: "Нихолхона (Питомники)",
+    labelTj: "Ниҳолхона",
+    labelEn: "Tree nurseries",
   },
 };
 
