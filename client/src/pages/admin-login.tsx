@@ -62,9 +62,6 @@ export default function AdminLogin() {
       <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-2xl shadow-gray-300/50 overflow-hidden">
           <div className="bg-gradient-to-r from-gray-500 to-gray-600 p-6 text-center">
-            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
-              <Lock className="h-8 w-8 text-white" />
-            </div>
             <h1 className="text-2xl font-bold text-white">Панель администратора</h1>
             <p className="text-white/80 text-sm mt-1">Войдите для управления локациями</p>
           </div>
