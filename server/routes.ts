@@ -3,6 +3,7 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
 // Simple admin credentials (set via environment variables)
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
@@ -20,6 +21,9 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Register object storage routes for file uploads
+  registerObjectStorageRoutes(app);
+
   // Simple admin login
   app.post("/api/admin/login", (req, res) => {
     const { username, password } = req.body;

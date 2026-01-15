@@ -8,12 +8,13 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Loader2, MapPin, Map as MapIcon, Layers } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
+import { useLanguage } from "@/lib/i18n";
+import { LanguageSwitcher } from "@/components/language-switcher";
 
 type MapStyleType = 'osm' | 'minimal';
 
 const MAP_STYLES = {
   osm: {
-    name: 'Цветная',
     style: {
       version: 8 as const,
       sources: {
@@ -34,7 +35,6 @@ const MAP_STYLES = {
     }
   },
   minimal: {
-    name: 'Минимал',
     style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
   }
 };
@@ -63,6 +63,7 @@ export default function MapPage() {
   const [popupInfo, setPopupInfo] = useState<Location | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
+  const { t } = useLanguage();
 
   const markers = useMemo(() => locations?.map((location) => (
     <Marker
@@ -71,7 +72,6 @@ export default function MapPage() {
       latitude={location.lat}
       anchor="bottom"
       onClick={e => {
-        // Prevent map click
         e.originalEvent.stopPropagation();
         setSelectedLocation(location);
         setPopupInfo(null);
@@ -95,7 +95,7 @@ export default function MapPage() {
       <div className="flex h-screen items-center justify-center bg-black text-white">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <h2 className="text-xl font-display tracking-widest">LOADING MAP</h2>
+          <h2 className="text-xl font-display tracking-widest">{t("map.loading")}</h2>
         </div>
       </div>
     );
@@ -103,17 +103,18 @@ export default function MapPage() {
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
-      {/* Header Overlay */}
       <div className="pointer-events-none absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
         <div className="pointer-events-auto">
           <h1 className="font-display text-4xl font-bold text-white tracking-wider drop-shadow-lg">
             TAJIKISTAN
           </h1>
-          <p className="text-white/60 text-sm font-light tracking-widest mt-1">INTERACTIVE 3D MAP</p>
+          <p className="text-white/60 text-sm font-light tracking-widest mt-1">{t("map.title")}</p>
+        </div>
+        <div className="pointer-events-auto">
+          <LanguageSwitcher />
         </div>
       </div>
 
-      {/* Map Style Switcher */}
       <div className="absolute right-4 top-24 z-50 flex flex-col gap-1 rounded-lg bg-background/90 backdrop-blur-sm p-1 shadow-lg border border-border">
         <button
           onClick={() => setMapStyle('osm')}
@@ -125,7 +126,7 @@ export default function MapPage() {
           data-testid="button-style-osm"
         >
           <MapIcon className="h-4 w-4" />
-          Цветная
+          {t("map.colorful")}
         </button>
         <button
           onClick={() => setMapStyle('minimal')}
@@ -137,7 +138,7 @@ export default function MapPage() {
           data-testid="button-style-minimal"
         >
           <Layers className="h-4 w-4" />
-          Минимал
+          {t("map.minimal")}
         </button>
       </div>
 
@@ -175,22 +176,20 @@ export default function MapPage() {
         )}
       </Map>
 
-      {/* Detail Dialog */}
       <Dialog open={!!selectedLocation} onOpenChange={(open) => !open && setSelectedLocation(null)}>
         <DialogContent className="max-w-3xl bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
           <DialogHeader>
             <DialogTitle className="font-display text-3xl tracking-wide">{selectedLocation?.name}</DialogTitle>
             <DialogDescription className="text-base text-muted-foreground/80">
-              {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
+              {t("map.coordinates")}: {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
             </DialogDescription>
           </DialogHeader>
           
           <div className="mt-4 space-y-6">
             {selectedLocation?.imageUrl && (
               <div className="overflow-hidden rounded-lg border border-white/10 shadow-2xl">
-                 {/* Scenic landscape of Tajikistan mountains */}
                 <img 
-                  src={selectedLocation.imageUrl} 
+                  src={selectedLocation.imageUrl.startsWith('/objects/') ? selectedLocation.imageUrl : selectedLocation.imageUrl} 
                   alt={selectedLocation.name} 
                   className="w-full h-[300px] object-cover hover:scale-105 transition-transform duration-700"
                 />
@@ -207,7 +206,7 @@ export default function MapPage() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   />
                 ) : (
-                  <video controls className="w-full h-full" src={selectedLocation.videoUrl}>
+                  <video controls className="w-full h-full" src={selectedLocation.videoUrl.startsWith('/objects/') ? selectedLocation.videoUrl : selectedLocation.videoUrl}>
                     Your browser does not support the video tag.
                   </video>
                 )}
@@ -215,8 +214,9 @@ export default function MapPage() {
             )}
 
             <div className="prose prose-invert max-w-none">
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                {selectedLocation?.description || "No description available for this location."}
+              <h3 className="text-lg font-semibold text-foreground mb-2">{t("map.description")}</h3>
+              <p className="text-base leading-relaxed text-muted-foreground">
+                {selectedLocation?.description || t("map.noLocations")}
               </p>
             </div>
           </div>
