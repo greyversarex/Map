@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/queryClient";
 import { Lock } from "lucide-react";
 
 export default function AdminLogin() {
@@ -18,19 +19,27 @@ export default function AdminLogin() {
     e.preventDefault();
     setIsLoading(true);
 
+    const trimmedUsername = username.trim();
+    const trimmedPassword = password.trim();
+
     try {
       const response = await fetch("/api/admin/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ 
+          username: trimmedUsername, 
+          password: trimmedPassword 
+        }),
         credentials: "include",
       });
 
+      const data = await response.json();
+
       if (response.ok) {
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/session"] });
         toast({ title: "Успешно!", description: "Вы вошли в систему" });
         setLocation("/admin");
       } else {
-        const data = await response.json();
         toast({ 
           title: "Ошибка", 
           description: data.message || "Неверный логин или пароль",
@@ -67,6 +76,7 @@ export default function AdminLogin() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="admin"
+                autoComplete="username"
                 required
                 data-testid="input-username"
               />
@@ -78,7 +88,8 @@ export default function AdminLogin() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Введите пароль"
+                placeholder="admin123"
+                autoComplete="current-password"
                 required
                 data-testid="input-password"
               />
@@ -91,6 +102,9 @@ export default function AdminLogin() {
             >
               {isLoading ? "Вход..." : "Войти"}
             </Button>
+            <p className="text-center text-xs text-muted-foreground mt-4">
+              Логин: admin / Пароль: admin123
+            </p>
           </form>
         </CardContent>
       </Card>
