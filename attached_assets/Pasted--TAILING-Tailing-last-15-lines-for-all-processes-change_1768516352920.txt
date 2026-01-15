@@ -1,0 +1,38 @@
+[TAILING] Tailing last 15 lines for [all] processes (change the value with --lines option)
+/root/.pm2/pm2.log last 15 lines:
+PM2        | 2026-01-15T22:13:38: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-15T22:13:38: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-15T22:13:38: PM2 log: pid=11882 msg=process killed
+PM2        | 2026-01-15T22:13:38: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-15T22:13:38: PM2 log: App [ecomap:0] online
+PM2        | 2026-01-15T22:20:24: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-15T22:20:24: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-15T22:20:24: PM2 log: pid=11915 msg=process killed
+PM2        | 2026-01-15T22:20:24: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-15T22:20:24: PM2 log: App [ecomap:0] online
+PM2        | 2026-01-15T22:29:47: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-15T22:29:47: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-15T22:29:47: PM2 log: pid=12219 msg=process killed
+PM2        | 2026-01-15T22:29:47: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-15T22:29:47: PM2 log: App [ecomap:0] online
+
+/root/.pm2/logs/ecomap-error.log last 15 lines:
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Error generating upload URL: Error: PRIVATE_OBJECT_DIR not set. Create a bucket in 'Object Storage' tool and set PRIVATE_OBJECT_DIR env var.
+0|ecomap   |     at ObjectStorageService.getPrivateObjectDir (/var/www/ecomap/dist/index.cjs:419:13)
+0|ecomap   |     at ObjectStorageService.getObjectEntityUploadURL (/var/www/ecomap/dist/index.cjs:467:35)
+0|ecomap   |     at /var/www/ecomap/dist/index.cjs:603:52
+0|ecomap   |     at Layer.handle [as handle_request] (/var/www/ecomap/node_modules/express/lib/router/layer.js:95:5)
+0|ecomap   |     at next (/var/www/ecomap/node_modules/express/lib/router/route.js:149:13)
+0|ecomap   |     at Route.dispatch (/var/www/ecomap/node_modules/express/lib/router/route.js:119:3)
+0|ecomap   |     at Layer.handle [as handle_request] (/var/www/ecomap/node_modules/express/lib/router/layer.js:95:5)
+0|ecomap   |     at /var/www/ecomap/node_modules/express/lib/router/index.js:284:15
+0|ecomap   |     at Function.process_params (/var/www/ecomap/node_modules/express/lib/router/index.js:346:12)
+0|ecomap   |     at next (/var/www/ecomap/node_modules/express/lib/router/index.js:280:10)
+
+/root/.pm2/logs/ecomap-out.log last 15 lines:
+0|ecomap   | к Дашти Джум","description":"Заповедник в Дарвазском районе ГБАО","lat":38.4667,"lng":70.1667,"imageUrl":null,"videoUrl":null,"locationType":"reserve","createdAt":"2026-01-15T22:20:09.698Z"},{"id":15,"name":"Заповедник Зоркуль","description":"Высокогорный заповедник на границе с Афганистаном","lat":37.45,"lng":73.75,"imageUrl":null,"videoUrl":null,"locationType":"reserve","createdAt":"2026-01-15T22:20:09.698Z"},{"id":16,"name":"Ледник Федченко","description":"Крупнейший ледник Памира и один из крупнейших в мире","lat":38.8333,"lng":72.25,"imageUrl":null,"videoUrl":null,"locationType":"glacier","createdAt":"2026-01-15T22:20:09.698Z"},{"id":17,"name":"Рыбхоз Кайраккум","description":"Рыбоводческое хозяйство на Кайраккумском водохранилище","lat":40.25,"lng":69.8333,"imageUrl":null,"videoUrl":null,"locationType":"fishery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":18,"name":"Рыбхоз Нурек","description":"Рыбоводческое хозяйство при Нурекском водохранилище","lat":38.3667,"lng":69.35,"imageUrl":null,"videoUrl":null,"locationType":"fishery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":19,"name":"Питомник Варзоб","description":"Лесной питомник в Варзобском районе","lat":38.75,"lng":68.8333,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":20,"name":"Питомник Файзабад","description":"Питомник декоративных растений","lat":38.5333,"lng":69.3167,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":21,"name":"Питомник Гиссар","description":"Плодовый питомник Гиссарского района","lat":38.5167,"lng":68.5333,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":22,"name":"Питомник Шахринав","description":"Лесопитомник Шахринавского района","lat":38.5667,"lng":68.3167,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":23,"name":"Питомник Яван","description":"Питомник саженцев Яванского района","lat":38.3167,"lng":69.0167,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":24,"name":"Питомник Дангара","description":"Питомник плодовых деревьев","lat":38.0833,"lng":69.3333,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"}]
+0|ecomap   | 10:32:02 PM [express] POST /api/uploads/request-url 500 in 2ms :: {"error":"Failed to generate upload URL"}
