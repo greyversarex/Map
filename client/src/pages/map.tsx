@@ -8,7 +8,7 @@ import { NavUser } from "@/components/nav-user";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, MapPin } from "lucide-react";
 import { type Location } from "@shared/schema";
-import { tajikistanAccurateBorder } from "@/data/tajikistan-accurate";
+import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 
 const TAJIKISTAN_VIEWSTATE = {
   longitude: 71.2761,
@@ -97,7 +97,7 @@ export default function MapPage() {
         <FullscreenControl position="bottom-right" />
         <ScaleControl position="bottom-left" />
 
-        <Source id="tajikistan-border" type="geojson" data={tajikistanAccurateBorder}>
+        <Source id="tajikistan-border" type="geojson" data={tajikistanOSMBorder}>
           <Layer {...borderLineLayer} />
         </Source>
 
