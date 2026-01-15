@@ -89,7 +89,24 @@ export default function MapPage() {
       <Map
         initialViewState={TAJIKISTAN_VIEWSTATE}
         style={{ width: "100%", height: "100%" }}
-        mapStyle="https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json"
+        mapStyle={{
+          version: 8,
+          sources: {
+            'satellite': {
+              type: 'raster',
+              tiles: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'],
+              tileSize: 256,
+              attribution: 'Esri, Maxar, Earthstar Geographics'
+            }
+          },
+          layers: [{
+            id: 'satellite-layer',
+            type: 'raster',
+            source: 'satellite',
+            minzoom: 0,
+            maxzoom: 19
+          }]
+        }}
         mapLib={maplibregl}
         terrain={{ source: 'terrain', exaggeration: 1.5 }}
       >
