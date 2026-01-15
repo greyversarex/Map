@@ -4,6 +4,39 @@ import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+
+// Local file upload configuration
+const UPLOADS_DIR = process.env.UPLOADS_DIR || "./uploads";
+
+// Ensure uploads directory exists
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+const localUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, UPLOADS_DIR);
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+  }),
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|webm/;
+    const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    const mimetype = allowedTypes.test(file.mimetype);
+    if (extname && mimetype) {
+      return cb(null, true);
+    }
+    cb(new Error('Only images and videos are allowed'));
+  }
+});
 
 // Simple admin credentials (set via environment variables)
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
@@ -21,8 +54,25 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Register object storage routes for file uploads
+  // Register object storage routes for file uploads (Replit only)
   registerObjectStorageRoutes(app);
+
+  // Serve uploaded files statically
+  app.use('/uploads', (await import('express')).static(UPLOADS_DIR));
+
+  // Local file upload endpoint (works on any server)
+  app.post("/api/upload", isAuthenticated, localUpload.single('file'), (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+      }
+      const fileUrl = `/uploads/${req.file.filename}`;
+      res.json({ url: fileUrl, filename: req.file.filename });
+    } catch (error) {
+      console.error('Upload error:', error);
+      res.status(500).json({ error: 'Upload failed' });
+    }
+  });
 
   // Simple admin login
   app.post("/api/admin/login", (req, res) => {

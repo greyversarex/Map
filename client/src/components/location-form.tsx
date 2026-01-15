@@ -49,33 +49,21 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
   });
 
   const uploadFile = async (file: File): Promise<string> => {
-    const response = await fetch("/api/uploads/request-url", {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await fetch("/api/upload", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: file.name,
-        size: file.size,
-        contentType: file.type,
-      }),
+      body: formData,
     });
 
     if (!response.ok) {
-      throw new Error("Не удалось загрузить файл");
+      const error = await response.json().catch(() => ({}));
+      throw new Error(error.error || "Не удалось загрузить файл");
     }
 
-    const { uploadURL, objectPath } = await response.json();
-
-    const uploadResponse = await fetch(uploadURL, {
-      method: "PUT",
-      body: file,
-      headers: { "Content-Type": file.type },
-    });
-
-    if (!uploadResponse.ok) {
-      throw new Error("Ошибка загрузки файла");
-    }
-
-    return objectPath;
+    const { url } = await response.json();
+    return url;
   };
 
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

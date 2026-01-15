@@ -241,10 +241,10 @@ export default function MapPage() {
             offset={40}
             className="z-50"
           >
-            <div className="bg-background px-3 py-2 rounded shadow-xl border border-border max-w-[280px]">
+            <div className="bg-background/80 backdrop-blur-sm px-3 py-2 rounded shadow-xl border border-border max-w-[280px]">
               <p className="font-bold text-sm text-foreground">{popupInfo.name}</p>
               {popupInfo.description && (
-                <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{popupInfo.description}</p>
+                <p className="text-xs text-foreground/80 mt-1 line-clamp-2">{popupInfo.description}</p>
               )}
             </div>
           </Popup>
