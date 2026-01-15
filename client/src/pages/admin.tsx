@@ -51,8 +51,8 @@ export default function AdminPage() {
 
   if (authLoading || locationsLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200">
-        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
       </div>
     );
   }
@@ -76,11 +76,11 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200 flex">
+    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex">
       <aside className="w-64 bg-white shadow-xl hidden md:flex flex-col">
         <div className="p-6 border-b border-gray-100">
           <Link href="/">
-            <h1 className="text-2xl font-bold text-black cursor-pointer hover:text-indigo-600 transition-colors tracking-wide">
+            <h1 className="text-2xl font-bold text-black cursor-pointer hover:text-gray-600 transition-colors tracking-wide">
               ADMIN
             </h1>
           </Link>
@@ -89,7 +89,7 @@ export default function AdminPage() {
         
         <nav className="flex-1 p-4 space-y-2">
           <Link href="/">
-            <Button variant="ghost" className="w-full justify-start text-black hover:bg-indigo-50 hover:text-indigo-600">
+            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700">
               <MapIcon className="mr-2 h-4 w-4" />
               Открыть карту
             </Button>
@@ -98,7 +98,7 @@ export default function AdminPage() {
 
         <div className="p-4 border-t border-gray-100 bg-gray-50">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg shadow-indigo-200">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-gray-500 to-gray-600 shadow-lg shadow-gray-300">
               <User className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col overflow-hidden">
@@ -131,7 +131,7 @@ export default function AdminPage() {
               <DialogTrigger asChild>
                 <Button 
                   onClick={openCreate} 
-                  className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white shadow-lg shadow-indigo-300/50"
+                  className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg shadow-gray-400/50"
                 >
                   <Plus className="mr-2 h-4 w-4" /> Добавить
                 </Button>
@@ -148,14 +148,14 @@ export default function AdminPage() {
             </Dialog>
           </div>
 
-          <div className="bg-white rounded-xl shadow-xl shadow-indigo-100/50 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-xl shadow-gray-200/50 overflow-hidden">
             <div className="p-6 border-b border-gray-100">
               <div className="flex items-center gap-4">
                 <div className="relative flex-1">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input 
                     placeholder="Поиск локаций..." 
-                    className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500"
+                    className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
@@ -181,7 +181,7 @@ export default function AdminPage() {
                     </TableRow>
                   ) : (
                     filteredLocations?.map((location) => (
-                      <TableRow key={location.id} className="hover:bg-indigo-50/50">
+                      <TableRow key={location.id} className="hover:bg-gray-50">
                         <TableCell className="font-medium text-black">
                           <div className="flex flex-col">
                             <span>{location.name}</span>
@@ -209,7 +209,7 @@ export default function AdminPage() {
                               variant="ghost" 
                               size="icon" 
                               onClick={() => openEdit(location)}
-                              className="text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
+                              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100"
                             >
                               <Pencil className="h-4 w-4" />
                             </Button>

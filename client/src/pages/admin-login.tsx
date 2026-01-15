@@ -58,10 +58,10 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white rounded-2xl shadow-2xl shadow-indigo-200/50 overflow-hidden">
-          <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-6 text-center">
+        <div className="bg-white rounded-2xl shadow-2xl shadow-gray-300/50 overflow-hidden">
+          <div className="bg-gradient-to-r from-gray-500 to-gray-600 p-6 text-center">
             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
               <Lock className="h-8 w-8 text-white" />
             </div>
@@ -81,7 +81,7 @@ export default function AdminLogin() {
                   placeholder="Введите логин"
                   autoComplete="username"
                   required
-                  className="h-12 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500"
+                  className="h-12 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
                   data-testid="input-username"
                 />
               </div>
@@ -96,7 +96,7 @@ export default function AdminLogin() {
                     placeholder="Введите пароль"
                     autoComplete="current-password"
                     required
-                    className="h-12 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 pr-12"
+                    className="h-12 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500 pr-12"
                     data-testid="input-password"
                   />
                   <button
@@ -110,7 +110,7 @@ export default function AdminLogin() {
               </div>
               <Button 
                 type="submit" 
-                className="w-full h-12 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold text-base shadow-lg shadow-indigo-300/50" 
+                className="w-full h-12 bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white font-semibold text-base shadow-lg shadow-gray-400/50" 
                 disabled={isLoading}
                 data-testid="button-login"
               >
