@@ -4,12 +4,12 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { LocationMarker, getLocationTypeLabel } from "@/components/location-icons";
+import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
 
 type MapStyleType = 'osm' | 'minimal';
 
@@ -63,9 +63,26 @@ export default function MapPage() {
   const [popupInfo, setPopupInfo] = useState<Location | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
+  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({
+    kmz: true,
+    branch: true,
+    reserve: true,
+    glacier: true,
+  });
   const { t, language } = useLanguage();
 
-  const markers = useMemo(() => locations?.map((location) => (
+  const toggleFilter = (type: string) => {
+    setActiveFilters(prev => ({
+      ...prev,
+      [type]: !prev[type]
+    }));
+  };
+
+  const filteredLocations = useMemo(() => {
+    return locations?.filter(loc => activeFilters[loc.locationType || "kmz"]) || [];
+  }, [locations, activeFilters]);
+
+  const markers = useMemo(() => filteredLocations.map((location) => (
     <Marker
       key={location.id}
       longitude={location.lng}
@@ -82,11 +99,11 @@ export default function MapPage() {
         onMouseEnter={() => setPopupInfo(location)}
         onMouseLeave={() => setPopupInfo(null)}
       >
-        <div className="marker-pulse absolute -inset-4 z-0"></div>
+        <div className={`absolute -inset-4 z-0 ${getPulseClass(location.locationType)}`}></div>
         <LocationMarker locationType={location.locationType} size="md" />
       </div>
     </Marker>
-  )), [locations]);
+  )), [filteredLocations]);
 
   if (isLoading) {
     return (
@@ -113,6 +130,46 @@ export default function MapPage() {
         </div>
       </div>
 
+      {/* Filter Panel - Left Side */}
+      <div className="absolute left-4 top-24 z-50 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[200px]">
+        <div className="flex items-center gap-2 mb-3 pb-2 border-b border-border">
+          <Filter className="h-4 w-4 text-muted-foreground" />
+          <span className="text-sm font-medium text-foreground">
+            {language === "ru" ? "Фильтры" : language === "tj" ? "Филтрҳо" : "Filters"}
+          </span>
+        </div>
+        <div className="space-y-2">
+          {Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
+            const Icon = config.icon;
+            const count = locations?.filter(l => l.locationType === key).length || 0;
+            return (
+              <label 
+                key={key} 
+                className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 rounded p-1.5 transition-colors"
+                data-testid={`filter-${key}`}
+              >
+                <input 
+                  type="checkbox"
+                  checked={activeFilters[key]}
+                  onChange={() => toggleFilter(key)}
+                  className="h-4 w-4 rounded border-muted-foreground accent-primary cursor-pointer"
+                />
+                <div className={`flex h-5 w-5 items-center justify-center rounded-full ${config.bgColor} border ${config.borderColor}`}>
+                  <Icon className={`h-3 w-3 ${config.color}`} />
+                </div>
+                <span className="text-xs text-foreground flex-1 truncate">
+                  {language === "ru" ? config.labelRu.split(" (")[0] : 
+                   language === "tj" ? config.labelTj.split(" (")[0] : 
+                   config.labelEn.split(" (")[0]}
+                </span>
+                <span className="text-xs text-muted-foreground">({count})</span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Map Style Switcher - Right Side */}
       <div className="absolute right-4 top-24 z-50 flex flex-col gap-1 rounded-lg bg-background/90 backdrop-blur-sm p-1 shadow-lg border border-border">
         <button
           onClick={() => setMapStyle('osm')}
@@ -151,7 +208,7 @@ export default function MapPage() {
         <FullscreenControl position="bottom-right" />
         <ScaleControl position="bottom-left" />
 
-        <Source id="tajikistan-border" type="geojson" data={tajikistanOSMBorder}>
+        <Source id="tajikistan-border" type="geojson" data={tajikistanOSMBorder as any}>
           <Layer {...borderLineLayer} />
         </Source>
 
