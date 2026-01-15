@@ -92,19 +92,19 @@ export default function MapPage() {
         mapStyle={{
           version: 8,
           sources: {
-            'terrain-tiles': {
+            'osm': {
               type: 'raster',
-              tiles: ['https://tile.opentopomap.org/{z}/{x}/{y}.png'],
+              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
               tileSize: 256,
-              attribution: 'OpenTopoMap (CC-BY-SA)'
+              attribution: '© OpenStreetMap contributors'
             }
           },
           layers: [{
-            id: 'terrain-layer',
+            id: 'osm-layer',
             type: 'raster',
-            source: 'terrain-tiles',
+            source: 'osm',
             minzoom: 0,
-            maxzoom: 17
+            maxzoom: 19
           }]
         }}
         mapLib={maplibregl}
