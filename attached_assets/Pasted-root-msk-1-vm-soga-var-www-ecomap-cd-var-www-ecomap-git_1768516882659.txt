@@ -1,0 +1,42 @@
+root@msk-1-vm-soga:/var/www/ecomap# cd /var/www/ecomap
+git pull origin main
+
+# Скопировать собранные файлы (они уже в репозитории)
+ls -la dist/public/
+
+# Если файлов нет - скопировать вручную:
+cp -r client/dist/* dist/public/ 2>/dev/null || true
+cp client/public/favicon.png dist/public/
+
+pm2 restart ecomap
+remote: Enumerating objects: 10, done.
+remote: Counting objects: 100% (10/10), done.
+remote: Compressing objects: 100% (2/2), done.
+remote: Total 8 (delta 6), reused 8 (delta 6), pack-reused 0 (from 0)
+Unpacking objects: 100% (8/8), 3.84 KiB | 1.92 MiB/s, done.
+From https://github.com/greyversarex/Map
+ * branch            main       -> FETCH_HEAD
+   0579b2b..321d162  main       -> origin/main
+Updating 0579b2b..321d162
+Fast-forward
+ attached_assets/Pasted-root-msk-1-vm-soga-var-www-ecomap-cd-var-www-ecomap-git_1768516757263.txt |  95 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ attached_assets/Pasted-root-msk-1-vm-soga-var-www-ecomap-cd-var-www-ecomap-git_1768516802008.txt | 119 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 214 insertions(+)
+ create mode 100644 attached_assets/Pasted-root-msk-1-vm-soga-var-www-ecomap-cd-var-www-ecomap-git_1768516757263.txt
+ create mode 100644 attached_assets/Pasted-root-msk-1-vm-soga-var-www-ecomap-cd-var-www-ecomap-git_1768516802008.txt
+total 320
+drwxr-xr-x 4 root root   4096 Jan 15 22:05 .
+drwxr-xr-x 3 root root   4096 Jan 15 21:47 ..
+drwxr-xr-x 2 root root   4096 Jan 15 22:05 assets
+-rw-r--r-- 1 root root 307031 Jan 15 22:39 favicon.png
+-rw-r--r-- 1 root root   2012 Jan 15 22:13 index.html
+drwxr-xr-x 3 root root   4096 Jan 15 22:04 public
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ecomap](ids: [ 0 ])
+[PM2] [ecomap](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ ecomap    │ default     │ 1.0.0   │ fork    │ 13205    │ 0s     │ 1    │ online    │ 0%       │ 12.6mb   │ root     │ disabled │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@msk-1-vm-soga:/var/www/ecomap#
