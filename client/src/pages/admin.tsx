@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useAuth } from "@/hooks/use-auth";
+import { useState, useEffect } from "react";
+import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
 import { LocationForm } from "@/components/location-form";
 import {
@@ -30,14 +30,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
 import type { Location } from "@shared/schema";
 
 export default function AdminPage() {
-  const { user, isLoading: authLoading, logout } = useAuth();
+  const { isAdmin, user, isLoading: authLoading, logout } = useAdminAuth();
   const { data: locations, isLoading: locationsLoading } = useLocations();
   const deleteMutation = useDeleteLocation();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -45,11 +44,11 @@ export default function AdminPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useWouterLocation();
 
-  // Redirect if not logged in
-  if (!authLoading && !user) {
-    setLocation("/");
-    return null;
-  }
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      setLocation("/admin/login");
+    }
+  }, [authLoading, isAdmin, setLocation]);
 
   if (authLoading || locationsLoading) {
     return (
@@ -57,6 +56,10 @@ export default function AdminPage() {
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
+  }
+
+  if (!isAdmin) {
+    return null;
   }
 
   const filteredLocations = locations?.filter(loc => 
@@ -97,18 +100,17 @@ export default function AdminPage() {
 
         <div className="p-4 border-t border-border">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <Avatar className="h-8 w-8">
-              <AvatarImage src={user?.profileImageUrl || undefined} />
-              <AvatarFallback>{user?.firstName?.[0]}</AvatarFallback>
-            </Avatar>
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
+              <User className="h-4 w-4 text-primary" />
+            </div>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-sm font-medium truncate">{user?.firstName}</span>
-              <span className="text-xs text-muted-foreground truncate">{user?.email}</span>
+              <span className="text-sm font-medium truncate">{user?.username || "Admin"}</span>
+              <span className="text-xs text-muted-foreground">Администратор</span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" onClick={() => logout()}>
+          <Button variant="outline" className="w-full" onClick={() => logout()} data-testid="button-logout">
             <LogOut className="mr-2 h-4 w-4" />
-            Logout
+            Выйти
           </Button>
         </div>
       </aside>

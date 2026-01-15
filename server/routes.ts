@@ -1,17 +1,55 @@
-import type { Express } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
+
+// Simple admin credentials (set via environment variables)
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123";
+
+// Simple session-based authentication
+function isAuthenticated(req: Request, res: Response, next: NextFunction) {
+  if (req.session && (req.session as any).isAdmin) {
+    return next();
+  }
+  return res.status(401).json({ message: "Unauthorized" });
+}
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup Auth
-  await setupAuth(app);
-  registerAuthRoutes(app);
+  // Simple admin login
+  app.post("/api/admin/login", (req, res) => {
+    const { username, password } = req.body;
+    
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      (req.session as any).isAdmin = true;
+      (req.session as any).adminUser = { username };
+      return res.json({ success: true, user: { username } });
+    }
+    
+    return res.status(401).json({ message: "Неверный логин или пароль" });
+  });
+
+  // Check admin session
+  app.get("/api/admin/session", (req, res) => {
+    if (req.session && (req.session as any).isAdmin) {
+      return res.json({ isAdmin: true, user: (req.session as any).adminUser });
+    }
+    return res.json({ isAdmin: false });
+  });
+
+  // Admin logout
+  app.post("/api/admin/logout", (req, res) => {
+    req.session?.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Logout failed" });
+      }
+      res.json({ success: true });
+    });
+  });
 
   // Locations API
   app.get(api.locations.list.path, async (req, res) => {

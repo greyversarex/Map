@@ -4,7 +4,6 @@ import type { LineLayer } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
-import { NavUser } from "@/components/nav-user";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, MapPin, Map as MapIcon, Layers } from "lucide-react";
 import { type Location } from "@shared/schema";
@@ -111,9 +110,6 @@ export default function MapPage() {
             TAJIKISTAN
           </h1>
           <p className="text-white/60 text-sm font-light tracking-widest mt-1">INTERACTIVE 3D MAP</p>
-        </div>
-        <div className="pointer-events-auto">
-          <NavUser />
         </div>
       </div>
 
