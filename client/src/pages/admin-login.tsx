@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Eye, EyeOff, Sparkles, Star, Crown } from "lucide-react";
+import { Eye, EyeOff, Sparkles, Star, MapPin } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const FloatingParticle = ({ delay, x, size }: { delay: number; x: number; size: number }) => (
@@ -145,7 +145,7 @@ export default function AdminLogin() {
                     repeatDelay: 0.5
                   }}
                 >
-                  <Crown className="h-14 w-14 text-white drop-shadow-lg" />
+                  <MapPin className="h-14 w-14 text-white drop-shadow-lg" />
                 </motion.div>
               </motion.div>
             </div>
