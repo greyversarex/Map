@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl } from "react-map-gl/maplibre";
+import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl, Source } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
@@ -78,11 +78,19 @@ export default function MapPage() {
         style={{ width: "100%", height: "100%" }}
         mapStyle="https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
         mapLib={maplibregl}
-        terrain={{ source: 'terrain', exaggeration: 1.5 }}
+        terrain={{ source: 'terrain', exaggeration: 2.5 }}
+        maxPitch={85}
       >
         <NavigationControl position="bottom-right" />
         <FullscreenControl position="bottom-right" />
         <ScaleControl position="bottom-left" />
+
+        <Source
+          id="terrain"
+          type="raster-dem"
+          url="https://demotiles.maplibre.org/terrain-tiles/tiles.json"
+          tileSize={256}
+        />
 
         {markers}
 
