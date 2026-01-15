@@ -30,7 +30,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
 import type { Location } from "@shared/schema";
@@ -52,8 +51,8 @@ export default function AdminPage() {
 
   if (authLoading || locationsLoading) {
     return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200">
+        <Loader2 className="h-8 w-8 animate-spin text-indigo-600" />
       </div>
     );
   }
@@ -77,63 +76,69 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 text-foreground flex">
-      {/* Sidebar */}
-      <aside className="w-64 border-r border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl hidden md:flex flex-col">
-        <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+    <div className="min-h-screen bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200 flex">
+      <aside className="w-64 bg-white shadow-xl hidden md:flex flex-col">
+        <div className="p-6 border-b border-gray-100">
           <Link href="/">
-            <h1 className="font-display text-2xl font-bold tracking-widest cursor-pointer hover:text-primary transition-colors">
+            <h1 className="text-2xl font-bold text-black cursor-pointer hover:text-indigo-600 transition-colors tracking-wide">
               ADMIN
             </h1>
           </Link>
-          <p className="text-xs text-muted-foreground mt-1">LOCATION MANAGER</p>
+          <p className="text-xs text-gray-500 mt-1 font-medium">МЕНЕДЖЕР ЛОКАЦИЙ</p>
         </div>
         
         <nav className="flex-1 p-4 space-y-2">
           <Link href="/">
-            <Button variant="ghost" className="w-full justify-start text-muted-foreground hover:text-foreground">
+            <Button variant="ghost" className="w-full justify-start text-black hover:bg-indigo-50 hover:text-indigo-600">
               <MapIcon className="mr-2 h-4 w-4" />
-              View Map
+              Открыть карту
             </Button>
           </Link>
         </nav>
 
-        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+        <div className="p-4 border-t border-gray-100 bg-gray-50">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-              <User className="h-4 w-4 text-primary" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg shadow-indigo-200">
+              <User className="h-5 w-5 text-white" />
             </div>
             <div className="flex flex-col overflow-hidden">
-              <span className="text-sm font-medium truncate">{user?.username || "Admin"}</span>
-              <span className="text-xs text-muted-foreground">Администратор</span>
+              <span className="text-sm font-semibold text-black truncate">{user?.username || "Admin"}</span>
+              <span className="text-xs text-gray-500">Администратор</span>
             </div>
           </div>
-          <Button variant="outline" className="w-full" onClick={() => logout()} data-testid="button-logout">
+          <Button 
+            variant="outline" 
+            className="w-full border-gray-200 text-black hover:bg-red-50 hover:text-red-600 hover:border-red-200" 
+            onClick={() => logout()} 
+            data-testid="button-logout"
+          >
             <LogOut className="mr-2 h-4 w-4" />
             Выйти
           </Button>
         </div>
       </aside>
 
-      {/* Main Content */}
       <main className="flex-1 p-6 md:p-8 lg:p-12 overflow-auto">
         <div className="max-w-6xl mx-auto space-y-8">
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-3xl font-display font-semibold">Locations</h2>
-              <p className="text-muted-foreground">Manage points of interest on the 3D map.</p>
+              <h2 className="text-3xl font-bold text-black">Локации</h2>
+              <p className="text-gray-600">Управление точками на 3D карте</p>
             </div>
             
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button onClick={openCreate} className="shadow-lg shadow-primary/20">
-                  <Plus className="mr-2 h-4 w-4" /> Add Location
+                <Button 
+                  onClick={openCreate} 
+                  className="bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white shadow-lg shadow-indigo-300/50"
+                >
+                  <Plus className="mr-2 h-4 w-4" /> Добавить
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
+              <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white">
                 <DialogHeader>
-                  <DialogTitle>{editingLocation ? "Edit Location" : "New Location"}</DialogTitle>
+                  <DialogTitle className="text-black">{editingLocation ? "Редактировать" : "Новая локация"}</DialogTitle>
                 </DialogHeader>
                 <LocationForm 
                   location={editingLocation || undefined} 
@@ -143,98 +148,109 @@ export default function AdminPage() {
             </Dialog>
           </div>
 
-          <Card className="border-gray-200 dark:border-gray-700 bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm shadow-sm">
-            <CardHeader className="pb-4">
+          <div className="bg-white rounded-xl shadow-xl shadow-indigo-100/50 overflow-hidden">
+            <div className="p-6 border-b border-gray-100">
               <div className="flex items-center gap-4">
                 <div className="relative flex-1">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
                   <Input 
-                    placeholder="Search locations..." 
-                    className="pl-9 bg-background/50"
+                    placeholder="Поиск локаций..." 
+                    className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="rounded-md border border-gray-200 dark:border-gray-700 overflow-hidden">
-                <Table>
-                  <TableHeader className="bg-muted/50">
+            </div>
+            <div className="overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-gray-50 hover:bg-gray-50">
+                    <TableHead className="text-black font-semibold">Название</TableHead>
+                    <TableHead className="hidden md:table-cell text-black font-semibold">Координаты</TableHead>
+                    <TableHead className="hidden sm:table-cell text-black font-semibold">Медиа</TableHead>
+                    <TableHead className="text-right text-black font-semibold">Действия</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredLocations?.length === 0 ? (
                     <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead className="hidden md:table-cell">Coordinates</TableHead>
-                      <TableHead className="hidden sm:table-cell">Media</TableHead>
-                      <TableHead className="text-right">Actions</TableHead>
+                      <TableCell colSpan={4} className="h-24 text-center text-gray-500">
+                        Локации не найдены
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredLocations?.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="h-24 text-center text-muted-foreground">
-                          No locations found.
+                  ) : (
+                    filteredLocations?.map((location) => (
+                      <TableRow key={location.id} className="hover:bg-indigo-50/50">
+                        <TableCell className="font-medium text-black">
+                          <div className="flex flex-col">
+                            <span>{location.name}</span>
+                            <span className="md:hidden text-xs text-gray-500 mt-0.5">
+                              {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="hidden md:table-cell text-gray-600">
+                          {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                        </TableCell>
+                        <TableCell className="hidden sm:table-cell">
+                          <div className="flex gap-2">
+                            {location.imageUrl && (
+                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">IMG</span>
+                            )}
+                            {location.videoUrl && (
+                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">VID</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => openEdit(location)}
+                              className="text-gray-600 hover:text-indigo-600 hover:bg-indigo-50"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </Button>
+                            
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon" 
+                                  className="text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="bg-white">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle className="text-black">Удалить локацию?</AlertDialogTitle>
+                                  <AlertDialogDescription className="text-gray-600">
+                                    Локация "{location.name}" будет удалена с карты навсегда.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="text-black">Отмена</AlertDialogCancel>
+                                  <AlertDialogAction 
+                                    onClick={() => deleteMutation.mutate(location.id)}
+                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                  >
+                                    Удалить
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </TableCell>
                       </TableRow>
-                    ) : (
-                      filteredLocations?.map((location) => (
-                        <TableRow key={location.id} className="hover:bg-muted/30">
-                          <TableCell className="font-medium">
-                            <div className="flex flex-col">
-                              <span>{location.name}</span>
-                              <span className="md:hidden text-xs text-muted-foreground mt-0.5">
-                                {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                              </span>
-                            </div>
-                          </TableCell>
-                          <TableCell className="hidden md:table-cell text-muted-foreground">
-                            {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                          </TableCell>
-                          <TableCell className="hidden sm:table-cell">
-                            <div className="flex gap-2">
-                              {location.imageUrl && <span className="text-xs bg-blue-500/10 text-blue-400 px-2 py-1 rounded">IMG</span>}
-                              {location.videoUrl && <span className="text-xs bg-purple-500/10 text-purple-400 px-2 py-1 rounded">VID</span>}
-                            </div>
-                          </TableCell>
-                          <TableCell className="text-right">
-                            <div className="flex justify-end gap-2">
-                              <Button variant="ghost" size="icon" onClick={() => openEdit(location)}>
-                                <Pencil className="h-4 w-4" />
-                              </Button>
-                              
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10">
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>Delete Location?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This will permanently remove "{location.name}" from the map.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction 
-                                      onClick={() => deleteMutation.mutate(location.id)}
-                                      className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
-                                    >
-                                      Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
-              </div>
-            </CardContent>
-          </Card>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
         </div>
       </main>
     </div>

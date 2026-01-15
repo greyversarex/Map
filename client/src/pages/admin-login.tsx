@@ -2,11 +2,10 @@ import { useState } from "react";
 import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import { Lock } from "lucide-react";
+import { Lock, Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
   const [, setLocation] = useLocation();
@@ -14,6 +13,7 @@ export default function AdminLogin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,56 +58,76 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-50 to-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Lock className="h-6 w-6 text-primary" />
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200 p-4">
+      <div className="w-full max-w-md">
+        <div className="bg-white rounded-2xl shadow-2xl shadow-indigo-200/50 overflow-hidden">
+          <div className="bg-gradient-to-r from-indigo-500 to-blue-600 p-6 text-center">
+            <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm">
+              <Lock className="h-8 w-8 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-white">Панель администратора</h1>
+            <p className="text-white/80 text-sm mt-1">Войдите для управления локациями</p>
           </div>
-          <CardTitle className="text-2xl">Вход в админку</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Логин</Label>
-              <Input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
-                autoComplete="username"
-                required
-                data-testid="input-username"
-              />
+          
+          <div className="p-8">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-black font-medium">Логин</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Введите логин"
+                  autoComplete="username"
+                  required
+                  className="h-12 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500"
+                  data-testid="input-username"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-black font-medium">Пароль</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Введите пароль"
+                    autoComplete="current-password"
+                    required
+                    className="h-12 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-indigo-500 focus:ring-indigo-500 pr-12"
+                    data-testid="input-password"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  </button>
+                </div>
+              </div>
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white font-semibold text-base shadow-lg shadow-indigo-300/50" 
+                disabled={isLoading}
+                data-testid="button-login"
+              >
+                {isLoading ? "Вход..." : "Войти"}
+              </Button>
+            </form>
+            <div className="mt-6 pt-4 border-t border-gray-100">
+              <p className="text-center text-sm text-gray-500">
+                Логин: <span className="font-mono text-black bg-gray-100 px-2 py-0.5 rounded">admin</span>
+              </p>
+              <p className="text-center text-sm text-gray-500 mt-1">
+                Пароль: <span className="font-mono text-black bg-gray-100 px-2 py-0.5 rounded">admin123</span>
+              </p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Пароль</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="admin123"
-                autoComplete="current-password"
-                required
-                data-testid="input-password"
-              />
-            </div>
-            <Button 
-              type="submit" 
-              className="w-full" 
-              disabled={isLoading}
-              data-testid="button-login"
-            >
-              {isLoading ? "Вход..." : "Войти"}
-            </Button>
-            <p className="text-center text-xs text-muted-foreground mt-4">
-              Логин: admin / Пароль: admin123
-            </p>
-          </form>
-        </CardContent>
-      </Card>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
