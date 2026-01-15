@@ -6,9 +6,39 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
 import { NavUser } from "@/components/nav-user";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, MapPin } from "lucide-react";
+import { Loader2, MapPin, Map as MapIcon, Layers } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
+
+type MapStyleType = 'osm' | 'minimal';
+
+const MAP_STYLES = {
+  osm: {
+    name: 'Цветная',
+    style: {
+      version: 8 as const,
+      sources: {
+        'osm': {
+          type: 'raster' as const,
+          tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+          tileSize: 256,
+          attribution: '© OpenStreetMap contributors'
+        }
+      },
+      layers: [{
+        id: 'osm-layer',
+        type: 'raster' as const,
+        source: 'osm',
+        minzoom: 0,
+        maxzoom: 19
+      }]
+    }
+  },
+  minimal: {
+    name: 'Минимал',
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json'
+  }
+};
 
 const TAJIKISTAN_VIEWSTATE = {
   longitude: 71.2761,
@@ -33,6 +63,7 @@ export default function MapPage() {
   const { data: locations, isLoading } = useLocations();
   const [popupInfo, setPopupInfo] = useState<Location | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
+  const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
 
   const markers = useMemo(() => locations?.map((location) => (
     <Marker
@@ -86,27 +117,38 @@ export default function MapPage() {
         </div>
       </div>
 
+      {/* Map Style Switcher */}
+      <div className="absolute right-4 top-24 z-50 flex flex-col gap-1 rounded-lg bg-background/90 backdrop-blur-sm p-1 shadow-lg border border-border">
+        <button
+          onClick={() => setMapStyle('osm')}
+          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            mapStyle === 'osm' 
+              ? 'bg-primary text-primary-foreground' 
+              : 'hover:bg-muted text-foreground'
+          }`}
+          data-testid="button-style-osm"
+        >
+          <MapIcon className="h-4 w-4" />
+          Цветная
+        </button>
+        <button
+          onClick={() => setMapStyle('minimal')}
+          className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+            mapStyle === 'minimal' 
+              ? 'bg-primary text-primary-foreground' 
+              : 'hover:bg-muted text-foreground'
+          }`}
+          data-testid="button-style-minimal"
+        >
+          <Layers className="h-4 w-4" />
+          Минимал
+        </button>
+      </div>
+
       <Map
         initialViewState={TAJIKISTAN_VIEWSTATE}
         style={{ width: "100%", height: "100%" }}
-        mapStyle={{
-          version: 8,
-          sources: {
-            'osm': {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256,
-              attribution: '© OpenStreetMap contributors'
-            }
-          },
-          layers: [{
-            id: 'osm-layer',
-            type: 'raster',
-            source: 'osm',
-            minzoom: 0,
-            maxzoom: 19
-          }]
-        }}
+        mapStyle={MAP_STYLES[mapStyle].style}
         mapLib={maplibregl}
         terrain={{ source: 'terrain', exaggeration: 1.5 }}
       >
