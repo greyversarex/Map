@@ -97,25 +97,25 @@ export default function MapPage() {
         <Source
           id="tajikistan-boundary"
           type="geojson"
-          data="https://raw.githubusercontent.com/datasets/geo-boundaries-world-110m/master/countries/TJK.geojson"
+          data="https://raw.githubusercontent.com/gregoiredavid/france-geojson/master/countries/tajikistan.geojson"
         >
           <Layer
             id="boundary-line"
             type="line"
             paint={{
-              "line-color": "#FF0000",
-              "line-width": 3,
-              "line-opacity": 0.8,
+              "line-color": "#ffffff",
+              "line-width": 4,
+              "line-opacity": 0.9,
             }}
           />
           <Layer
             id="boundary-glow"
             type="line"
             paint={{
-              "line-color": "#FF0000",
-              "line-width": 8,
-              "line-opacity": 0.2,
-              "line-blur": 5,
+              "line-color": "#ffffff",
+              "line-width": 12,
+              "line-opacity": 0.4,
+              "line-blur": 10,
             }}
           />
         </Source>
