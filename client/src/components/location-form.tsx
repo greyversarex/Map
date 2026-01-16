@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateLocation, useUpdateLocation } from "@/hooks/use-locations";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, X, Image, Video } from "lucide-react";
+import { Loader2, Upload, X, Image, Video, MapPin } from "lucide-react";
 import { LOCATION_TYPE_CONFIG, LocationMarker } from "./location-icons";
 
 interface LocationFormProps {
@@ -29,6 +29,7 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
   const [videoPreview, setVideoPreview] = useState<string | null>(location?.videoUrl || null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
+  const [isGettingLocation, setIsGettingLocation] = useState(false);
   
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
@@ -94,6 +95,47 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
     setVideoPreview(null);
     form.setValue("videoUrl", "");
     if (videoInputRef.current) videoInputRef.current.value = "";
+  };
+
+  const getCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Ошибка",
+        description: "Геолокация не поддерживается вашим браузером",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGettingLocation(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        form.setValue("lat", position.coords.latitude);
+        form.setValue("lng", position.coords.longitude);
+        setIsGettingLocation(false);
+        toast({
+          title: "Успешно",
+          description: "Координаты определены",
+        });
+      },
+      (error) => {
+        setIsGettingLocation(false);
+        let message = "Не удалось определить местоположение";
+        if (error.code === error.PERMISSION_DENIED) {
+          message = "Доступ к геолокации запрещён";
+        } else if (error.code === error.POSITION_UNAVAILABLE) {
+          message = "Информация о местоположении недоступна";
+        } else if (error.code === error.TIMEOUT) {
+          message = "Время ожидания истекло";
+        }
+        toast({
+          title: "Ошибка",
+          description: message,
+          variant: "destructive",
+        });
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
   };
 
   const onSubmit = async (data: InsertLocation) => {
@@ -230,6 +272,22 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
             )}
           />
         </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={getCurrentLocation}
+          disabled={isGettingLocation}
+          className="w-full"
+          data-testid="button-get-location"
+        >
+          {isGettingLocation ? (
+            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          ) : (
+            <MapPin className="h-4 w-4 mr-2" />
+          )}
+          Определить моё местоположение
+        </Button>
 
         <FormField
           control={form.control}

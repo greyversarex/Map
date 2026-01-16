@@ -4,7 +4,7 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
@@ -308,6 +308,17 @@ export default function MapPage() {
                 {selectedLocation?.description || t("map.noLocations")}
               </p>
             </div>
+
+            <a
+              href={`https://www.google.com/maps/dir/?api=1&destination=${selectedLocation?.lat},${selectedLocation?.lng}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              data-testid="button-route"
+            >
+              <Navigation className="h-5 w-5" />
+              {language === 'ru' ? 'Построить маршрут' : language === 'tj' ? 'Сохтани роҳ' : 'Get directions'}
+            </a>
           </div>
         </DialogContent>
       </Dialog>
