@@ -11,77 +11,30 @@ import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
 
-function PopupContent({ location, language, t, onClose }: { location: Location; language: string; t: (key: string) => string; onClose: () => void }) {
-  const [showDetails, setShowDetails] = useState(false);
-  
+function HoverPopup({ location }: { location: Location }) {
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 rounded-xl shadow-2xl border border-gray-200 w-[380px] overflow-hidden">
+    <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-xl border border-gray-200 max-w-[280px] overflow-hidden">
       <div className="flex">
         {location.imageUrl ? (
           <img 
             src={location.imageUrl} 
             alt={location.name}
-            className="w-32 h-32 object-cover flex-shrink-0"
+            className="w-20 h-20 object-cover flex-shrink-0"
           />
         ) : (
-          <div className="w-32 h-32 bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <MapIcon className="h-10 w-10 text-gray-400" />
+          <div className="w-20 h-20 bg-gray-100 flex items-center justify-center flex-shrink-0">
+            <MapIcon className="h-8 w-8 text-gray-400" />
           </div>
         )}
-        <div className="p-4 flex-1 min-w-0">
-          <p className="font-bold text-base text-gray-900 leading-tight">{location.name}</p>
-          <div className="mt-2 space-y-1">
-            {location.foundedYear && (
-              <p className="text-sm text-gray-600">
-                {language === 'ru' ? 'Основан' : language === 'tj' ? 'Ташкил шуд' : 'Founded'}: {location.foundedYear}
-              </p>
-            )}
-            {location.workerCount && (
-              <p className="text-sm text-gray-600">
-                {language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}: {location.workerCount}
-              </p>
-            )}
-            {location.area && (
-              <p className="text-sm text-gray-600">
-                {language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}: {location.area}
-              </p>
-            )}
-          </div>
-        </div>
-      </div>
-      
-      <div className="px-4 pb-3">
-        <a
-          href={`https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full py-2.5 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Navigation className="h-4 w-4" />
-          {language === 'ru' ? 'Навигатор' : language === 'tj' ? 'Навигатор' : 'Navigate'}
-        </a>
-      </div>
-
-      {location.description && (
-        <div className="border-t border-gray-200">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowDetails(!showDetails);
-            }}
-            className="flex items-center justify-center gap-1.5 w-full py-2.5 text-sm text-blue-600 hover:bg-gray-50 transition-colors font-medium"
-          >
-            {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            {language === 'ru' ? 'Подробности' : language === 'tj' ? 'Тафсилот' : 'Details'}
-          </button>
-          {showDetails && (
-            <div className="px-4 pb-4">
-              <p className="text-sm text-gray-700 leading-relaxed">{location.description}</p>
-            </div>
+        <div className="p-3 flex-1 min-w-0">
+          <p className="font-bold text-sm text-gray-900">{location.name}</p>
+          {location.foundedYear && (
+            <p className="text-xs text-gray-500 mt-1">
+              {location.foundedYear}
+            </p>
           )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -168,15 +121,20 @@ export default function MapPage() {
       anchor="bottom"
       onClick={e => {
         e.originalEvent.stopPropagation();
-        setPopupInfo(popupInfo?.id === location.id ? null : location);
+        setSelectedLocation(location);
+        setPopupInfo(null);
       }}
     >
-      <div className="group relative cursor-pointer">
+      <div 
+        className="group relative cursor-pointer"
+        onMouseEnter={() => setPopupInfo(location)}
+        onMouseLeave={() => setPopupInfo(null)}
+      >
         <div className={`absolute -inset-4 z-0 ${getPulseClass(location.locationType)}`}></div>
         <LocationMarker locationType={location.locationType} size="md" />
       </div>
     </Marker>
-  )), [filteredLocations, popupInfo]);
+  )), [filteredLocations]);
 
   if (isLoading) {
     return (
@@ -307,12 +265,11 @@ export default function MapPage() {
             longitude={popupInfo.lng}
             latitude={popupInfo.lat}
             closeButton={false}
-            closeOnClick={true}
-            onClose={() => setPopupInfo(null)}
+            closeOnClick={false}
             offset={40}
             className="z-50"
           >
-            <PopupContent location={popupInfo} language={language} t={t} onClose={() => setPopupInfo(null)} />
+            <HoverPopup location={popupInfo} />
           </Popup>
         )}
       </Map>
