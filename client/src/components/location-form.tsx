@@ -40,7 +40,11 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
     resolver: zodResolver(insertLocationSchema),
     defaultValues: {
       name: location?.name ?? "",
+      nameRu: location?.nameRu ?? "",
+      nameEn: location?.nameEn ?? "",
       description: location?.description ?? "",
+      descriptionRu: location?.descriptionRu ?? "",
+      descriptionEn: location?.descriptionEn ?? "",
       lat: location?.lat ?? 38.8610,
       lng: location?.lng ?? 71.2761,
       imageUrl: location?.imageUrl ?? "",
@@ -184,23 +188,62 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-black">Название</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Флагшток Душанбе" 
-                  {...field} 
-                  className="bg-white border-gray-300 text-black placeholder:text-gray-400"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
+          <p className="text-sm font-medium text-gray-700">Название локации</p>
+          <FormField
+            control={form.control}
+            name="name"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">🇹🇯 Тоҷикӣ (основное)</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Номи ҷой бо забони тоҷикӣ" 
+                    {...field} 
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="nameRu"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">🇷🇺 Русский</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Название на русском" 
+                    {...field} 
+                    value={field.value || ""}
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="nameEn"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">🇬🇧 English</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="Name in English" 
+                    {...field} 
+                    value={field.value || ""}
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}
@@ -353,24 +396,63 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
           />
         </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel className="text-black">Описание</FormLabel>
-              <FormControl>
-                <Textarea 
-                  placeholder="Опишите это место..." 
-                  className="resize-none bg-white border-gray-300 text-black placeholder:text-gray-400" 
-                  {...field} 
-                  value={field.value || ""} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="space-y-3 p-3 border border-gray-200 rounded-lg bg-gray-50">
+          <p className="text-sm font-medium text-gray-700">Описание локации</p>
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">🇹🇯 Тоҷикӣ (основное)</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Тавсифи ҷой бо забони тоҷикӣ..." 
+                    className="resize-none bg-white border-gray-300 text-black placeholder:text-gray-400" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="descriptionRu"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">🇷🇺 Русский</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Описание на русском..." 
+                    className="resize-none bg-white border-gray-300 text-black placeholder:text-gray-400" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="descriptionEn"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">🇬🇧 English</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Description in English..." 
+                    className="resize-none bg-white border-gray-300 text-black placeholder:text-gray-400" 
+                    {...field} 
+                    value={field.value || ""} 
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <div className="space-y-2">
           <FormLabel className="text-black">Фотография</FormLabel>

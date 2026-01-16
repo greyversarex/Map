@@ -11,15 +11,28 @@ import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
 
+function getLocalizedName(location: Location, language: string): string {
+  if (language === 'ru' && location.nameRu) return location.nameRu;
+  if (language === 'en' && location.nameEn) return location.nameEn;
+  return location.name;
+}
+
+function getLocalizedDescription(location: Location, language: string): string | null {
+  if (language === 'ru' && location.descriptionRu) return location.descriptionRu;
+  if (language === 'en' && location.descriptionEn) return location.descriptionEn;
+  return location.description;
+}
+
 function HoverPopup({ location, language }: { location: Location; language: string }) {
   const hasData = location.foundedYear || location.workerCount || location.area;
+  const localizedName = getLocalizedName(location, language);
   
   return (
     <div className="flex bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
       {location.imageUrl ? (
         <img 
           src={location.imageUrl} 
-          alt={location.name}
+          alt={localizedName}
           className="w-28 h-28 object-cover flex-shrink-0"
         />
       ) : (
@@ -28,7 +41,7 @@ function HoverPopup({ location, language }: { location: Location; language: stri
         </div>
       )}
       <div className="p-4 flex flex-col justify-center min-w-[240px]">
-        <p className="font-bold text-sm text-gray-900 leading-snug">{location.name}</p>
+        <p className="font-bold text-sm text-gray-900 leading-snug">{localizedName}</p>
         {hasData && (
           <div className="mt-2 space-y-1">
             {location.foundedYear && (
@@ -295,7 +308,9 @@ export default function MapPage() {
             <div className="flex items-center gap-3">
               <LocationMarker locationType={selectedLocation?.locationType} size="lg" />
               <div>
-                <DialogTitle className="font-display text-3xl tracking-wide text-gray-900">{selectedLocation?.name}</DialogTitle>
+                <DialogTitle className="font-display text-3xl tracking-wide text-gray-900">
+                  {selectedLocation && getLocalizedName(selectedLocation, language)}
+                </DialogTitle>
                 <DialogDescription className="text-base text-gray-600">
                   {getLocationTypeLabel(selectedLocation?.locationType, language)} | {t("map.coordinates")}: {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
                 </DialogDescription>
@@ -308,7 +323,7 @@ export default function MapPage() {
               <div className="overflow-hidden rounded-xl border border-gray-200 shadow-xl">
                 <img 
                   src={selectedLocation.imageUrl} 
-                  alt={selectedLocation.name} 
+                  alt={selectedLocation && getLocalizedName(selectedLocation, language)} 
                   className="w-full h-[300px] object-cover hover:scale-105 transition-transform duration-700"
                 />
               </div>
@@ -352,11 +367,11 @@ export default function MapPage() {
               </div>
             )}
 
-            {selectedLocation?.description && (
+            {selectedLocation && getLocalizedDescription(selectedLocation, language) && (
               <div className="bg-white/50 rounded-xl p-4 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("map.description")}</h3>
                 <p className="text-base leading-relaxed text-gray-700">
-                  {selectedLocation.description}
+                  {getLocalizedDescription(selectedLocation, language)}
                 </p>
               </div>
             )}

@@ -20,7 +20,11 @@ export type LocationType = typeof LOCATION_TYPES[keyof typeof LOCATION_TYPES];
 export const locations = pgTable("locations", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  nameRu: text("name_ru"),
+  nameEn: text("name_en"),
   description: text("description"),
+  descriptionRu: text("description_ru"),
+  descriptionEn: text("description_en"),
   lat: doublePrecision("lat").notNull(),
   lng: doublePrecision("lng").notNull(),
   imageUrl: text("image_url"),
