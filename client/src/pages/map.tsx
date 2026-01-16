@@ -281,6 +281,7 @@ export default function MapPage() {
             closeButton={false}
             closeOnClick={false}
             offset={40}
+            maxWidth="400px"
             className="z-50"
           >
             <HoverPopup location={popupInfo} language={language} />
