@@ -4,12 +4,85 @@ import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
+
+function PopupContent({ location, language, t }: { location: Location; language: string; t: (key: string) => string }) {
+  const [showDetails, setShowDetails] = useState(false);
+  
+  return (
+    <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-xl border border-border max-w-[340px] overflow-hidden">
+      <div className="flex">
+        {location.imageUrl ? (
+          <img 
+            src={location.imageUrl} 
+            alt={location.name}
+            className="w-24 h-24 object-cover flex-shrink-0"
+          />
+        ) : (
+          <div className="w-24 h-24 bg-muted flex items-center justify-center flex-shrink-0">
+            <MapIcon className="h-8 w-8 text-muted-foreground" />
+          </div>
+        )}
+        <div className="p-3 flex-1 min-w-0">
+          <p className="font-bold text-sm text-foreground truncate">{location.name}</p>
+          {location.foundedYear && (
+            <p className="text-xs text-muted-foreground mt-1">
+              {language === 'ru' ? 'Основан' : language === 'tj' ? 'Ташкил шуд' : 'Founded'}: {location.foundedYear}
+            </p>
+          )}
+          {location.workerCount && (
+            <p className="text-xs text-muted-foreground">
+              {language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}: {location.workerCount}
+            </p>
+          )}
+          {location.area && (
+            <p className="text-xs text-muted-foreground">
+              {language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}: {location.area}
+            </p>
+          )}
+        </div>
+      </div>
+      
+      <div className="px-3 pb-2">
+        <a
+          href={`https://www.google.com/maps/dir/?api=1&destination=${location.lat},${location.lng}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full py-2 bg-primary text-primary-foreground rounded-md text-sm font-medium hover:bg-primary/90 transition-colors"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Navigation className="h-4 w-4" />
+          {language === 'ru' ? 'Навигатор' : language === 'tj' ? 'Навигатор' : 'Navigate'}
+        </a>
+      </div>
+
+      {location.description && (
+        <div className="border-t border-border">
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDetails(!showDetails);
+            }}
+            className="flex items-center justify-center gap-1 w-full py-2 text-sm text-primary hover:bg-muted/50 transition-colors"
+          >
+            {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            {language === 'ru' ? 'Подробности' : language === 'tj' ? 'Тафсилот' : 'Details'}
+          </button>
+          {showDetails && (
+            <div className="px-3 pb-3">
+              <p className="text-xs text-foreground/80">{location.description}</p>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
 
 type MapStyleType = 'osm' | 'minimal';
 
@@ -241,21 +314,7 @@ export default function MapPage() {
             offset={40}
             className="z-50"
           >
-            <div className="bg-background/80 backdrop-blur-sm rounded shadow-xl border border-border max-w-[280px] overflow-hidden">
-              {popupInfo.imageUrl && (
-                <img 
-                  src={popupInfo.imageUrl} 
-                  alt={popupInfo.name}
-                  className="w-full h-32 object-cover"
-                />
-              )}
-              <div className="px-3 py-2">
-                <p className="font-bold text-sm text-foreground">{popupInfo.name}</p>
-                {popupInfo.description && (
-                  <p className="text-xs text-foreground/80 mt-1 line-clamp-2">{popupInfo.description}</p>
-                )}
-              </div>
-            </div>
+            <PopupContent location={popupInfo} language={language} t={t} />
           </Popup>
         )}
       </Map>

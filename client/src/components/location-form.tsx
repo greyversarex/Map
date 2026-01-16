@@ -46,6 +46,9 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
       imageUrl: location?.imageUrl ?? "",
       videoUrl: location?.videoUrl ?? "",
       locationType: location?.locationType ?? "kmz",
+      foundedYear: location?.foundedYear ?? undefined,
+      workerCount: location?.workerCount ?? undefined,
+      area: location?.area ?? "",
     },
   });
 
@@ -288,6 +291,67 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
           )}
           Определить моё местоположение
         </Button>
+
+        <div className="grid grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="foundedYear"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">Год основания</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    placeholder="1991" 
+                    {...field} 
+                    value={field.value ?? ""}
+                    onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="workerCount"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">Кол-во работников</FormLabel>
+                <FormControl>
+                  <Input 
+                    type="number" 
+                    placeholder="15" 
+                    {...field} 
+                    value={field.value ?? ""}
+                    onChange={e => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)} 
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="area"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-black">Площадь</FormLabel>
+                <FormControl>
+                  <Input 
+                    placeholder="450 кв.м" 
+                    {...field} 
+                    value={field.value ?? ""}
+                    className="bg-white border-gray-300 text-black placeholder:text-gray-400"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <FormField
           control={form.control}

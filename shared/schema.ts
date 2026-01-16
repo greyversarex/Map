@@ -26,6 +26,9 @@ export const locations = pgTable("locations", {
   imageUrl: text("image_url"),
   videoUrl: text("video_url"),
   locationType: text("location_type").default("kmz"),
+  foundedYear: integer("founded_year"),
+  workerCount: integer("worker_count"),
+  area: text("area"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
