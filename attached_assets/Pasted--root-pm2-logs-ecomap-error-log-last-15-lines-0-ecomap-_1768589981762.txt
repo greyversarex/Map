@@ -1,0 +1,20 @@
+/root/.pm2/logs/ecomap-error.log last 15 lines:
+0|ecomap   |     at /var/www/ecomap/node_modules/express/lib/router/index.js:284:15
+0|ecomap   |     at Function.process_params (/var/www/ecomap/node_modules/express/lib/router/index.js:346:12)
+0|ecomap   |     at next (/var/www/ecomap/node_modules/express/lib/router/index.js:280:10)
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+
+/root/.pm2/logs/ecomap-out.log last 15 lines:
+0|ecomap   | �кумском водохранилище","lat":40.25,"lng":69.8333,"imageUrl":null,"videoUrl":null,"locationType":"fishery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":18,"name":"Рыбхоз Нурек","description":"Рыбоводческое хозяйство при Нурекском водохранилище","lat":38.3667,"lng":69.35,"imageUrl":null,"videoUrl":null,"locationType":"fishery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":19,"name":"Питомник Варзоб","description":"Лесной питомник в Варзобском районе","lat":38.75,"lng":68.8333,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":20,"name":"Питомник Файзабад","description":"Питомник декоративных растений","lat":38.5333,"lng":69.3167,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":21,"name":"Питомник Гиссар","description":"Плодовый питомник Гиссарского района","lat":38.5167,"lng":68.5333,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":22,"name":"Питомник Шахринав","description":"Лесопитомник Шахринавского района","lat":38.5667,"lng":68.3167,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":23,"name":"Питомник Яван","description":"Питомник саженцев Яванского района","lat":38.3167,"lng":69.0167,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":24,"name":"Питомник Дангара","description":"Питомник плодовых деревьев","lat":38.0833,"lng":69.3333,"imageUrl":null,"videoUrl":null,"locationType":"nursery","createdAt":"2026-01-15T22:20:09.698Z"},{"id":4,"name":"КМЗ - Главное управление","description":"Комитет по охране окружающей среды при Правительстве Республики Таджикистан","lat":38.5598,"lng":68.787,"imageUrl":"","videoUrl":"","locationType":"kmz","createdAt":"2026-01-15T22:20:09.698Z"},{"id":5,"name":"КМЗ Душанбе","description":"Городское управление охраны окружающей среды города Душанбе\nОткрытие состоялось в сентябре месяца 2025\nКоличество работников больше 200 человек","lat":38.5737,"lng":68.7864,"imageUrl":"","videoUrl":"","locationType":"kmz","createdAt":"2026-01-15T22:20:09.698Z"},{"id":25,"name":"Вольер Снежный барс","description":"Барс мургоб","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"reserve","createdAt":"2026-01-16T15:33:20.081Z"}]
+0|ecomap   | 6:57:38 PM [express] POST /api/upload 200 in 1ms
