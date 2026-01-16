@@ -12,41 +12,42 @@ import { LanguageSwitcher } from "@/components/language-switcher";
 import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
 
 function HoverPopup({ location, language }: { location: Location; language: string }) {
+  const hasData = location.foundedYear || location.workerCount || location.area;
+  
   return (
-    <div className="bg-gradient-to-b from-white to-gray-100 rounded-xl shadow-2xl border border-gray-200/80 w-[300px] overflow-hidden">
+    <div className="flex bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
       {location.imageUrl ? (
         <img 
           src={location.imageUrl} 
           alt={location.name}
-          className="w-full h-36 object-cover"
+          className="w-28 h-28 object-cover flex-shrink-0"
         />
       ) : (
-        <div className="w-full h-36 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
-          <MapIcon className="h-12 w-12 text-gray-400" />
+        <div className="w-28 h-28 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
+          <MapIcon className="h-10 w-10 text-gray-400" />
         </div>
       )}
-      <div className="p-4">
-        <p className="font-bold text-base text-gray-900 leading-tight">{location.name}</p>
-        <div className="mt-3 space-y-1.5">
-          {location.foundedYear && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">{language === 'ru' ? 'Основан' : language === 'tj' ? 'Ташкил шуд' : 'Founded'}</span>
-              <span className="font-semibold text-gray-800">{location.foundedYear}</span>
-            </div>
-          )}
-          {location.workerCount && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">{language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}</span>
-              <span className="font-semibold text-gray-800">{location.workerCount}</span>
-            </div>
-          )}
-          {location.area && (
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">{language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}</span>
-              <span className="font-semibold text-gray-800">{location.area}</span>
-            </div>
-          )}
-        </div>
+      <div className="p-3 flex flex-col justify-center min-w-[160px]">
+        <p className="font-bold text-sm text-gray-900 leading-snug">{location.name}</p>
+        {hasData && (
+          <div className="mt-2 space-y-1">
+            {location.foundedYear && (
+              <p className="text-xs text-gray-600">
+                <span className="text-gray-400">{language === 'ru' ? 'Основан:' : language === 'tj' ? 'Ташкил:' : 'Founded:'}</span> <span className="font-medium">{location.foundedYear}</span>
+              </p>
+            )}
+            {location.workerCount && (
+              <p className="text-xs text-gray-600">
+                <span className="text-gray-400">{language === 'ru' ? 'Работников:' : language === 'tj' ? 'Корбар:' : 'Workers:'}</span> <span className="font-medium">{location.workerCount}</span>
+              </p>
+            )}
+            {location.area && (
+              <p className="text-xs text-gray-600">
+                <span className="text-gray-400">{language === 'ru' ? 'Площадь:' : language === 'tj' ? 'Масоҳат:' : 'Area:'}</span> <span className="font-medium">{location.area}</span>
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
