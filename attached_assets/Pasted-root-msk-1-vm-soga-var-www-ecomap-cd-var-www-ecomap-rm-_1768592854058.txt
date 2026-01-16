@@ -1,0 +1,51 @@
+root@msk-1-vm-soga:/var/www/ecomap# cd /var/www/ecomap && rm -rf dist
+root@msk-1-vm-soga:/var/www/ecomap# cd /var/www/ecomap && ./node_modules/.bin/tsx script/build.ts
+building client...
+vite v7.3.0 building client environment for production...
+✓ 2207 modules transformed.
+../dist/public/index.html                     2.19 kB │ gzip:   0.85 kB
+../dist/public/assets/index-DtNRq8bW.css    147.93 kB │ gzip:  22.74 kB
+../dist/public/assets/index-DqyB1FUs.js   1,736.78 kB │ gzip: 508.51 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 1m 32s
+building server...
+
+  dist/index.cjs  1.1mb ⚠️
+
+⚡ Done in 9773ms
+root@msk-1-vm-soga:/var/www/ecomap# ls -la /var/www/ecomap/dist/index.cjs
+-rw-r--r-- 1 root root 1196838 Jan 16 19:47 /var/www/ecomap/dist/index.cjs
+root@msk-1-vm-soga:/var/www/ecomap# pm2 restart ecomap && pm2 logs --lines 5
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [ecomap](ids: [ 0 ])
+[PM2] [ecomap](0) ✓
+┌────┬────────────────────┬──────────┬──────┬───────────┬──────────┬──────────┐
+│ id │ name               │ mode     │ ↺    │ status    │ cpu      │ memory   │
+├────┼────────────────────┼──────────┼──────┼───────────┼──────────┼──────────┤
+│ 0  │ ecomap             │ fork     │ 12   │ online    │ 0%       │ 18.4mb   │
+└────┴────────────────────┴──────────┴──────┴───────────┴──────────┴──────────┘
+[TAILING] Tailing last 5 lines for [all] processes (change the value with --lines option)
+/root/.pm2/pm2.log last 5 lines:
+PM2        | 2026-01-16T19:47:22: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-16T19:47:22: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-16T19:47:23: PM2 log: pid=41596 msg=process killed
+PM2        | 2026-01-16T19:47:23: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-16T19:47:23: PM2 log: App [ecomap:0] online
+
+/root/.pm2/logs/ecomap-out.log last 5 lines:
+0|ecomap   | 7:10:01 PM [express] GET /api/admin/session 304 in 1ms :: {"isAdmin":true,"user":{"username":"admin"}}
+0|ecomap   | 7:11:17 PM [express] GET /api/v1/users/search 200 in 2ms
+0|ecomap   | 7:17:35 PM [express] serving on port 3000
+0|ecomap   | 7:25:22 PM [express] serving on port 3000
+0|ecomap   | 7:25:35 PM [express] serving on port 3000
+
+/root/.pm2/logs/ecomap-error.log last 5 lines:
+0|ecomap   |     at defaultImportModuleDynamicallyForScript (node:internal/modules/esm/utils:234:31)
+0|ecomap   |     at importModuleDynamicallyCallback (node:internal/modules/esm/utils:256:12) {
+0|ecomap   |   code: 'ERR_MODULE_NOT_FOUND',
+0|ecomap   |   url: 'file:///var/www/ecomap/dist/index.cjs'
+0|ecomap   | }
