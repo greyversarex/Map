@@ -27,7 +27,7 @@ function HoverPopup({ location, language }: { location: Location; language: stri
           <MapIcon className="h-10 w-10 text-gray-400" />
         </div>
       )}
-      <div className="p-3 flex flex-col justify-center min-w-[160px]">
+      <div className="p-4 flex flex-col justify-center min-w-[200px]">
         <p className="font-bold text-sm text-gray-900 leading-snug">{location.name}</p>
         {hasData && (
           <div className="mt-2 space-y-1">
