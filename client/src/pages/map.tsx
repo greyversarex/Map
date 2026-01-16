@@ -15,7 +15,7 @@ function PopupContent({ location, language, t }: { location: Location; language:
   const [showDetails, setShowDetails] = useState(false);
   
   return (
-    <div className="bg-background/95 backdrop-blur-sm rounded-lg shadow-xl border border-border max-w-[340px] overflow-hidden">
+    <div className="bg-gradient-to-br from-white to-gray-100 rounded-lg shadow-xl border border-gray-200 max-w-[340px] overflow-hidden">
       <div className="flex">
         {location.imageUrl ? (
           <img 
@@ -29,19 +29,19 @@ function PopupContent({ location, language, t }: { location: Location; language:
           </div>
         )}
         <div className="p-3 flex-1 min-w-0">
-          <p className="font-bold text-sm text-foreground truncate">{location.name}</p>
+          <p className="font-bold text-sm text-gray-900 truncate">{location.name}</p>
           {location.foundedYear && (
-            <p className="text-xs text-muted-foreground mt-1">
+            <p className="text-xs text-gray-600 mt-1">
               {language === 'ru' ? 'Основан' : language === 'tj' ? 'Ташкил шуд' : 'Founded'}: {location.foundedYear}
             </p>
           )}
           {location.workerCount && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               {language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}: {location.workerCount}
             </p>
           )}
           {location.area && (
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-gray-600">
               {language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}: {location.area}
             </p>
           )}
@@ -62,20 +62,20 @@ function PopupContent({ location, language, t }: { location: Location; language:
       </div>
 
       {location.description && (
-        <div className="border-t border-border">
+        <div className="border-t border-gray-200">
           <button
             onClick={(e) => {
               e.stopPropagation();
               setShowDetails(!showDetails);
             }}
-            className="flex items-center justify-center gap-1 w-full py-2 text-sm text-primary hover:bg-muted/50 transition-colors"
+            className="flex items-center justify-center gap-1 w-full py-2 text-sm text-blue-600 hover:bg-gray-50 transition-colors"
           >
             {showDetails ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
             {language === 'ru' ? 'Подробности' : language === 'tj' ? 'Тафсилот' : 'Details'}
           </button>
           {showDetails && (
             <div className="px-3 pb-3">
-              <p className="text-xs text-foreground/80">{location.description}</p>
+              <p className="text-xs text-gray-700">{location.description}</p>
             </div>
           )}
         </div>
