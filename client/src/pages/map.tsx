@@ -11,28 +11,40 @@ import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
 
-function HoverPopup({ location }: { location: Location }) {
+function HoverPopup({ location, language }: { location: Location; language: string }) {
   return (
-    <div className="bg-gradient-to-br from-white to-gray-50 rounded-lg shadow-xl border border-gray-200 max-w-[280px] overflow-hidden">
+    <div className="bg-gradient-to-br from-white via-gray-50 to-gray-100 rounded-lg shadow-xl border border-gray-200 max-w-[320px] overflow-hidden">
       <div className="flex">
         {location.imageUrl ? (
           <img 
             src={location.imageUrl} 
             alt={location.name}
-            className="w-20 h-20 object-cover flex-shrink-0"
+            className="w-24 h-24 object-cover flex-shrink-0"
           />
         ) : (
-          <div className="w-20 h-20 bg-gray-100 flex items-center justify-center flex-shrink-0">
+          <div className="w-24 h-24 bg-gray-100 flex items-center justify-center flex-shrink-0">
             <MapIcon className="h-8 w-8 text-gray-400" />
           </div>
         )}
         <div className="p-3 flex-1 min-w-0">
           <p className="font-bold text-sm text-gray-900">{location.name}</p>
-          {location.foundedYear && (
-            <p className="text-xs text-gray-500 mt-1">
-              {location.foundedYear}
-            </p>
-          )}
+          <div className="mt-1.5 space-y-0.5">
+            {location.foundedYear && (
+              <p className="text-xs text-gray-600">
+                {language === 'ru' ? 'Основан' : language === 'tj' ? 'Ташкил шуд' : 'Founded'}: {location.foundedYear}
+              </p>
+            )}
+            {location.workerCount && (
+              <p className="text-xs text-gray-600">
+                {language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}: {location.workerCount}
+              </p>
+            )}
+            {location.area && (
+              <p className="text-xs text-gray-600">
+                {language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}: {location.area}
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -269,19 +281,19 @@ export default function MapPage() {
             offset={40}
             className="z-50"
           >
-            <HoverPopup location={popupInfo} />
+            <HoverPopup location={popupInfo} language={language} />
           </Popup>
         )}
       </Map>
 
       <Dialog open={!!selectedLocation} onOpenChange={(open) => !open && setSelectedLocation(null)}>
-        <DialogContent className="max-w-3xl bg-background/95 backdrop-blur-xl border-white/10 text-foreground">
+        <DialogContent className="max-w-3xl bg-gradient-to-br from-white via-gray-50 to-gray-200 border-gray-300 shadow-2xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
               <LocationMarker locationType={selectedLocation?.locationType} size="lg" />
               <div>
-                <DialogTitle className="font-display text-3xl tracking-wide">{selectedLocation?.name}</DialogTitle>
-                <DialogDescription className="text-base text-muted-foreground/80">
+                <DialogTitle className="font-display text-3xl tracking-wide text-gray-900">{selectedLocation?.name}</DialogTitle>
+                <DialogDescription className="text-base text-gray-600">
                   {getLocationTypeLabel(selectedLocation?.locationType, language)} | {t("map.coordinates")}: {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
                 </DialogDescription>
               </div>
@@ -290,17 +302,38 @@ export default function MapPage() {
           
           <div className="mt-4 space-y-6">
             {selectedLocation?.imageUrl && (
-              <div className="overflow-hidden rounded-lg border border-white/10 shadow-2xl">
+              <div className="overflow-hidden rounded-xl border border-gray-200 shadow-xl">
                 <img 
-                  src={selectedLocation.imageUrl.startsWith('/objects/') ? selectedLocation.imageUrl : selectedLocation.imageUrl} 
+                  src={selectedLocation.imageUrl} 
                   alt={selectedLocation.name} 
                   className="w-full h-[300px] object-cover hover:scale-105 transition-transform duration-700"
                 />
               </div>
             )}
+
+            <div className="grid grid-cols-3 gap-4">
+              {selectedLocation?.foundedYear && (
+                <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Год основания' : language === 'tj' ? 'Соли таъсис' : 'Founded'}</p>
+                  <p className="text-xl font-bold text-gray-900">{selectedLocation.foundedYear}</p>
+                </div>
+              )}
+              {selectedLocation?.workerCount && (
+                <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}</p>
+                  <p className="text-xl font-bold text-gray-900">{selectedLocation.workerCount}</p>
+                </div>
+              )}
+              {selectedLocation?.area && (
+                <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                  <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}</p>
+                  <p className="text-xl font-bold text-gray-900">{selectedLocation.area}</p>
+                </div>
+              )}
+            </div>
             
             {selectedLocation?.videoUrl && (
-              <div className="aspect-video w-full overflow-hidden rounded-lg border border-white/10 shadow-2xl bg-black">
+              <div className="aspect-video w-full overflow-hidden rounded-xl border border-gray-200 shadow-xl bg-black">
                 {selectedLocation.videoUrl.includes('youtube') || selectedLocation.videoUrl.includes('youtu.be') ? (
                   <iframe 
                     src={selectedLocation.videoUrl.replace('watch?v=', 'embed/')} 
@@ -309,25 +342,27 @@ export default function MapPage() {
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                   />
                 ) : (
-                  <video controls className="w-full h-full" src={selectedLocation.videoUrl.startsWith('/objects/') ? selectedLocation.videoUrl : selectedLocation.videoUrl}>
+                  <video controls className="w-full h-full" src={selectedLocation.videoUrl}>
                     Your browser does not support the video tag.
                   </video>
                 )}
               </div>
             )}
 
-            <div className="prose prose-invert max-w-none">
-              <h3 className="text-lg font-semibold text-foreground mb-2">{t("map.description")}</h3>
-              <p className="text-base leading-relaxed text-muted-foreground">
-                {selectedLocation?.description || t("map.noLocations")}
-              </p>
-            </div>
+            {selectedLocation?.description && (
+              <div className="bg-white/50 rounded-xl p-4 border border-gray-200">
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("map.description")}</h3>
+                <p className="text-base leading-relaxed text-gray-700">
+                  {selectedLocation.description}
+                </p>
+              </div>
+            )}
 
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${selectedLocation?.lat},${selectedLocation?.lng}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-primary text-primary-foreground rounded-lg font-medium hover:bg-primary/90 transition-colors"
+              className="flex items-center justify-center gap-2 w-full py-3 px-4 bg-blue-600 text-white rounded-xl font-medium hover:bg-blue-700 transition-colors shadow-lg"
               data-testid="button-route"
             >
               <Navigation className="h-5 w-5" />
