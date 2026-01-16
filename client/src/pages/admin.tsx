@@ -1,15 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
 import { LocationForm } from "@/components/location-form";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import {
   Dialog,
   DialogContent,
@@ -30,10 +22,13 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
 import type { Location } from "@shared/schema";
 import { LocationMarker, LOCATION_TYPE_CONFIG } from "@/components/location-icons";
+
+const LOCATION_TYPE_ORDER = ["kmz", "branch", "fishery", "nursery", "reserve", "glacier"] as const;
 
 export default function AdminPage() {
   const { isAdmin, user, isLoading: authLoading, logout } = useAdminAuth();
@@ -43,6 +38,8 @@ export default function AdminPage() {
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useWouterLocation();
+  
+  const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
   useEffect(() => {
     if (!authLoading && !isAdmin) {
@@ -66,6 +63,15 @@ export default function AdminPage() {
     loc.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const locationsByType = LOCATION_TYPE_ORDER.reduce((acc, type) => {
+    acc[type] = filteredLocations?.filter(loc => loc.locationType === type) || [];
+    return acc;
+  }, {} as Record<string, Location[]>);
+
+  const scrollToSection = (type: string) => {
+    sectionRefs.current[type]?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   const openEdit = (location: Location) => {
     setEditingLocation(location);
     setIsDialogOpen(true);
@@ -78,7 +84,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300 flex">
-      <aside className="w-64 bg-white shadow-xl hidden md:flex flex-col">
+      <aside className="w-64 bg-white shadow-xl hidden md:flex flex-col sticky top-0 h-screen">
         <div className="p-6 border-b border-gray-100">
           <Link href="/">
             <h1 className="text-2xl font-bold text-black cursor-pointer hover:text-gray-600 transition-colors tracking-wide">
@@ -88,13 +94,36 @@ export default function AdminPage() {
           <p className="text-xs text-gray-500 mt-1 font-medium">МЕНЕДЖЕР ЛОКАЦИЙ</p>
         </div>
         
-        <nav className="flex-1 p-4 space-y-2">
+        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           <Link href="/">
-            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700">
+            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700 mb-4">
               <MapIcon className="mr-2 h-4 w-4" />
               Открыть карту
             </Button>
           </Link>
+          
+          <div className="pt-2 border-t border-gray-100">
+            <p className="text-xs text-gray-400 uppercase tracking-wider px-3 py-2 font-semibold">Типы локаций</p>
+            {LOCATION_TYPE_ORDER.map((type) => {
+              const config = LOCATION_TYPE_CONFIG[type];
+              const Icon = config.icon;
+              const count = locationsByType[type]?.length || 0;
+              return (
+                <button
+                  key={type}
+                  onClick={() => scrollToSection(type)}
+                  className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+                  data-testid={`nav-type-${type}`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Icon className={`h-4 w-4 ${config.color}`} />
+                    <span>{config.labelRu}</span>
+                  </div>
+                  <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{count}</span>
+                </button>
+              );
+            })}
+          </div>
         </nav>
 
         <div className="p-4 border-t border-gray-100 bg-gray-50">
@@ -149,77 +178,87 @@ export default function AdminPage() {
             </Dialog>
           </div>
 
-          <div className="bg-white rounded-xl shadow-xl shadow-gray-200/50 overflow-hidden">
-            <div className="p-6 border-b border-gray-100">
-              <div className="flex items-center gap-4">
-                <div className="relative flex-1">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-                  <Input 
-                    placeholder="Поиск локаций..." 
-                    className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </div>
-              </div>
+          <div className="bg-white rounded-xl shadow-lg p-4">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <Input 
+                placeholder="Поиск локаций..." 
+                className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
             </div>
-            <div className="overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-gray-50 hover:bg-gray-50">
-                    <TableHead className="text-black font-semibold">Название</TableHead>
-                    <TableHead className="hidden lg:table-cell text-black font-semibold">Тип</TableHead>
-                    <TableHead className="hidden md:table-cell text-black font-semibold">Координаты</TableHead>
-                    <TableHead className="hidden sm:table-cell text-black font-semibold">Медиа</TableHead>
-                    <TableHead className="text-right text-black font-semibold">Действия</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredLocations?.length === 0 ? (
-                    <TableRow>
-                      <TableCell colSpan={5} className="h-24 text-center text-gray-500">
-                        Локации не найдены
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    filteredLocations?.map((location) => (
-                      <TableRow key={location.id} className="hover:bg-gray-50">
-                        <TableCell className="font-medium text-black">
-                          <div className="flex items-center gap-2">
-                            <LocationMarker locationType={location.locationType} size="sm" />
-                            <div className="flex flex-col">
-                              <span>{location.name}</span>
-                              <span className="md:hidden text-xs text-gray-500 mt-0.5">
-                                {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                              </span>
+          </div>
+
+          {LOCATION_TYPE_ORDER.map((type) => {
+            const config = LOCATION_TYPE_CONFIG[type];
+            const Icon = config.icon;
+            const typeLocations = locationsByType[type];
+            
+            if (typeLocations.length === 0) return null;
+            
+            return (
+              <section 
+                key={type} 
+                ref={(el) => { sectionRefs.current[type] = el; }}
+                className="scroll-mt-6"
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-2 rounded-lg ${config.bgColor || 'bg-gray-100'}`}>
+                    <Icon className={`h-5 w-5 ${config.color}`} />
+                  </div>
+                  <h3 className="text-xl font-bold text-black">{config.labelRu}</h3>
+                  <span className="text-sm text-gray-500">({typeLocations.length})</span>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {typeLocations.map((location) => (
+                    <Card key={location.id} className="bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+                      {location.imageUrl && (
+                        <div className="h-32 overflow-hidden">
+                          <img 
+                            src={location.imageUrl} 
+                            alt={location.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <CardContent className="p-4">
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 mb-1">
+                              <LocationMarker locationType={location.locationType} size="sm" />
+                              <h4 className="font-semibold text-black truncate">{location.name}</h4>
+                            </div>
+                            <p className="text-xs text-gray-500 mb-2">
+                              {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
+                            </p>
+                            {location.description && (
+                              <p className="text-sm text-gray-600 line-clamp-2">{location.description}</p>
+                            )}
+                            <div className="flex gap-2 mt-2">
+                              {location.imageUrl && (
+                                <span className="inline-flex items-center gap-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">
+                                  <Image className="h-3 w-3" />
+                                  Фото
+                                </span>
+                              )}
+                              {location.videoUrl && (
+                                <span className="inline-flex items-center gap-1 text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">
+                                  <Video className="h-3 w-3" />
+                                  Видео
+                                </span>
+                              )}
                             </div>
                           </div>
-                        </TableCell>
-                        <TableCell className="hidden lg:table-cell text-gray-600">
-                          <span className="text-xs">
-                            {LOCATION_TYPE_CONFIG[location.locationType || "kmz"]?.labelRu || "КМЗ"}
-                          </span>
-                        </TableCell>
-                        <TableCell className="hidden md:table-cell text-gray-600">
-                          {location.lat.toFixed(4)}, {location.lng.toFixed(4)}
-                        </TableCell>
-                        <TableCell className="hidden sm:table-cell">
-                          <div className="flex gap-2">
-                            {location.imageUrl && (
-                              <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full font-medium">IMG</span>
-                            )}
-                            {location.videoUrl && (
-                              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full font-medium">VID</span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-1">
+                          
+                          <div className="flex flex-col gap-1">
                             <Button 
                               variant="ghost" 
                               size="icon" 
                               onClick={() => openEdit(location)}
-                              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                              className="h-8 w-8 text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                              data-testid={`button-edit-${location.id}`}
                             >
                               <Pencil className="h-4 w-4" />
                             </Button>
@@ -229,7 +268,8 @@ export default function AdminPage() {
                                 <Button 
                                   variant="ghost" 
                                   size="icon" 
-                                  className="text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                  className="h-8 w-8 text-gray-600 hover:text-red-600 hover:bg-red-50"
+                                  data-testid={`button-delete-${location.id}`}
                                 >
                                   <Trash2 className="h-4 w-4" />
                                 </Button>
@@ -253,14 +293,20 @@ export default function AdminPage() {
                               </AlertDialogContent>
                             </AlertDialog>
                           </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              </section>
+            );
+          })}
+
+          {filteredLocations?.length === 0 && (
+            <div className="text-center py-12 text-gray-500">
+              Локации не найдены
             </div>
-          </div>
+          )}
         </div>
       </main>
     </div>
