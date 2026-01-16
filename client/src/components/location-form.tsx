@@ -278,7 +278,7 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
           variant="outline"
           onClick={getCurrentLocation}
           disabled={isGettingLocation}
-          className="w-full"
+          className="w-full text-black border-gray-300 hover:bg-gray-100"
           data-testid="button-get-location"
         >
           {isGettingLocation ? (
