@@ -105,11 +105,21 @@ interface LocationMarkerProps {
   locationType?: string | null;
   size?: "sm" | "md" | "lg";
   showPulse?: boolean;
+  customColor?: string | null;
+  customBgColor?: string | null;
+  customBorderColor?: string | null;
 }
 
-export function LocationMarker({ locationType = "kmz", size = "md", showPulse = false }: LocationMarkerProps) {
-  const config = LOCATION_TYPE_CONFIG[locationType || "kmz"] || LOCATION_TYPE_CONFIG.kmz;
-  const Icon = config.icon;
+export function LocationMarker({ 
+  locationType = "kmz", 
+  size = "md", 
+  showPulse = false,
+  customColor,
+  customBgColor,
+  customBorderColor
+}: LocationMarkerProps) {
+  const config = LOCATION_TYPE_CONFIG[locationType || "kmz"];
+  const Icon = config?.icon || DEFAULT_ICONS[locationType || "kmz"] || MapPin;
   
   const sizeClasses = {
     sm: "h-6 w-6",
@@ -123,11 +133,34 @@ export function LocationMarker({ locationType = "kmz", size = "md", showPulse = 
     lg: "h-5 w-5",
   };
 
+  // Use custom colors if provided, otherwise fall back to config or defaults
+  const useInlineStyles = !config || customColor || customBgColor || customBorderColor;
+  const bgColor = customBgColor || config?.bgColor?.replace('bg-', '') || '#f3f4f6';
+  const borderColor = customBorderColor || config?.borderColor?.replace('border-', '') || '#9ca3af';
+  const iconColor = customColor || '#6b7280';
+
+  if (useInlineStyles && !config) {
+    // For dynamic types without static config, use inline styles
+    return (
+      <div className="relative">
+        {showPulse && <div className="absolute inset-0 animate-ping opacity-75 rounded-full" style={{ backgroundColor: bgColor }}></div>}
+        <div 
+          className={`relative z-10 flex ${sizeClasses[size]} items-center justify-center rounded-full shadow-lg border-2 transition-transform group-hover:scale-110`}
+          style={{ backgroundColor: bgColor, borderColor: borderColor }}
+        >
+          <Icon className={iconSizes[size]} style={{ color: iconColor }} />
+        </div>
+      </div>
+    );
+  }
+
+  // For static types, use class names
+  const fallbackConfig = config || LOCATION_TYPE_CONFIG.kmz;
   return (
     <div className="relative">
-      {showPulse && <div className={`absolute inset-0 ${config.pulseClass}`}></div>}
-      <div className={`relative z-10 flex ${sizeClasses[size]} items-center justify-center rounded-full ${config.bgColor} shadow-lg border-2 ${config.borderColor} transition-transform group-hover:scale-110`}>
-        <Icon className={`${iconSizes[size]} ${config.color}`} />
+      {showPulse && <div className={`absolute inset-0 ${fallbackConfig.pulseClass}`}></div>}
+      <div className={`relative z-10 flex ${sizeClasses[size]} items-center justify-center rounded-full ${fallbackConfig.bgColor} shadow-lg border-2 ${fallbackConfig.borderColor} transition-transform group-hover:scale-110`}>
+        <Icon className={`${iconSizes[size]} ${fallbackConfig.color}`} />
       </div>
     </div>
   );

@@ -3,14 +3,15 @@ import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl,
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
+import { useLocationTypes } from "@/hooks/use-location-types";
 import { useLocationMedia } from "@/hooks/use-location-media";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin } from "lucide-react";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
+import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass, DEFAULT_ICONS } from "@/components/location-icons";
 import { MediaCarousel } from "@/components/media-carousel";
 
 function getLocalizedName(location: Location, language: string): string {
@@ -117,21 +118,29 @@ const borderLineLayer = {
 
 export default function MapPage() {
   const { data: locations, isLoading } = useLocations();
+  const { data: dbLocationTypes } = useLocationTypes();
   const [popupInfo, setPopupInfo] = useState<Location | null>(null);
   const [selectedLocation, setSelectedLocation] = useState<Location | null>(null);
   const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
-  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({
-    kmz: true,
-    branch: true,
-    reserve: true,
-    glacier: true,
-    fishery: true,
-    nursery: true,
-  });
+  const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
   const [filtersOpen, setFiltersOpen] = useState(false);
   const { t, language } = useLanguage();
   
   const { data: locationMedia } = useLocationMedia(selectedLocation?.id || 0);
+
+  // Initialize filters when location types are loaded
+  useEffect(() => {
+    if (dbLocationTypes && dbLocationTypes.length > 0) {
+      setActiveFilters(prev => {
+        const newFilters: Record<string, boolean> = {};
+        dbLocationTypes.forEach(type => {
+          // Preserve existing filter state or default to true
+          newFilters[type.slug] = prev[type.slug] !== undefined ? prev[type.slug] : true;
+        });
+        return newFilters;
+      });
+    }
+  }, [dbLocationTypes]);
 
   const toggleFilter = (type: string) => {
     setActiveFilters(prev => ({
@@ -144,28 +153,46 @@ export default function MapPage() {
     return locations?.filter(loc => activeFilters[loc.locationType || "kmz"]) || [];
   }, [locations, activeFilters]);
 
-  const markers = useMemo(() => filteredLocations.map((location) => (
-    <Marker
-      key={location.id}
-      longitude={location.lng}
-      latitude={location.lat}
-      anchor="bottom"
-      onClick={e => {
-        e.originalEvent.stopPropagation();
-        setSelectedLocation(location);
-        setPopupInfo(null);
-      }}
-    >
-      <div 
-        className="group relative cursor-pointer"
-        onMouseEnter={() => setPopupInfo(location)}
-        onMouseLeave={() => setPopupInfo(null)}
+  // Create a lookup map for location types
+  const locationTypeMap = useMemo(() => {
+    if (!dbLocationTypes) return {};
+    return dbLocationTypes.reduce((acc, type) => {
+      acc[type.slug] = type;
+      return acc;
+    }, {} as Record<string, typeof dbLocationTypes[0]>);
+  }, [dbLocationTypes]);
+
+  const markers = useMemo(() => filteredLocations.map((location) => {
+    const locType = locationTypeMap[location.locationType || 'kmz'];
+    return (
+      <Marker
+        key={location.id}
+        longitude={location.lng}
+        latitude={location.lat}
+        anchor="bottom"
+        onClick={e => {
+          e.originalEvent.stopPropagation();
+          setSelectedLocation(location);
+          setPopupInfo(null);
+        }}
       >
-        <div className={`absolute -inset-4 z-0 ${getPulseClass(location.locationType)}`}></div>
-        <LocationMarker locationType={location.locationType} size="md" />
-      </div>
-    </Marker>
-  )), [filteredLocations]);
+        <div 
+          className="group relative cursor-pointer"
+          onMouseEnter={() => setPopupInfo(location)}
+          onMouseLeave={() => setPopupInfo(null)}
+        >
+          <div className={`absolute -inset-4 z-0 ${getPulseClass(location.locationType)}`}></div>
+          <LocationMarker 
+            locationType={location.locationType} 
+            size="md" 
+            customColor={locType?.color}
+            customBgColor={locType?.bgColor}
+            customBorderColor={locType?.borderColor}
+          />
+        </div>
+      </Marker>
+    );
+  }), [filteredLocations, locationTypeMap]);
 
   if (isLoading) {
     return (
@@ -213,28 +240,35 @@ export default function MapPage() {
         {filtersOpen && (
           <div className="mt-2 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[220px]">
             <div className="space-y-2">
-              {Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
-                const Icon = config.icon;
-                const count = locations?.filter(l => l.locationType === key).length || 0;
+              {(dbLocationTypes || []).map((locType) => {
+                const staticConfig = LOCATION_TYPE_CONFIG[locType.slug];
+                const Icon = staticConfig?.icon || DEFAULT_ICONS[locType.slug] || MapPin;
+                const count = locations?.filter(l => l.locationType === locType.slug).length || 0;
                 return (
                   <label 
-                    key={key} 
+                    key={locType.slug} 
                     className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 rounded p-1.5 transition-colors"
-                    data-testid={`filter-${key}`}
+                    data-testid={`filter-${locType.slug}`}
                   >
                     <input 
                       type="checkbox"
-                      checked={activeFilters[key]}
-                      onChange={() => toggleFilter(key)}
+                      checked={activeFilters[locType.slug] ?? true}
+                      onChange={() => toggleFilter(locType.slug)}
                       className="h-4 w-4 rounded border-muted-foreground accent-primary cursor-pointer"
                     />
-                    <div className={`flex h-5 w-5 items-center justify-center rounded-full ${config.bgColor} border ${config.borderColor}`}>
-                      <Icon className={`h-3 w-3 ${config.color}`} />
+                    <div 
+                      className="flex h-5 w-5 items-center justify-center rounded-full border"
+                      style={{ 
+                        backgroundColor: locType.bgColor || '#f3f4f6', 
+                        borderColor: locType.borderColor || '#9ca3af' 
+                      }}
+                    >
+                      <Icon className="h-3 w-3" style={{ color: locType.color || '#6b7280' }} />
                     </div>
                     <span className="text-xs text-foreground flex-1 truncate">
-                      {language === "ru" ? config.labelRu.split(" (")[0] : 
-                       language === "tj" ? config.labelTj.split(" (")[0] : 
-                       config.labelEn.split(" (")[0]}
+                      {language === "ru" ? (locType.nameRu || locType.name).split(" (")[0] : 
+                       language === "tj" ? locType.name.split(" (")[0] : 
+                       (locType.nameEn || locType.name).split(" (")[0]}
                     </span>
                     <span className="text-xs text-muted-foreground">({count})</span>
                   </label>
@@ -310,7 +344,13 @@ export default function MapPage() {
         <DialogContent className="max-w-3xl bg-gradient-to-br from-white via-gray-50 to-gray-200 border-gray-300 shadow-2xl">
           <DialogHeader>
             <div className="flex items-center gap-3">
-              <LocationMarker locationType={selectedLocation?.locationType} size="lg" />
+              <LocationMarker 
+                locationType={selectedLocation?.locationType} 
+                size="lg" 
+                customColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.color : undefined}
+                customBgColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.bgColor : undefined}
+                customBorderColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.borderColor : undefined}
+              />
               <div>
                 <DialogTitle className="font-display text-3xl tracking-wide text-gray-900">
                   {selectedLocation && getLocalizedName(selectedLocation, language)}

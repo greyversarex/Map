@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
 import { useLocationTypes, useDeleteLocationType } from "@/hooks/use-location-types";
@@ -29,9 +29,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
 import type { Location, LocationType as LocationTypeDB } from "@shared/schema";
-import { LocationMarker, LOCATION_TYPE_CONFIG } from "@/components/location-icons";
-
-const LOCATION_TYPE_ORDER = ["kmz", "branch", "fishery", "nursery", "reserve", "glacier"] as const;
+import { LocationMarker, LOCATION_TYPE_CONFIG, DEFAULT_ICONS } from "@/components/location-icons";
+import { MapPin } from "lucide-react";
 
 export default function AdminPage() {
   const { isAdmin, user, isLoading: authLoading, logout } = useAdminAuth();
@@ -71,10 +70,23 @@ export default function AdminPage() {
     loc.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const locationsByType = LOCATION_TYPE_ORDER.reduce((acc, type) => {
-    acc[type] = filteredLocations?.filter(loc => loc.locationType === type) || [];
-    return acc;
-  }, {} as Record<string, Location[]>);
+  // Build locationsByType dynamically from database location types
+  const locationsByType = useMemo(() => {
+    if (!dbLocationTypes) return {} as Record<string, Location[]>;
+    return dbLocationTypes.reduce((acc, locType) => {
+      acc[locType.slug] = filteredLocations?.filter(loc => loc.locationType === locType.slug) || [];
+      return acc;
+    }, {} as Record<string, Location[]>);
+  }, [dbLocationTypes, filteredLocations]);
+
+  // Create a lookup map for location types
+  const locationTypeMap = useMemo(() => {
+    if (!dbLocationTypes) return {};
+    return dbLocationTypes.reduce((acc, type) => {
+      acc[type.slug] = type;
+      return acc;
+    }, {} as Record<string, typeof dbLocationTypes[0]>);
+  }, [dbLocationTypes]);
 
   const scrollToSection = (type: string) => {
     sectionRefs.current[type]?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -204,20 +216,20 @@ export default function AdminPage() {
               </div>
             )}
             
-            {LOCATION_TYPE_ORDER.map((type) => {
-              const config = LOCATION_TYPE_CONFIG[type];
-              const Icon = config.icon;
-              const count = locationsByType[type]?.length || 0;
+            {(dbLocationTypes || []).map((locType) => {
+              const staticConfig = LOCATION_TYPE_CONFIG[locType.slug];
+              const Icon = staticConfig?.icon || DEFAULT_ICONS[locType.slug] || MapPin;
+              const count = locationsByType[locType.slug]?.length || 0;
               return (
                 <button
-                  key={type}
-                  onClick={() => scrollToSection(type)}
+                  key={locType.slug}
+                  onClick={() => scrollToSection(locType.slug)}
                   className="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-100 transition-colors"
-                  data-testid={`nav-type-${type}`}
+                  data-testid={`nav-type-${locType.slug}`}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className={`h-4 w-4 ${config.color}`} />
-                    <span>{config.labelRu}</span>
+                    <Icon className="h-4 w-4" style={{ color: locType.color || '#6b7280' }} />
+                    <span>{locType.nameRu || locType.name}</span>
                   </div>
                   <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{count}</span>
                 </button>
@@ -310,24 +322,27 @@ export default function AdminPage() {
             </div>
           </div>
 
-          {LOCATION_TYPE_ORDER.map((type) => {
-            const config = LOCATION_TYPE_CONFIG[type];
-            const Icon = config.icon;
-            const typeLocations = locationsByType[type];
+          {(dbLocationTypes || []).map((locType) => {
+            const staticConfig = LOCATION_TYPE_CONFIG[locType.slug];
+            const Icon = staticConfig?.icon || DEFAULT_ICONS[locType.slug] || MapPin;
+            const typeLocations = locationsByType[locType.slug] || [];
             
             if (typeLocations.length === 0) return null;
             
             return (
               <section 
-                key={type} 
-                ref={(el) => { sectionRefs.current[type] = el; }}
+                key={locType.slug} 
+                ref={(el) => { sectionRefs.current[locType.slug] = el; }}
                 className="scroll-mt-6"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={`p-2 rounded-lg ${config.bgColor || 'bg-gray-100'}`}>
-                    <Icon className={`h-5 w-5 ${config.color}`} />
+                  <div 
+                    className="p-2 rounded-lg"
+                    style={{ backgroundColor: locType.bgColor || '#f3f4f6' }}
+                  >
+                    <Icon className="h-5 w-5" style={{ color: locType.color || '#6b7280' }} />
                   </div>
-                  <h3 className="text-xl font-bold text-white drop-shadow-lg">{config.labelRu}</h3>
+                  <h3 className="text-xl font-bold text-white drop-shadow-lg">{locType.nameRu || locType.name}</h3>
                   <span className="text-sm text-gray-300">({typeLocations.length})</span>
                 </div>
                 
@@ -347,7 +362,13 @@ export default function AdminPage() {
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
-                              <LocationMarker locationType={location.locationType} size="sm" />
+                              <LocationMarker 
+                                locationType={location.locationType} 
+                                size="sm" 
+                                customColor={locationTypeMap[location.locationType || 'kmz']?.color}
+                                customBgColor={locationTypeMap[location.locationType || 'kmz']?.bgColor}
+                                customBorderColor={locationTypeMap[location.locationType || 'kmz']?.borderColor}
+                              />
                               <h4 className="font-semibold text-black truncate">{location.name}</h4>
                             </div>
                             <p className="text-xs text-gray-500 mb-2">
