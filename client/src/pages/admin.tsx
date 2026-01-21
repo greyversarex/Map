@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video, Settings } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
 import type { Location } from "@shared/schema";
 import { LocationMarker, LOCATION_TYPE_CONFIG } from "@/components/location-icons";
@@ -96,9 +96,16 @@ export default function AdminPage() {
         
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           <Link href="/">
-            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700 mb-4">
+            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700 mb-2">
               <MapIcon className="mr-2 h-4 w-4" />
               Открыть карту
+            </Button>
+          </Link>
+          
+          <Link href="/admin/location-types">
+            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700 mb-4" data-testid="link-manage-types">
+              <Settings className="mr-2 h-4 w-4" />
+              Управление типами
             </Button>
           </Link>
           

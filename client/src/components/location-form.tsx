@@ -1,17 +1,20 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { insertLocationSchema, LOCATION_TYPES } from "@shared/schema";
-import type { Location, InsertLocation } from "@shared/schema";
+import { insertLocationSchema } from "@shared/schema";
+import type { Location, InsertLocation, LocationType as LocationTypeDB } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateLocation, useUpdateLocation } from "@/hooks/use-locations";
+import { useLocationTypes } from "@/hooks/use-location-types";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload, X, Image, Video, MapPin } from "lucide-react";
-import { LOCATION_TYPE_CONFIG, LocationMarker } from "./location-icons";
+import { Loader2, Upload, X, Image, Video, MapPin, Plus, GripVertical } from "lucide-react";
+import { LOCATION_TYPE_CONFIG, LocationMarker, DEFAULT_ICONS } from "./location-icons";
+import { MultiMediaUploader, type MediaItem } from "./multi-media-uploader";
+import { useCreateLocationMedia, useLocationMedia, useDeleteLocationMedia } from "@/hooks/use-location-media";
 
 interface LocationFormProps {
   location?: Location;
@@ -22,6 +25,10 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
   const { toast } = useToast();
   const createMutation = useCreateLocation();
   const updateMutation = useUpdateLocation();
+  const createMediaMutation = useCreateLocationMedia();
+  const deleteMediaMutation = useDeleteLocationMedia();
+  const { data: locationTypes, isLoading: typesLoading } = useLocationTypes();
+  const { data: existingMedia } = useLocationMedia(location?.id || 0);
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [videoFile, setVideoFile] = useState<File | null>(null);
@@ -30,11 +37,26 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
   const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [isUploadingVideo, setIsUploadingVideo] = useState(false);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
+  const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [mediaInitialized, setMediaInitialized] = useState(false);
   
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
 
   const isEditing = !!location;
+  
+  useEffect(() => {
+    if (existingMedia && existingMedia.length > 0 && !mediaInitialized) {
+      setMediaItems(existingMedia.map(m => ({
+        id: m.id,
+        url: m.url,
+        mediaType: m.mediaType as "photo" | "video",
+        isPrimary: m.isPrimary || false,
+        sortOrder: m.sortOrder || 0,
+      })));
+      setMediaInitialized(true);
+    }
+  }, [existingMedia, mediaInitialized]);
 
   const form = useForm<InsertLocation>({
     resolver: zodResolver(insertLocationSchema),
@@ -164,11 +186,52 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
 
       const submitData = { ...data, imageUrl, videoUrl };
 
+      let locationId: number;
+
       if (isEditing && location) {
         await updateMutation.mutateAsync({ id: location.id, ...submitData });
+        locationId = location.id;
+        
+        // Handle media updates - delete removed items and add new ones
+        const existingIds = new Set(existingMedia?.map(m => m.id) || []);
+        const currentIds = new Set(mediaItems.filter(m => m.id).map(m => m.id));
+        
+        // Delete removed media
+        for (const existingId of existingIds) {
+          if (!currentIds.has(existingId)) {
+            await deleteMediaMutation.mutateAsync({ id: existingId, locationId });
+          }
+        }
+        
+        // Add new media
+        for (const item of mediaItems) {
+          if (item.isNew) {
+            await createMediaMutation.mutateAsync({
+              locationId,
+              mediaType: item.mediaType,
+              url: item.url,
+              isPrimary: item.isPrimary,
+              sortOrder: item.sortOrder,
+            });
+          }
+        }
+        
         toast({ title: "Успешно", description: "Локация обновлена" });
       } else {
-        await createMutation.mutateAsync(submitData);
+        const newLocation = await createMutation.mutateAsync(submitData);
+        locationId = newLocation.id;
+        
+        // Add media items for new location
+        for (const item of mediaItems) {
+          await createMediaMutation.mutateAsync({
+            locationId,
+            mediaType: item.mediaType,
+            url: item.url,
+            isPrimary: item.isPrimary,
+            sortOrder: item.sortOrder,
+          });
+        }
+        
         toast({ title: "Успешно", description: "Локация создана" });
       }
       onSuccess?.();
@@ -258,17 +321,36 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
-                    const Icon = config.icon;
-                    return (
-                      <SelectItem key={key} value={key} data-testid={`option-type-${key}`}>
-                        <div className="flex items-center gap-2">
-                          <Icon className={`h-4 w-4 ${config.color}`} />
-                          <span>{config.labelRu}</span>
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
+                  {locationTypes && locationTypes.length > 0 ? (
+                    locationTypes.map((type) => {
+                      const Icon = DEFAULT_ICONS[type.slug] || MapPin;
+                      const fallbackConfig = LOCATION_TYPE_CONFIG[type.slug];
+                      return (
+                        <SelectItem key={type.slug} value={type.slug} data-testid={`option-type-${type.slug}`}>
+                          <div className="flex items-center gap-2">
+                            {type.iconUrl ? (
+                              <img src={type.iconUrl} alt="" className="h-4 w-4 rounded-full object-cover" />
+                            ) : (
+                              <Icon className={`h-4 w-4 ${fallbackConfig?.color || 'text-gray-500'}`} />
+                            )}
+                            <span>{type.nameRu || type.name}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })
+                  ) : (
+                    Object.entries(LOCATION_TYPE_CONFIG).map(([key, config]) => {
+                      const Icon = config.icon;
+                      return (
+                        <SelectItem key={key} value={key} data-testid={`option-type-${key}`}>
+                          <div className="flex items-center gap-2">
+                            <Icon className={`h-4 w-4 ${config.color}`} />
+                            <span>{config.labelRu}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -536,6 +618,16 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
               </div>
             </Button>
           )}
+        </div>
+
+        <div className="space-y-2">
+          <FormLabel className="text-black">Галерея медиа (несколько фото/видео)</FormLabel>
+          <MultiMediaUploader
+            media={mediaItems}
+            onChange={setMediaItems}
+            onUpload={uploadFile}
+            disabled={isPending}
+          />
         </div>
 
         <Button type="submit" className="w-full bg-gray-700 hover:bg-gray-800 text-white" disabled={isPending}>

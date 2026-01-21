@@ -3,6 +3,7 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import { insertLocationTypeSchema, insertLocationMediaSchema } from "@shared/schema";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import multer from "multer";
 import path from "path";
@@ -161,6 +162,107 @@ export async function registerRoutes(
     res.status(204).send();
   });
 
+  // Location Types API
+  app.get("/api/location-types", async (req, res) => {
+    const types = await storage.getLocationTypes();
+    res.json(types);
+  });
+
+  app.get("/api/location-types/:id", async (req, res) => {
+    const locationType = await storage.getLocationType(Number(req.params.id));
+    if (!locationType) {
+      return res.status(404).json({ message: "Location type not found" });
+    }
+    res.json(locationType);
+  });
+
+  app.post("/api/location-types", isAuthenticated, async (req, res) => {
+    try {
+      const input = insertLocationTypeSchema.parse(req.body);
+      const locationType = await storage.createLocationType(input);
+      res.status(201).json(locationType);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      throw err;
+    }
+  });
+
+  app.put("/api/location-types/:id", isAuthenticated, async (req, res) => {
+    try {
+      const input = insertLocationTypeSchema.partial().parse(req.body);
+      const locationType = await storage.updateLocationType(Number(req.params.id), input);
+      if (!locationType) {
+        return res.status(404).json({ message: "Location type not found" });
+      }
+      res.json(locationType);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      throw err;
+    }
+  });
+
+  app.delete("/api/location-types/:id", isAuthenticated, async (req, res) => {
+    await storage.deleteLocationType(Number(req.params.id));
+    res.status(204).send();
+  });
+
+  // Location Media API
+  app.get("/api/locations/:id/media", async (req, res) => {
+    const media = await storage.getLocationMedia(Number(req.params.id));
+    res.json(media);
+  });
+
+  app.post("/api/locations/:id/media", isAuthenticated, async (req, res) => {
+    try {
+      const locationId = Number(req.params.id);
+      const input = insertLocationMediaSchema.omit({ locationId: true }).parse(req.body);
+      const media = await storage.createLocationMedia({ ...input, locationId });
+      res.status(201).json(media);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      throw err;
+    }
+  });
+
+  app.put("/api/media/:id", isAuthenticated, async (req, res) => {
+    try {
+      const input = insertLocationMediaSchema.partial().parse(req.body);
+      const media = await storage.updateLocationMedia(Number(req.params.id), input);
+      if (!media) {
+        return res.status(404).json({ message: "Media not found" });
+      }
+      res.json(media);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      throw err;
+    }
+  });
+
+  app.delete("/api/media/:id", isAuthenticated, async (req, res) => {
+    await storage.deleteLocationMedia(Number(req.params.id));
+    res.status(204).send();
+  });
+
   // Seed Data
   await seedDatabase();
 
@@ -168,6 +270,23 @@ export async function registerRoutes(
 }
 
 async function seedDatabase() {
+  // Seed location types if none exist
+  const existingTypes = await storage.getLocationTypes();
+  if (existingTypes.length === 0) {
+    const defaultTypes = [
+      { slug: "kmz", name: "КМЗ (Идоракунии асосӣ)", nameRu: "КМЗ (Головное управление)", nameEn: "CEP (Headquarters)", color: "#16a34a", bgColor: "#dcfce7", borderColor: "#22c55e", sortOrder: 0 },
+      { slug: "branch", name: "Шуъбаҳо", nameRu: "Филиалы", nameEn: "Branch offices", color: "#6b7280", bgColor: "#f3f4f6", borderColor: "#9ca3af", sortOrder: 1 },
+      { slug: "reserve", name: "Мамнунгоҳ", nameRu: "Заповедники", nameEn: "Nature reserves", color: "#059669", bgColor: "#d1fae5", borderColor: "#10b981", sortOrder: 2 },
+      { slug: "glacier", name: "Пиряххо", nameRu: "Ледники", nameEn: "Glaciers", color: "#06b6d4", bgColor: "#cffafe", borderColor: "#22d3ee", sortOrder: 3 },
+      { slug: "fishery", name: "Моҳипарварӣ", nameRu: "Рыбоводство", nameEn: "Fish farms", color: "#3b82f6", bgColor: "#dbeafe", borderColor: "#60a5fa", sortOrder: 4 },
+      { slug: "nursery", name: "Ниҳолхона", nameRu: "Питомники", nameEn: "Tree nurseries", color: "#84cc16", bgColor: "#ecfccb", borderColor: "#a3e635", sortOrder: 5 },
+    ];
+    for (const type of defaultTypes) {
+      await storage.createLocationType(type);
+    }
+  }
+
+  // Seed locations if none exist
   const existingLocations = await storage.getLocations();
   if (existingLocations.length === 0) {
     await storage.createLocation({

@@ -1,8 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl, Source, Layer } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useLocations } from "@/hooks/use-locations";
+import { useLocationMedia } from "@/hooks/use-location-media";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink } from "lucide-react";
 import { type Location } from "@shared/schema";
@@ -10,6 +11,7 @@ import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass } from "@/components/location-icons";
+import { MediaCarousel } from "@/components/media-carousel";
 
 function getLocalizedName(location: Location, language: string): string {
   if (language === 'ru' && location.nameRu) return location.nameRu;
@@ -128,6 +130,8 @@ export default function MapPage() {
   });
   const [filtersOpen, setFiltersOpen] = useState(false);
   const { t, language } = useLanguage();
+  
+  const { data: locationMedia } = useLocationMedia(selectedLocation?.id || 0);
 
   const toggleFilter = (type: string) => {
     setActiveFilters(prev => ({
@@ -319,14 +323,12 @@ export default function MapPage() {
           </DialogHeader>
           
           <div className="mt-4 space-y-6">
-            {selectedLocation?.imageUrl && (
-              <div className="overflow-hidden rounded-xl border border-gray-200 shadow-xl">
-                <img 
-                  src={selectedLocation.imageUrl} 
-                  alt={selectedLocation && getLocalizedName(selectedLocation, language)} 
-                  className="w-full h-[300px] object-cover hover:scale-105 transition-transform duration-700"
-                />
-              </div>
+            {selectedLocation && (locationMedia?.length || selectedLocation.imageUrl || selectedLocation.videoUrl) && (
+              <MediaCarousel
+                media={locationMedia || []}
+                fallbackImageUrl={selectedLocation.imageUrl}
+                fallbackVideoUrl={selectedLocation.videoUrl}
+              />
             )}
 
             <div className="grid grid-cols-3 gap-4">
@@ -349,23 +351,6 @@ export default function MapPage() {
                 </div>
               )}
             </div>
-            
-            {selectedLocation?.videoUrl && (
-              <div className="aspect-video w-full overflow-hidden rounded-xl border border-gray-200 shadow-xl bg-black">
-                {selectedLocation.videoUrl.includes('youtube') || selectedLocation.videoUrl.includes('youtu.be') ? (
-                  <iframe 
-                    src={selectedLocation.videoUrl.replace('watch?v=', 'embed/')} 
-                    className="w-full h-full"
-                    allowFullScreen 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  />
-                ) : (
-                  <video controls className="w-full h-full" src={selectedLocation.videoUrl}>
-                    Your browser does not support the video tag.
-                  </video>
-                )}
-              </div>
-            )}
 
             {selectedLocation && getLocalizedDescription(selectedLocation, language) && (
               <div className="bg-white/50 rounded-xl p-4 border border-gray-200">

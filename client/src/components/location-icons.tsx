@@ -1,5 +1,5 @@
-import { Building2, TreePine, Snowflake, Building, Fish, Leaf } from "lucide-react";
-import type { LocationType } from "@shared/schema";
+import { Building2, TreePine, Snowflake, Building, Fish, Leaf, MapPin } from "lucide-react";
+import type { LocationType as LocationTypeDB } from "@shared/schema";
 
 interface LocationTypeConfig {
   icon: typeof Building2;
@@ -12,6 +12,17 @@ interface LocationTypeConfig {
   labelEn: string;
 }
 
+// Default icons for fallback when no custom icon is set
+export const DEFAULT_ICONS: Record<string, typeof Building2> = {
+  kmz: Building2,
+  branch: Building,
+  reserve: TreePine,
+  glacier: Snowflake,
+  fishery: Fish,
+  nursery: Leaf,
+};
+
+// Legacy config for backward compatibility (used when types not loaded from DB)
 export const LOCATION_TYPE_CONFIG: Record<string, LocationTypeConfig> = {
   kmz: {
     icon: Building2,
@@ -74,6 +85,21 @@ export const LOCATION_TYPE_CONFIG: Record<string, LocationTypeConfig> = {
     labelEn: "Tree nurseries",
   },
 };
+
+// Helper to get config from database type
+export function getConfigFromDBType(dbType: LocationTypeDB): LocationTypeConfig {
+  const fallback = LOCATION_TYPE_CONFIG[dbType.slug] || LOCATION_TYPE_CONFIG.kmz;
+  return {
+    icon: DEFAULT_ICONS[dbType.slug] || MapPin,
+    color: `text-[${dbType.color}]`,
+    bgColor: `bg-[${dbType.bgColor}]`,
+    borderColor: `border-[${dbType.borderColor}]`,
+    pulseClass: `marker-pulse-${dbType.slug}`,
+    labelRu: dbType.nameRu || dbType.name,
+    labelTj: dbType.name,
+    labelEn: dbType.nameEn || dbType.name,
+  };
+}
 
 interface LocationMarkerProps {
   locationType?: string | null;

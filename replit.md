@@ -100,3 +100,29 @@ Preferred communication style: Simple, everyday language.
 - **Vite**: Frontend dev server with HMR
 - **tsx**: TypeScript execution for server
 - **Drizzle Kit**: Database schema management
+
+## Recent Changes (January 2026)
+
+### Database-Driven Location Types
+- New `location_types` table for customizable location categories
+- Circular icons with custom colors uploaded via admin panel
+- Admin page at `/admin/location-types` for CRUD operations
+- ImageCropper component using react-easy-crop for circular cropping
+
+### Multiple Media per Location
+- New `location_media` table for storing multiple photos/videos per location
+- MediaCarousel component with arrow navigation for viewing gallery
+- MultiMediaUploader component in location form for managing media:
+  - Upload multiple photos/videos
+  - Set primary media (shown first)
+  - Reorder media items
+  - Remove unwanted media
+- Backward compatible: Falls back to legacy imageUrl/videoUrl if no media records
+
+### Key Files for New Features
+- `client/src/components/image-cropper.tsx` - Circular image cropping
+- `client/src/components/media-carousel.tsx` - Multi-media carousel viewer
+- `client/src/components/multi-media-uploader.tsx` - Upload manager
+- `client/src/pages/admin-location-types.tsx` - Admin type management
+- `client/src/hooks/use-location-types.ts` - Location types API hooks
+- `client/src/hooks/use-location-media.ts` - Location media API hooks
