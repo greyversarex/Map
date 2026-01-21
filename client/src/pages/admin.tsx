@@ -368,6 +368,7 @@ export default function AdminPage() {
                                 customColor={locationTypeMap[location.locationType || 'kmz']?.color}
                                 customBgColor={locationTypeMap[location.locationType || 'kmz']?.bgColor}
                                 customBorderColor={locationTypeMap[location.locationType || 'kmz']?.borderColor}
+                                customIconUrl={locationTypeMap[location.locationType || 'kmz']?.iconUrl}
                               />
                               <h4 className="font-semibold text-black truncate">{location.name}</h4>
                             </div>

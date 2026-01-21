@@ -188,6 +188,7 @@ export default function MapPage() {
             customColor={locType?.color}
             customBgColor={locType?.bgColor}
             customBorderColor={locType?.borderColor}
+            customIconUrl={locType?.iconUrl}
           />
         </div>
       </Marker>
@@ -350,6 +351,7 @@ export default function MapPage() {
                 customColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.color : undefined}
                 customBgColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.bgColor : undefined}
                 customBorderColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.borderColor : undefined}
+                customIconUrl={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.iconUrl : undefined}
               />
               <div>
                 <DialogTitle className="font-display text-3xl tracking-wide text-gray-900">

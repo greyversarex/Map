@@ -108,6 +108,7 @@ interface LocationMarkerProps {
   customColor?: string | null;
   customBgColor?: string | null;
   customBorderColor?: string | null;
+  customIconUrl?: string | null;
 }
 
 export function LocationMarker({ 
@@ -116,7 +117,8 @@ export function LocationMarker({
   showPulse = false,
   customColor,
   customBgColor,
-  customBorderColor
+  customBorderColor,
+  customIconUrl
 }: LocationMarkerProps) {
   const config = LOCATION_TYPE_CONFIG[locationType || "kmz"];
   const Icon = config?.icon || DEFAULT_ICONS[locationType || "kmz"] || MapPin;
@@ -133,11 +135,31 @@ export function LocationMarker({
     lg: "h-5 w-5",
   };
 
+  const imgSizes = {
+    sm: "h-4 w-4",
+    md: "h-5 w-5",
+    lg: "h-6 w-6",
+  };
+
   // Use custom colors if provided, otherwise fall back to config or defaults
   const useInlineStyles = !config || customColor || customBgColor || customBorderColor;
   const bgColor = customBgColor || config?.bgColor?.replace('bg-', '') || '#f3f4f6';
   const borderColor = customBorderColor || config?.borderColor?.replace('border-', '') || '#9ca3af';
   const iconColor = customColor || '#6b7280';
+
+  // Render custom icon image if provided
+  const renderIcon = () => {
+    if (customIconUrl) {
+      return (
+        <img 
+          src={customIconUrl} 
+          alt="" 
+          className={`${imgSizes[size]} object-contain`}
+        />
+      );
+    }
+    return <Icon className={iconSizes[size]} style={{ color: iconColor }} />;
+  };
 
   if (useInlineStyles && !config) {
     // For dynamic types without static config, use inline styles
@@ -148,19 +170,23 @@ export function LocationMarker({
           className={`relative z-10 flex ${sizeClasses[size]} items-center justify-center rounded-full shadow-lg border-2 transition-transform group-hover:scale-110`}
           style={{ backgroundColor: bgColor, borderColor: borderColor }}
         >
-          <Icon className={iconSizes[size]} style={{ color: iconColor }} />
+          {renderIcon()}
         </div>
       </div>
     );
   }
 
-  // For static types, use class names
+  // For static types, use class names (but still support custom icon)
   const fallbackConfig = config || LOCATION_TYPE_CONFIG.kmz;
   return (
     <div className="relative">
       {showPulse && <div className={`absolute inset-0 ${fallbackConfig.pulseClass}`}></div>}
       <div className={`relative z-10 flex ${sizeClasses[size]} items-center justify-center rounded-full ${fallbackConfig.bgColor} shadow-lg border-2 ${fallbackConfig.borderColor} transition-transform group-hover:scale-110`}>
-        <Icon className={`${iconSizes[size]} ${fallbackConfig.color}`} />
+        {customIconUrl ? (
+          <img src={customIconUrl} alt="" className={`${imgSizes[size]} object-contain`} />
+        ) : (
+          <Icon className={`${iconSizes[size]} ${fallbackConfig.color}`} />
+        )}
       </div>
     </div>
   );
