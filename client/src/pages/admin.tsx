@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
+import { useLocationTypes, useDeleteLocationType } from "@/hooks/use-location-types";
 import { LocationForm } from "@/components/location-form";
+import { LocationTypeForm } from "@/components/location-type-form";
 import {
   Dialog,
   DialogContent,
@@ -23,9 +25,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video, Settings } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video, Settings, ChevronDown, ChevronUp } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
-import type { Location } from "@shared/schema";
+import type { Location, LocationType as LocationTypeDB } from "@shared/schema";
 import { LocationMarker, LOCATION_TYPE_CONFIG } from "@/components/location-icons";
 
 const LOCATION_TYPE_ORDER = ["kmz", "branch", "fishery", "nursery", "reserve", "glacier"] as const;
@@ -33,11 +35,16 @@ const LOCATION_TYPE_ORDER = ["kmz", "branch", "fishery", "nursery", "reserve", "
 export default function AdminPage() {
   const { isAdmin, user, isLoading: authLoading, logout } = useAdminAuth();
   const { data: locations, isLoading: locationsLoading } = useLocations();
+  const { data: dbLocationTypes, isLoading: typesLoading } = useLocationTypes();
   const deleteMutation = useDeleteLocation();
+  const deleteTypeMutation = useDeleteLocationType();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [, setLocation] = useWouterLocation();
+  const [isTypeDialogOpen, setIsTypeDialogOpen] = useState(false);
+  const [editingType, setEditingType] = useState<LocationTypeDB | null>(null);
+  const [typeManagementExpanded, setTypeManagementExpanded] = useState(false);
   
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -102,15 +109,98 @@ export default function AdminPage() {
             </Button>
           </Link>
           
-          <Link href="/admin/location-types">
-            <Button variant="ghost" className="w-full justify-start text-black hover:bg-gray-100 hover:text-gray-700 mb-4" data-testid="link-manage-types">
-              <Settings className="mr-2 h-4 w-4" />
-              Управление типами
-            </Button>
-          </Link>
-          
           <div className="pt-2 border-t border-gray-100">
-            <p className="text-xs text-gray-400 uppercase tracking-wider px-3 py-2 font-semibold">Типы локаций</p>
+            <button
+              onClick={() => setTypeManagementExpanded(!typeManagementExpanded)}
+              className="w-full flex items-center justify-between px-3 py-2 text-xs text-gray-400 uppercase tracking-wider font-semibold hover:bg-gray-50 rounded-lg"
+            >
+              <span>Типы локаций</span>
+              {typeManagementExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+            
+            {typeManagementExpanded && (
+              <div className="px-3 py-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full mb-2 text-gray-700 border-gray-300"
+                  onClick={() => {
+                    setEditingType(null);
+                    setIsTypeDialogOpen(true);
+                  }}
+                  data-testid="button-add-type"
+                >
+                  <Plus className="h-3 w-3 mr-1" />
+                  Добавить тип
+                </Button>
+                
+                {dbLocationTypes?.map((dbType) => (
+                  <div
+                    key={dbType.id}
+                    className="flex items-center justify-between py-1.5 px-2 rounded-lg hover:bg-gray-100 group"
+                  >
+                    <div className="flex items-center gap-2 min-w-0">
+                      <div 
+                        className="w-6 h-6 rounded-full flex-shrink-0 border"
+                        style={{ 
+                          backgroundColor: dbType.bgColor || "#f0f0f0",
+                          borderColor: dbType.borderColor || "#ccc"
+                        }}
+                      >
+                        {dbType.iconUrl && (
+                          <img src={dbType.iconUrl} alt="" className="w-full h-full rounded-full object-cover" />
+                        )}
+                      </div>
+                      <span className="text-sm text-gray-700 truncate">{dbType.nameRu || dbType.name}</span>
+                    </div>
+                    <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => {
+                          setEditingType(dbType);
+                          setIsTypeDialogOpen(true);
+                        }}
+                        data-testid={`button-edit-type-${dbType.id}`}
+                      >
+                        <Pencil className="h-3 w-3" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-red-500 hover:text-red-700"
+                            data-testid={`button-delete-type-${dbType.id}`}
+                          >
+                            <Trash2 className="h-3 w-3" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-white">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle className="text-black">Удалить тип?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Это действие нельзя отменить. Тип "{dbType.nameRu || dbType.name}" будет удалён.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="text-gray-700">Отмена</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-600 hover:bg-red-700 text-white"
+                              onClick={() => deleteTypeMutation.mutate(dbType.id)}
+                            >
+                              Удалить
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            
             {LOCATION_TYPE_ORDER.map((type) => {
               const config = LOCATION_TYPE_CONFIG[type];
               const Icon = config.icon;
@@ -180,6 +270,18 @@ export default function AdminPage() {
                 <LocationForm 
                   location={editingLocation || undefined} 
                   onSuccess={() => setIsDialogOpen(false)} 
+                />
+              </DialogContent>
+            </Dialog>
+            
+            <Dialog open={isTypeDialogOpen} onOpenChange={setIsTypeDialogOpen}>
+              <DialogContent className="sm:max-w-[400px] max-h-[90vh] overflow-y-auto bg-white">
+                <DialogHeader>
+                  <DialogTitle className="text-black">{editingType ? "Редактировать тип" : "Новый тип локации"}</DialogTitle>
+                </DialogHeader>
+                <LocationTypeForm 
+                  locationType={editingType || undefined} 
+                  onSuccess={() => setIsTypeDialogOpen(false)} 
                 />
               </DialogContent>
             </Dialog>

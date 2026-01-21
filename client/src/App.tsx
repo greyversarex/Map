@@ -8,7 +8,6 @@ import NotFound from "@/pages/not-found";
 import MapPage from "@/pages/map";
 import AdminPage from "@/pages/admin";
 import AdminLogin from "@/pages/admin-login";
-import AdminLocationTypesPage from "@/pages/admin-location-types";
 
 function Router() {
   return (
@@ -16,7 +15,6 @@ function Router() {
       <Route path="/" component={MapPage} />
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/login" component={AdminLogin} />
-      <Route path="/admin/location-types" component={AdminLocationTypesPage} />
       <Route component={NotFound} />
     </Switch>
   );
