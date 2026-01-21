@@ -247,13 +247,22 @@ export default function AdminPage() {
           </Button>
         </div>
       </aside>
-      <main className="flex-1 p-6 md:p-8 lg:p-12 overflow-auto bg-gray-100">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <main 
+        className="flex-1 p-6 md:p-8 lg:p-12 overflow-auto relative"
+        style={{
+          backgroundImage: `url(${earthBackground})`,
+          backgroundSize: 'cover',
+          backgroundPosition: '60% center',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
+        <div className="max-w-6xl mx-auto space-y-8 relative z-10">
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-black">Локации</h2>
-              <p className="text-gray-600">Управление точками на 3D карте</p>
+              <h2 className="text-3xl font-bold text-white drop-shadow-lg">Локации</h2>
+              <p className="text-gray-200">Управление точками на 3D карте</p>
             </div>
             
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -301,16 +310,6 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div 
-            className="rounded-xl overflow-hidden relative p-6 -mx-2"
-            style={{
-              backgroundImage: `url(${earthBackground})`,
-              backgroundSize: 'cover',
-              backgroundPosition: '60% center',
-            }}
-          >
-            <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
-            <div className="relative z-10 space-y-8">
           {LOCATION_TYPE_ORDER.map((type) => {
             const config = LOCATION_TYPE_CONFIG[type];
             const Icon = config.icon;
@@ -428,8 +427,6 @@ export default function AdminPage() {
               Локации не найдены
             </div>
           )}
-            </div>
-          </div>
         </div>
       </main>
     </div>
