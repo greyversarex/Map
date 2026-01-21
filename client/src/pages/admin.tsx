@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
 import { useLocationTypes, useDeleteLocationType } from "@/hooks/use-location-types";
-import earthBackground from "@assets/c41ea1103cd311ee8de23eb7565f893e_upscaled_1769017766449.jpg";
+import earthBackground from "@assets/earth-depicted-anime-style_1769019104987.jpg";
 import { LocationForm } from "@/components/location-form";
 import { LocationTypeForm } from "@/components/location-type-form";
 import {
