@@ -253,7 +253,7 @@ export default function AdminPage() {
         style={{
           backgroundImage: `url(${earthBackground})`,
           backgroundSize: 'cover',
-          backgroundPosition: 'center',
+          backgroundPosition: '60% center',
           backgroundAttachment: 'fixed',
         }}
       >
