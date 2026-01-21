@@ -136,9 +136,9 @@ export function LocationMarker({
   };
 
   const imgSizes = {
-    sm: "h-4 w-4",
-    md: "h-5 w-5",
-    lg: "h-6 w-6",
+    sm: "h-6 w-6",
+    md: "h-8 w-8",
+    lg: "h-10 w-10",
   };
 
   // Use custom colors if provided, otherwise fall back to config or defaults
@@ -147,17 +147,22 @@ export function LocationMarker({
   const borderColor = customBorderColor || config?.borderColor?.replace('border-', '') || '#9ca3af';
   const iconColor = customColor || '#6b7280';
 
-  // Render custom icon image if provided
-  const renderIcon = () => {
-    if (customIconUrl) {
-      return (
+  // If custom icon URL is provided, render just the image without background/border
+  if (customIconUrl) {
+    return (
+      <div className="relative">
+        {showPulse && <div className="absolute inset-0 animate-ping opacity-75 rounded-full" style={{ backgroundColor: bgColor }}></div>}
         <img 
           src={customIconUrl} 
           alt="" 
-          className={`${imgSizes[size]} object-contain`}
+          className={`relative z-10 ${imgSizes[size]} object-contain rounded-full shadow-lg transition-transform group-hover:scale-110`}
         />
-      );
-    }
+      </div>
+    );
+  }
+
+  // Render default Lucide icon
+  const renderIcon = () => {
     return <Icon className={iconSizes[size]} style={{ color: iconColor }} />;
   };
 
@@ -176,17 +181,13 @@ export function LocationMarker({
     );
   }
 
-  // For static types, use class names (but still support custom icon)
+  // For static types, use class names
   const fallbackConfig = config || LOCATION_TYPE_CONFIG.kmz;
   return (
     <div className="relative">
       {showPulse && <div className={`absolute inset-0 ${fallbackConfig.pulseClass}`}></div>}
       <div className={`relative z-10 flex ${sizeClasses[size]} items-center justify-center rounded-full ${fallbackConfig.bgColor} shadow-lg border-2 ${fallbackConfig.borderColor} transition-transform group-hover:scale-110`}>
-        {customIconUrl ? (
-          <img src={customIconUrl} alt="" className={`${imgSizes[size]} object-contain`} />
-        ) : (
-          <Icon className={`${iconSizes[size]} ${fallbackConfig.color}`} />
-        )}
+        <Icon className={`${iconSizes[size]} ${fallbackConfig.color}`} />
       </div>
     </div>
   );

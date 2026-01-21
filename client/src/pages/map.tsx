@@ -29,12 +29,15 @@ function getLocalizedDescription(location: Location, language: string): string |
 function HoverPopup({ location, language }: { location: Location; language: string }) {
   const hasData = location.foundedYear || location.workerCount || location.area;
   const localizedName = getLocalizedName(location, language);
+  const { data: media } = useLocationMedia(location.id);
+  
+  const primaryImage = media?.find(m => m.isPrimary)?.url || media?.[0]?.url || location.imageUrl;
   
   return (
     <div className="flex bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
-      {location.imageUrl ? (
+      {primaryImage ? (
         <img 
-          src={location.imageUrl} 
+          src={primaryImage} 
           alt={localizedName}
           className="w-28 h-28 object-cover flex-shrink-0"
         />
@@ -59,7 +62,7 @@ function HoverPopup({ location, language }: { location: Location; language: stri
             )}
             {location.area && (
               <p className="text-xs text-gray-600">
-                <span className="text-gray-400">{language === 'ru' ? 'Площадь:' : language === 'tj' ? 'Масоҳат:' : 'Area:'}</span> <span className="font-medium">{location.area}</span>
+                <span className="text-gray-400">{language === 'ru' ? 'Площадь:' : language === 'tj' ? 'Масоҳат:' : 'Area:'}</span> <span className="font-medium">{location.area} м²</span>
               </p>
             )}
           </div>
@@ -389,7 +392,7 @@ export default function MapPage() {
               {selectedLocation?.area && (
                 <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
                   <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}</p>
-                  <p className="text-xl font-bold text-gray-900">{selectedLocation.area}</p>
+                  <p className="text-xl font-bold text-gray-900">{selectedLocation.area} м²</p>
                 </div>
               )}
             </div>
