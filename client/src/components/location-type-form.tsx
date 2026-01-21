@@ -12,7 +12,6 @@ import { Loader2, Upload } from "lucide-react";
 import { ImageCropper } from "./image-cropper";
 
 const formSchema = z.object({
-  slug: z.string().min(1, "Обязательное поле").regex(/^[a-z0-9_]+$/, "Только латинские буквы, цифры и _"),
   name: z.string().min(1, "Обязательное поле"),
   nameRu: z.string().optional(),
   nameEn: z.string().optional(),
@@ -21,6 +20,22 @@ const formSchema = z.object({
   borderColor: z.string().default("#10b981"),
   sortOrder: z.number().default(0),
 });
+
+function generateSlug(name: string): string {
+  const translitMap: Record<string, string> = {
+    'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'yo', 'ж': 'zh',
+    'з': 'z', 'и': 'i', 'й': 'y', 'к': 'k', 'л': 'l', 'м': 'm', 'н': 'n', 'о': 'o',
+    'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u', 'ф': 'f', 'х': 'kh', 'ц': 'ts',
+    'ч': 'ch', 'ш': 'sh', 'щ': 'sch', 'ъ': '', 'ы': 'y', 'ь': '', 'э': 'e', 'ю': 'yu', 'я': 'ya',
+  };
+  return name.toLowerCase()
+    .split('')
+    .map(char => translitMap[char] || char)
+    .join('')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .substring(0, 50);
+}
 
 type FormData = z.infer<typeof formSchema>;
 
@@ -45,7 +60,6 @@ export function LocationTypeForm({ locationType, onSuccess }: LocationTypeFormPr
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      slug: locationType?.slug ?? "",
       name: locationType?.name ?? "",
       nameRu: locationType?.nameRu ?? "",
       nameEn: locationType?.nameEn ?? "",
@@ -99,7 +113,8 @@ export function LocationTypeForm({ locationType, onSuccess }: LocationTypeFormPr
 
   const onSubmit = async (data: FormData) => {
     try {
-      const submitData = { ...data, iconUrl };
+      const slug = isEditing ? locationType!.slug : generateSlug(data.nameRu || data.name);
+      const submitData = { ...data, slug, iconUrl };
       
       if (isEditing && locationType) {
         await updateMutation.mutateAsync({ id: locationType.id, ...submitData });
@@ -172,20 +187,6 @@ export function LocationTypeForm({ locationType, onSuccess }: LocationTypeFormPr
             <Upload className="h-4 w-4 mr-2" />
             Загрузить иконку
           </Button>
-
-          <FormField
-            control={form.control}
-            name="slug"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel className="text-gray-700">Код (slug)</FormLabel>
-                <FormControl>
-                  <Input {...field} placeholder="my_type" className="bg-white text-black" disabled={isEditing} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
 
           <FormField
             control={form.control}
