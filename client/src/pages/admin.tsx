@@ -247,9 +247,8 @@ export default function AdminPage() {
           </Button>
         </div>
       </aside>
-
       <main 
-        className="flex-1 p-6 md:p-8 lg:p-12 overflow-auto relative"
+        className="flex-1 p-6 md:p-8 lg:p-12 overflow-auto relative ml-[6px] mr-[6px]"
         style={{
           backgroundImage: `url(${earthBackground})`,
           backgroundSize: 'cover',
