@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
 import { useLocationTypes, useDeleteLocationType } from "@/hooks/use-location-types";
-import earthBackground from "@assets/stock_images/earth_planet_from_sp_db2ed3f9.jpg";
+import earthBackground from "@assets/c41ea1103cd311ee8de23eb7565f893e_upscaled_1769017766449.jpg";
 import { LocationForm } from "@/components/location-form";
 import { LocationTypeForm } from "@/components/location-type-form";
 import {
@@ -260,8 +260,8 @@ export default function AdminPage() {
           
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
-              <h2 className="text-3xl font-bold text-black">Локации</h2>
-              <p className="text-gray-600">Управление точками на 3D карте</p>
+              <h2 className="text-3xl font-bold text-white drop-shadow-lg">Локации</h2>
+              <p className="text-gray-200">Управление точками на 3D карте</p>
             </div>
             
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -326,8 +326,8 @@ export default function AdminPage() {
                   <div className={`p-2 rounded-lg ${config.bgColor || 'bg-gray-100'}`}>
                     <Icon className={`h-5 w-5 ${config.color}`} />
                   </div>
-                  <h3 className="text-xl font-bold text-black">{config.labelRu}</h3>
-                  <span className="text-sm text-gray-500">({typeLocations.length})</span>
+                  <h3 className="text-xl font-bold text-white drop-shadow-lg">{config.labelRu}</h3>
+                  <span className="text-sm text-gray-300">({typeLocations.length})</span>
                 </div>
                 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -376,7 +376,7 @@ export default function AdminPage() {
                               variant="ghost" 
                               size="icon" 
                               onClick={() => openEdit(location)}
-                              className="h-8 w-8 text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                              className="h-8 w-8 text-black bg-gray-100 hover:bg-gray-200"
                               data-testid={`button-edit-${location.id}`}
                             >
                               <Pencil className="h-4 w-4" />
