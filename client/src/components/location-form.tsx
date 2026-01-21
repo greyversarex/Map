@@ -193,12 +193,12 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
         locationId = location.id;
         
         // Handle media updates - delete removed items and add new ones
-        const existingIds = new Set(existingMedia?.map(m => m.id) || []);
+        const existingIds = existingMedia?.map(m => m.id) || [];
         const currentIds = new Set(mediaItems.filter(m => m.id).map(m => m.id));
         
         // Delete removed media
         for (const existingId of existingIds) {
-          if (!currentIds.has(existingId)) {
+          if (existingId && !currentIds.has(existingId)) {
             await deleteMediaMutation.mutateAsync({ id: existingId, locationId });
           }
         }

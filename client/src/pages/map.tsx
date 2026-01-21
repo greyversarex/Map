@@ -31,16 +31,33 @@ function HoverPopup({ location, language }: { location: Location; language: stri
   const localizedName = getLocalizedName(location, language);
   const { data: media } = useLocationMedia(location.id);
   
-  const primaryImage = media?.find(m => m.isPrimary)?.url || media?.[0]?.url || location.imageUrl;
+  const primaryMedia = media?.find(m => m.isPrimary) || media?.[0];
+  const primaryUrl = primaryMedia?.url || location.imageUrl;
+  const isVideo = primaryMedia?.mediaType === 'video';
   
   return (
     <div className="flex bg-gradient-to-r from-white to-gray-50 rounded-xl shadow-2xl border border-gray-200 overflow-hidden">
-      {primaryImage ? (
-        <img 
-          src={primaryImage} 
-          alt={localizedName}
-          className="w-28 h-28 object-cover flex-shrink-0"
-        />
+      {primaryUrl ? (
+        isVideo ? (
+          <div className="w-28 h-28 bg-gray-800 flex items-center justify-center flex-shrink-0 relative">
+            <video 
+              src={primaryUrl}
+              className="w-full h-full object-cover"
+              muted
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+              <div className="w-10 h-10 rounded-full bg-white/80 flex items-center justify-center">
+                <div className="w-0 h-0 border-l-[12px] border-l-gray-800 border-y-[8px] border-y-transparent ml-1" />
+              </div>
+            </div>
+          </div>
+        ) : (
+          <img 
+            src={primaryUrl} 
+            alt={localizedName}
+            className="w-28 h-28 object-cover flex-shrink-0"
+          />
+        )
       ) : (
         <div className="w-28 h-28 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center flex-shrink-0">
           <MapIcon className="h-10 w-10 text-gray-400" />
