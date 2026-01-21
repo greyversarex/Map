@@ -101,7 +101,7 @@ export default function AdminPage() {
       }}
     >
       <div className="absolute inset-0 bg-black/30 backdrop-blur-[1px]"></div>
-      <aside className="w-64 bg-white/95 backdrop-blur-sm shadow-xl hidden md:flex flex-col sticky top-0 h-screen z-10">
+      <aside className="w-64 bg-white/80 backdrop-blur-md shadow-xl hidden md:flex flex-col sticky top-0 h-screen z-10">
         <div className="p-6 border-b border-gray-100">
           <Link href="/">
             <h1 className="text-2xl font-bold text-black cursor-pointer hover:text-gray-600 transition-colors tracking-wide">
