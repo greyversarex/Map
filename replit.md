@@ -1,5 +1,38 @@
 # Tajikistan Interactive Map
 
+## Production Deployment Info
+
+**ВАЖНО: Сайт развёрнут на облачном сервере Timeweb**
+
+### Рабочий процесс
+- Replit используется ТОЛЬКО для разработки и улучшения сайта
+- После изменений делаем push в репозиторий из Replit
+- Затем обновляем код на продакшн сервере через командную строку
+- **КРИТИЧЕСКИ ВАЖНО**: При обновлениях НИКОГДА не стирать и не повреждать данные на продакшене!
+
+### Продакшн сервер
+- **Путь**: `/var/www/ecomap`
+- **Хост**: `msk-1-vm-soga` (Timeweb)
+
+### Переменные окружения продакшена
+```
+DATABASE_URL=postgresql://ecomap_user:eco2026@localhost:5432/ecomap
+SESSION_SECRET=ecomap_secret_key_2024_secure
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=admin123
+NODE_ENV=production
+PORT=3000
+```
+
+### Безопасное обновление продакшена
+1. Делаем изменения в Replit
+2. Тестируем локально
+3. `git push` из Replit
+4. На сервере: `git pull` + restart приложения
+5. НЕ запускать миграции которые удаляют данные!
+
+---
+
 ## Overview
 
 This is an interactive map application for exploring locations in Tajikistan. The project features a public-facing map view where users can browse points of interest, and an admin panel for managing location data. Built with React on the frontend and Express on the backend, it uses MapLibre GL for map rendering and PostgreSQL for data persistence.
