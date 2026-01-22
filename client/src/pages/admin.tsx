@@ -175,7 +175,7 @@ export default function AdminPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-6 w-6"
+                        className="h-6 w-6 text-gray-800"
                         onClick={() => {
                           setEditingType(dbType);
                           setIsTypeDialogOpen(true);
@@ -231,7 +231,19 @@ export default function AdminPage() {
                   data-testid={`nav-type-${locType.slug}`}
                 >
                   <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4" style={{ color: locType.color || '#6b7280' }} />
+                    {locType.iconUrl ? (
+                      <div 
+                        className="w-5 h-5 rounded-full flex-shrink-0 border overflow-hidden"
+                        style={{ 
+                          backgroundColor: locType.bgColor || "#f0f0f0",
+                          borderColor: locType.borderColor || "#ccc"
+                        }}
+                      >
+                        <img src={locType.iconUrl} alt="" className="w-full h-full object-cover" />
+                      </div>
+                    ) : (
+                      <Icon className="h-4 w-4" style={{ color: locType.color || '#6b7280' }} />
+                    )}
                     <span>{locType.nameRu || locType.name}</span>
                   </div>
                   <span className="text-xs bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full">{count}</span>
