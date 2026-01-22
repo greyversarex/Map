@@ -48,27 +48,12 @@ export default function AdminPage() {
   
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
-  useEffect(() => {
-    if (!authLoading && !isAdmin) {
-      setLocation("/admin/login");
-    }
-  }, [authLoading, isAdmin, setLocation]);
-
-  if (authLoading || locationsLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
-      </div>
+  // All hooks must be called before any conditional returns
+  const filteredLocations = useMemo(() => {
+    return locations?.filter(loc => 
+      loc.name.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }
-
-  if (!isAdmin) {
-    return null;
-  }
-
-  const filteredLocations = locations?.filter(loc => 
-    loc.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  }, [locations, searchQuery]);
 
   // Build locationsByType dynamically from database location types
   const locationsByType = useMemo(() => {
@@ -87,6 +72,24 @@ export default function AdminPage() {
       return acc;
     }, {} as Record<string, typeof dbLocationTypes[0]>);
   }, [dbLocationTypes]);
+
+  useEffect(() => {
+    if (!authLoading && !isAdmin) {
+      setLocation("/admin/login");
+    }
+  }, [authLoading, isAdmin, setLocation]);
+
+  if (authLoading || locationsLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gradient-to-br from-gray-100 via-gray-200 to-gray-300">
+        <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
+      </div>
+    );
+  }
+
+  if (!isAdmin) {
+    return null;
+  }
 
   const scrollToSection = (type: string) => {
     sectionRefs.current[type]?.scrollIntoView({ behavior: "smooth", block: "start" });
