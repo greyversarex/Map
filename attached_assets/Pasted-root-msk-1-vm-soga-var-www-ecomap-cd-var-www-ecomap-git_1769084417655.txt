@@ -1,0 +1,162 @@
+root@msk-1-vm-soga:/var/www/ecomap# cd /var/www/ecomap
+git stash
+git pull
+npm install
+npm run build
+pm2 restart all
+Saved working directory and index state WIP on main: ae32b1c Improve deployment process by using direct build commands
+Updating ae32b1c..1683540
+Fast-forward
+ .replit                                                                     |   8 ++-
+ attached_assets/c41ea1103cd311ee8de23eb7565f893e_upscaled_1769017766449.jpg | Bin 0 -> 293773 bytes
+ attached_assets/earth-depicted-anime-style_1769019104987.jpg                | Bin 0 -> 7828147 bytes
+ attached_assets/image_1769015151817.png                                     | Bin 0 -> 101709 bytes
+ attached_assets/image_1769017528745.png                                     | Bin 0 -> 638437 bytes
+ attached_assets/image_1769023821452.png                                     | Bin 0 -> 285982 bytes
+ attached_assets/image_1769023830179.png                                     | Bin 0 -> 285982 bytes
+ attached_assets/image_1769024380583.png                                     | Bin 0 -> 647296 bytes
+ attached_assets/image_1769031233110.png                                     | Bin 0 -> 15226 bytes
+ attached_assets/image_1769031269830.png                                     | Bin 0 -> 80328 bytes
+ attached_assets/image_1769076090209.png                                     | Bin 0 -> 50020 bytes
+ attached_assets/image_1769082074151.png                                     | Bin 0 -> 34103 bytes
+ attached_assets/stock_images/earth_planet_from_sp_0b466a59.jpg              | Bin 0 -> 111582 bytes
+ attached_assets/stock_images/earth_planet_from_sp_b55e52c7.jpg              | Bin 0 -> 208187 bytes
+ attached_assets/stock_images/earth_planet_from_sp_db2ed3f9.jpg              | Bin 0 -> 394065 bytes
+ client/src/components/image-cropper.tsx                                     | 186 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ client/src/components/location-form.tsx                                     | 218 +++++++++++++++++++++++++++++++++++++++++++-----------------------------------
+ client/src/components/location-icons.tsx                                    | 114 ++++++++++++++++++++++++++++++++++++++---
+ client/src/components/location-type-form.tsx                                | 324 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ client/src/components/media-carousel.tsx                                    | 147 +++++++++++++++++++++++++++++++++++++++++++++++++++++
+ client/src/components/multi-media-uploader.tsx                              | 320 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ client/src/hooks/use-location-media.ts                                      |  49 ++++++++++++++++++
+ client/src/hooks/use-location-types.ts                                      |  54 ++++++++++++++++++++
+ client/src/index.css                                                        |  58 +++++++++++++++++++++
+ client/src/pages/admin-location-types.tsx                                   | 459 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+ client/src/pages/admin.tsx                                                  | 249 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------------
+ client/src/pages/map.tsx                                                    | 206 +++++++++++++++++++++++++++++++++++++++++++++----------------------------
+ package-lock.json                                                           | 525 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ package.json                                                                |   4 +-
+ replit.md                                                                   |  61 +++++++++++++++++++++-
+ server/routes.ts                                                            | 131 ++++++++++++++++++++++++++++++++++++++++++++++-
+ server/storage.ts                                                           |  92 ++++++++++++++++++++++++++++++++-
+ shared/schema.ts                                                            |  85 +++++++++++++++++++++++++++----
+ uploads/1769023918211-230140704.png                                         | Bin 0 -> 2067078 bytes
+ uploads/1769024172084-430763708.png                                         | Bin 0 -> 2064030 bytes
+ uploads/1769024296407-870407856.jpg                                         | Bin 0 -> 411306 bytes
+ uploads/1769024296678-814527676.webp                                        | Bin 0 -> 113120 bytes
+ uploads/1769024331657-19587164.jpg                                          | Bin 0 -> 211772 bytes
+ uploads/1769024353883-795062111.jpg                                         | Bin 0 -> 211772 bytes
+ uploads/1769028753939-660098471.png                                         | Bin 0 -> 2096140 bytes
+ uploads/1769028816309-807492542.jpg                                         | Bin 0 -> 211772 bytes
+ uploads/1769028816569-94515740.jpg                                          | Bin 0 -> 411306 bytes
+ uploads/1769028816872-117465709.webp                                        | Bin 0 -> 113120 bytes
+ uploads/1769078172390-635302883.mp4                                         | Bin 0 -> 10485760 bytes
+ uploads/1769078488140-13376519.mp4                                          | Bin 0 -> 9666425 bytes
+ uploads/1769078526822-831078226.MP4                                         | Bin 0 -> 6261744 bytes
+ 46 files changed, 3038 insertions(+), 252 deletions(-)
+ create mode 100644 attached_assets/c41ea1103cd311ee8de23eb7565f893e_upscaled_1769017766449.jpg
+ create mode 100644 attached_assets/earth-depicted-anime-style_1769019104987.jpg
+ create mode 100644 attached_assets/image_1769015151817.png
+ create mode 100644 attached_assets/image_1769017528745.png
+ create mode 100644 attached_assets/image_1769023821452.png
+ create mode 100644 attached_assets/image_1769023830179.png
+ create mode 100644 attached_assets/image_1769024380583.png
+ create mode 100644 attached_assets/image_1769031233110.png
+ create mode 100644 attached_assets/image_1769031269830.png
+ create mode 100644 attached_assets/image_1769076090209.png
+ create mode 100644 attached_assets/image_1769082074151.png
+ create mode 100644 attached_assets/stock_images/earth_planet_from_sp_0b466a59.jpg
+ create mode 100644 attached_assets/stock_images/earth_planet_from_sp_b55e52c7.jpg
+ create mode 100644 attached_assets/stock_images/earth_planet_from_sp_db2ed3f9.jpg
+ create mode 100644 client/src/components/image-cropper.tsx
+ create mode 100644 client/src/components/location-type-form.tsx
+ create mode 100644 client/src/components/media-carousel.tsx
+ create mode 100644 client/src/components/multi-media-uploader.tsx
+ create mode 100644 client/src/hooks/use-location-media.ts
+ create mode 100644 client/src/hooks/use-location-types.ts
+ create mode 100644 client/src/pages/admin-location-types.tsx
+ create mode 100644 uploads/1769023918211-230140704.png
+ create mode 100644 uploads/1769024172084-430763708.png
+ create mode 100644 uploads/1769024296407-870407856.jpg
+ create mode 100644 uploads/1769024296678-814527676.webp
+ create mode 100644 uploads/1769024331657-19587164.jpg
+ create mode 100644 uploads/1769024353883-795062111.jpg
+ create mode 100644 uploads/1769028753939-660098471.png
+ create mode 100644 uploads/1769028816309-807492542.jpg
+ create mode 100644 uploads/1769028816569-94515740.jpg
+ create mode 100644 uploads/1769028816872-117465709.webp
+ create mode 100644 uploads/1769078172390-635302883.mp4
+ create mode 100644 uploads/1769078488140-13376519.mp4
+ create mode 100644 uploads/1769078526822-831078226.MP4
+
+added 5 packages, changed 1 package, and audited 677 packages in 5s
+
+92 packages are looking for funding
+  run `npm fund` for details
+
+4 vulnerabilities (1 moderate, 3 high)
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+=== Starting build process ===
+Step 1: Cleaning dist folder...
+✓ dist folder cleaned
+Step 2: Building client with Vite...
+vite v7.3.0 building client environment for production...
+✓ 2223 modules transformed.
+Use --update-env to update environment variables
+[PM2] Applying action restartProcessId on app [all](ids: [ 0 ])
+[PM2] [ecomap](0) ✓
+┌────┬───────────┬─────────────┬─────────┬─────────┬──────────┬────────┬──────┬───────────┬──────────┬──────────┬──────────┬──────────┐
+│ id │ name      │ namespace   │ version │ mode    │ pid      │ uptime │ ↺    │ status    │ cpu      │ mem      │ user     │ watching │
+├────┼───────────┼─────────────┼─────────┼─────────┼──────────┼────────┼──────┼───────────┼──────────┼──────────┼──────────┼──────────┤
+│ 0  │ ecomap    │ default     │ 1.0.0   │ fork    │ 267230   │ 0s     │ 64   │ online    │ 0%       │ 18.4mb   │ root     │ disabled │
+└────┴───────────┴─────────────┴─────────┴─────────┴──────────┴────────┴──────┴───────────┴──────────┴──────────┴──────────┴──────────┘
+root@msk-1-vm-soga:/var/www/ecomap# pm2 logs
+[TAILING] Tailing last 15 lines for [all] processes (change the value with --lines option)
+/root/.pm2/pm2.log last 15 lines:
+PM2        | 2026-01-16T20:46:33: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-16T20:46:33: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-16T20:46:33: PM2 log: pid=42965 msg=process killed
+PM2        | 2026-01-16T20:46:33: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-16T20:46:33: PM2 log: App [ecomap:0] online
+PM2        | 2026-01-22T12:05:52: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-22T12:05:52: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-22T12:05:52: PM2 log: pid=43381 msg=process killed
+PM2        | 2026-01-22T12:05:52: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-22T12:05:52: PM2 log: App [ecomap:0] online
+PM2        | 2026-01-22T12:19:41: PM2 log: Stopping app:ecomap id:0
+PM2        | 2026-01-22T12:19:41: PM2 log: App [ecomap:0] exited with code [0] via signal [SIGINT]
+PM2        | 2026-01-22T12:19:41: PM2 log: pid=266743 msg=process killed
+PM2        | 2026-01-22T12:19:41: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-01-22T12:19:41: PM2 log: App [ecomap:0] online
+
+/root/.pm2/logs/ecomap-out.log last 15 lines:
+0|ecomap   | "videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":3,"area":"","createdAt":"2026-01-22T05:16:56.190Z"},{"id":81,"name":"Хуросон(бахш)","nameRu":"Хуросон(раздел)","nameEn":"Khuroson(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":3,"area":"","createdAt":"2026-01-22T05:18:01.511Z"},{"id":82,"name":"Қубодиён(бахш )","nameRu":"Кубодиён(раздел )","nameEn":"Qubodiyon(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":2,"area":"","createdAt":"2026-01-22T05:21:13.455Z"},{"id":83,"name":"Абдураҳмони Ҷомӣ(бахш)","nameRu":"Абдурахмана Джами(раздел)","nameEn":"Abdurakhmoni Jomi(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":2,"area":"","createdAt":"2026-01-22T05:24:58.376Z"},{"id":84,"name":"Ҷайҳун(бахш)","nameRu":"Джайхун(раздел)","nameEn":"Jayhun(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":2,"area":"","createdAt":"2026-01-22T05:30:31.128Z"},{"id":85,"name":"Шаҳритус(бахш)","nameRu":"Шахритус(раздел)","nameEn":"Shahritus(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":1,"area":"","createdAt":"2026-01-22T05:34:13.300Z"},{"id":86,"name":"Дустӣ(бахш)","nameRu":"Дусти(раздел)","nameEn":"Dusti(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":2,"area":"","createdAt":"2026-01-22T05:35:48.225Z"},{"id":87,"name":"Панҷ(бахш)","nameRu":"Пяндж(раздел)","nameEn":"Panj(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":3,"area":"","createdAt":"2026-01-22T05:38:30.460Z"},{"id":89,"name":"Носири Хусрав(бахш)","nameRu":"Носири Хусрав(раздел)","nameEn":"Nosiri Khusrav(section)","description":"","descriptionRu":"","descriptionEn":"","lat":38.861,"lng":71.2761,"imageUrl":"","videoUrl":"","locationType":"branch","foundedYear":null,"workerCount":2,"area":"","createdAt":"2026-01-22T05:40:53.685Z"}]
+0|ecomap   | 10:29:37 AM [express] POST /api 200 in 4ms
+0|ecomap   | 11:40:07 AM [express] POST /api 200 in 1ms
+0|ecomap   | 11:49:57 AM [express] POST /api 200 in 1ms
+0|ecomap   | 11:54:37 AM [express] POST /api 200 in 2ms
+
+/root/.pm2/logs/ecomap-error.log last 15 lines:
+0|ecomap   | }
+0|ecomap   | Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/var/www/ecomap/dist/index.cjs' imported from /usr/lib/node_modules/pm2/lib/ProcessContainerFork.js
+0|ecomap   |     at finalizeResolution (node:internal/modules/esm/resolve:283:11)
+0|ecomap   |     at moduleResolve (node:internal/modules/esm/resolve:952:10)
+0|ecomap   |     at defaultResolve (node:internal/modules/esm/resolve:1188:11)
+0|ecomap   |     at ModuleLoader.defaultResolve (node:internal/modules/esm/loader:708:12)
+0|ecomap   |     at #cachedDefaultResolve (node:internal/modules/esm/loader:657:25)
+0|ecomap   |     at ModuleLoader.resolve (node:internal/modules/esm/loader:640:38)
+0|ecomap   |     at ModuleLoader.getModuleJobForImport (node:internal/modules/esm/loader:264:38)
+0|ecomap   |     at ModuleLoader.import (node:internal/modules/esm/loader:605:34)
+0|ecomap   |     at defaultImportModuleDynamicallyForScript (node:internal/modules/esm/utils:234:31)
+0|ecomap   |     at importModuleDynamicallyCallback (node:internal/modules/esm/utils:256:12) {
+0|ecomap   |   code: 'ERR_MODULE_NOT_FOUND',
+0|ecomap   |   url: 'file:///var/www/ecomap/dist/index.cjs'
+0|ecomap   | }
