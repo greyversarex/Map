@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, X, Image, Video, MapPin, Plus, GripVertical } from "lucide-react";
 import { LOCATION_TYPE_CONFIG, LocationMarker, DEFAULT_ICONS } from "./location-icons";
 import { MultiMediaUploader, type MediaItem } from "./multi-media-uploader";
-import { useCreateLocationMedia, useLocationMedia, useDeleteLocationMedia } from "@/hooks/use-location-media";
+import { useCreateLocationMedia, useLocationMedia, useDeleteLocationMedia, useUpdateLocationMedia } from "@/hooks/use-location-media";
 
 interface LocationFormProps {
   location?: Location;
@@ -26,6 +26,7 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
   const createMutation = useCreateLocation();
   const updateMutation = useUpdateLocation();
   const createMediaMutation = useCreateLocationMedia();
+  const updateMediaMutation = useUpdateLocationMedia();
   const deleteMediaMutation = useDeleteLocationMedia();
   const { data: locationTypes, isLoading: typesLoading } = useLocationTypes();
   const { data: existingMedia } = useLocationMedia(location?.id || 0);
@@ -200,6 +201,21 @@ export function LocationForm({ location, onSuccess }: LocationFormProps) {
         for (const existingId of existingIds) {
           if (existingId && !currentIds.has(existingId)) {
             await deleteMediaMutation.mutateAsync({ id: existingId, locationId });
+          }
+        }
+        
+        // Update existing media (isPrimary, sortOrder)
+        for (const item of mediaItems) {
+          if (item.id && !item.isNew) {
+            const original = existingMedia?.find(m => m.id === item.id);
+            if (original && (original.isPrimary !== item.isPrimary || original.sortOrder !== item.sortOrder)) {
+              await updateMediaMutation.mutateAsync({
+                id: item.id,
+                locationId,
+                isPrimary: item.isPrimary,
+                sortOrder: item.sortOrder,
+              });
+            }
           }
         }
         
