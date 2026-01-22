@@ -16,6 +16,16 @@ export const DEFAULT_LOCATION_TYPES = {
 
 // === TABLE DEFINITIONS ===
 
+// Marker effect options
+export const MARKER_EFFECTS = {
+  none: { label: "Без эффекта", labelEn: "No effect" },
+  pulse: { label: "Пульсация", labelEn: "Pulse" },
+  ring: { label: "Расходящиеся круги", labelEn: "Expanding rings" },
+  ringSlow: { label: "Медленные круги", labelEn: "Slow rings" },
+  glow: { label: "Свечение", labelEn: "Glow" },
+  frost: { label: "Мерцание", labelEn: "Shimmer" },
+} as const;
+
 // Location Types table - user-manageable types with custom icons
 export const locationTypes = pgTable("location_types", {
   id: serial("id").primaryKey(),
@@ -27,6 +37,7 @@ export const locationTypes = pgTable("location_types", {
   color: text("color").default("#22c55e"),
   bgColor: text("bg_color").default("#dcfce7"),
   borderColor: text("border_color").default("#22c55e"),
+  markerEffect: text("marker_effect").default("pulse"),
   sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });

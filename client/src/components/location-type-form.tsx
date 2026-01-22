@@ -3,9 +3,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import type { LocationType } from "@shared/schema";
+import { MARKER_EFFECTS } from "@shared/schema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useCreateLocationType, useUpdateLocationType } from "@/hooks/use-location-types";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload } from "lucide-react";
@@ -18,6 +20,7 @@ const formSchema = z.object({
   color: z.string().default("#10b981"),
   bgColor: z.string().default("#ecfdf5"),
   borderColor: z.string().default("#10b981"),
+  markerEffect: z.string().default("pulse"),
   sortOrder: z.number().default(0),
 });
 
@@ -66,6 +69,7 @@ export function LocationTypeForm({ locationType, onSuccess }: LocationTypeFormPr
       color: locationType?.color ?? "#10b981",
       bgColor: locationType?.bgColor ?? "#ecfdf5",
       borderColor: locationType?.borderColor ?? "#10b981",
+      markerEffect: locationType?.markerEffect ?? "pulse",
       sortOrder: locationType?.sortOrder ?? 0,
     },
   });
@@ -266,6 +270,30 @@ export function LocationTypeForm({ locationType, onSuccess }: LocationTypeFormPr
               )}
             />
           </div>
+
+          <FormField
+            control={form.control}
+            name="markerEffect"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel className="text-gray-700">Эффект маркера на карте</FormLabel>
+                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <FormControl>
+                    <SelectTrigger className="bg-white text-black">
+                      <SelectValue placeholder="Выберите эффект" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    {Object.entries(MARKER_EFFECTS).map(([key, effect]) => (
+                      <SelectItem key={key} value={key}>
+                        {effect.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FormItem>
+            )}
+          />
 
           <FormField
             control={form.control}

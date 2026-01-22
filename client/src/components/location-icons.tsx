@@ -198,6 +198,18 @@ export function getPulseClass(locationType: string | null | undefined): string {
   return config.pulseClass;
 }
 
+export function getMarkerEffectClass(markerEffect: string | null | undefined, color: string = "#22c55e"): string {
+  const effectMap: Record<string, string> = {
+    none: "",
+    pulse: "marker-pulse-dynamic",
+    ring: "marker-ring-dynamic",
+    ringSlow: "marker-ring-slow-dynamic",
+    glow: "marker-glow-dynamic",
+    frost: "marker-frost-dynamic",
+  };
+  return effectMap[markerEffect || "pulse"] || "marker-pulse-dynamic";
+}
+
 export function getLocationTypeLabel(locationType: string | null | undefined, language: string = "ru"): string {
   const config = LOCATION_TYPE_CONFIG[locationType || "kmz"] || LOCATION_TYPE_CONFIG.kmz;
   

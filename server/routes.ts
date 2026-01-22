@@ -59,8 +59,16 @@ export async function registerRoutes(
   // Register object storage routes for file uploads (Replit only)
   registerObjectStorageRoutes(app);
 
-  // Serve uploaded files statically
-  app.use('/uploads', (await import('express')).static(UPLOADS_DIR));
+  // Serve uploaded files statically with proper video support
+  const expressModule = await import('express');
+  app.use('/uploads', (req, res, next) => {
+    const ext = path.extname(req.path).toLowerCase();
+    if (['.mp4', '.webm', '.mov', '.avi'].includes(ext)) {
+      res.setHeader('Accept-Ranges', 'bytes');
+      res.setHeader('Content-Type', ext === '.mp4' ? 'video/mp4' : ext === '.webm' ? 'video/webm' : ext === '.mov' ? 'video/quicktime' : 'video/x-msvideo');
+    }
+    next();
+  }, expressModule.static(UPLOADS_DIR));
 
   // Local file upload endpoint (works on any server)
   app.post("/api/upload", isAuthenticated, localUpload.single('file'), (req, res) => {

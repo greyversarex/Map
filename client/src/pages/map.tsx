@@ -11,7 +11,7 @@ import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass, DEFAULT_ICONS } from "@/components/location-icons";
+import { LocationMarker, getLocationTypeLabel, LOCATION_TYPE_CONFIG, getPulseClass, getMarkerEffectClass, DEFAULT_ICONS } from "@/components/location-icons";
 import { MediaCarousel } from "@/components/media-carousel";
 
 function getLocalizedName(location: Location, language: string): string {
@@ -201,7 +201,10 @@ export default function MapPage() {
           onMouseEnter={() => setPopupInfo(location)}
           onMouseLeave={() => setPopupInfo(null)}
         >
-          <div className={`absolute -inset-4 z-0 ${getPulseClass(location.locationType)}`}></div>
+          <div 
+            className={`absolute -inset-4 z-0 ${locType?.markerEffect ? getMarkerEffectClass(locType.markerEffect) : getPulseClass(location.locationType)}`}
+            style={{ '--marker-color': locType?.color || '#22c55e' } as React.CSSProperties}
+          ></div>
           <LocationMarker 
             locationType={location.locationType} 
             size="md" 

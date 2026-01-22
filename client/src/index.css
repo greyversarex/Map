@@ -157,6 +157,64 @@
   color: #84cc16;
 }
 
+/* Dynamic marker effects - use CSS custom properties for color */
+.marker-pulse-dynamic::before {
+  content: '';
+  position: absolute;
+  left: -8px; top: -8px;
+  height: calc(100% + 16px); width: calc(100% + 16px);
+  border-radius: 50%;
+  background-color: var(--marker-color, #22c55e);
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  opacity: 0.6;
+}
+
+.marker-ring-dynamic::before {
+  content: '';
+  position: absolute;
+  left: -10px; top: -10px;
+  height: calc(100% + 20px); width: calc(100% + 20px);
+  border-radius: 50%;
+  border: 3px solid var(--marker-color, #22c55e);
+  background: transparent;
+  animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+  opacity: 0.8;
+}
+
+.marker-ring-slow-dynamic::before {
+  content: '';
+  position: absolute;
+  left: -10px; top: -10px;
+  height: calc(100% + 20px); width: calc(100% + 20px);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--marker-color, #22c55e) 0%, transparent 70%);
+  animation: pulse-ring-slow 3s ease-out infinite;
+  opacity: 0.5;
+}
+
+.marker-glow-dynamic::before {
+  content: '';
+  position: absolute;
+  left: -6px; top: -6px;
+  height: calc(100% + 12px); width: calc(100% + 12px);
+  border-radius: 50%;
+  background: transparent;
+  border: 2px solid var(--marker-color, #22c55e);
+  animation: pulse-glow 2.5s ease-in-out infinite;
+  color: var(--marker-color, #22c55e);
+}
+
+.marker-frost-dynamic::before {
+  content: '';
+  position: absolute;
+  left: -8px; top: -8px;
+  height: calc(100% + 16px); width: calc(100% + 16px);
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--marker-color, #22c55e) 0%, transparent 60%);
+  animation: pulse-frost 2s ease-in-out infinite;
+  opacity: 0.6;
+}
+
 .marker-dot {
   background-color: hsl(var(--primary));
   animation: pulse-shimmer 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
