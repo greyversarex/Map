@@ -244,7 +244,7 @@ export default function MapPage() {
       </div>
 
       {/* Filter Panel - Top Left, Collapsible */}
-      <div className="absolute left-4 top-20 z-50">
+      <div className="absolute left-4 top-28 z-50">
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors"
@@ -264,6 +264,29 @@ export default function MapPage() {
         {filtersOpen && (
           <div className="mt-2 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[220px]">
             <div className="space-y-2">
+              {/* Select All checkbox */}
+              <label 
+                className="flex items-center gap-2 cursor-pointer hover:bg-muted/50 rounded p-1.5 transition-colors border-b border-border pb-2 mb-2"
+                data-testid="filter-select-all"
+              >
+                <input 
+                  type="checkbox"
+                  checked={dbLocationTypes?.every(type => activeFilters[type.slug]) ?? false}
+                  onChange={() => {
+                    const allSelected = dbLocationTypes?.every(type => activeFilters[type.slug]) ?? false;
+                    const newFilters: Record<string, boolean> = {};
+                    dbLocationTypes?.forEach(type => {
+                      newFilters[type.slug] = !allSelected;
+                    });
+                    setActiveFilters(newFilters);
+                  }}
+                  className="h-4 w-4 rounded border-muted-foreground accent-primary cursor-pointer"
+                />
+                <span className="text-xs font-medium text-foreground">
+                  {language === "ru" ? "Выбрать все" : language === "tj" ? "Ҳамаро интихоб кунед" : "Select all"}
+                </span>
+              </label>
+              
               {(dbLocationTypes || []).map((locType) => {
                 const staticConfig = LOCATION_TYPE_CONFIG[locType.slug];
                 const Icon = staticConfig?.icon || DEFAULT_ICONS[locType.slug] || MapPin;
