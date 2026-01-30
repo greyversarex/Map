@@ -443,9 +443,11 @@ export default function MapPage() {
             {selectedLocation && getLocalizedDescription(selectedLocation, language) && (
               <div className="bg-white/50 rounded-xl p-4 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("map.description")}</h3>
-                <p className="text-base leading-relaxed text-gray-700">
-                  {getLocalizedDescription(selectedLocation, language)}
-                </p>
+                <div className="max-h-[7.5rem] overflow-y-auto">
+                  <p className="text-base leading-relaxed text-gray-700">
+                    {getLocalizedDescription(selectedLocation, language)}
+                  </p>
+                </div>
               </div>
             )}
 
