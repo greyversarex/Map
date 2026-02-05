@@ -1,0 +1,34 @@
+root@msk-1-vm-soga:/var/www/ecomap# npm run build
+
+> rest-express@1.0.0 build
+> tsx script/build.ts
+
+=== Starting build process ===
+Step 1: Cleaning dist folder...
+✓ dist folder cleaned
+Step 2: Building client with Vite...
+vite v7.3.0 building client environment for production...
+✓ 2477 modules transformed.
+
+<--- Last few GCs --->
+
+[665822:0x442c3390]    43240 ms: Mark-Compact 470.9 (492.7) -> 467.1 (492.7) MB, 878.43 / 0.00 ms  (average mu = 0.554, current mu = 0.165) allocation failure; scavenge might not succeed
+[665822:0x442c3390]    44933 ms: Mark-Compact 471.5 (492.9) -> 468.3 (493.9) MB, 1525.89 / 0.00 ms  (average mu = 0.336, current mu = 0.099) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Reached heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 0xb76db1 node::OOMErrorHandler(char const*, v8::OOMDetails const&) [/usr/bin/node]
+ 2: 0xee62f0 v8::Utils::ReportOOMFailure(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/usr/bin/node]
+ 3: 0xee65d7 v8::internal::V8::FatalProcessOutOfMemory(v8::internal::Isolate*, char const*, v8::OOMDetails const&) [/usr/bin/node]
+ 4: 0x10f82d5  [/usr/bin/node]
+ 5: 0x1110158 v8::internal::Heap::CollectGarbage(v8::internal::AllocationSpace, v8::internal::GarbageCollectionReason, v8::GCCallbackFlags) [/usr/bin/node]
+ 6: 0x10e6271 v8::internal::HeapAllocator::AllocateRawWithLightRetrySlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/usr/bin/node]
+ 7: 0x10e7405 v8::internal::HeapAllocator::AllocateRawWithRetryOrFailSlowPath(int, v8::internal::AllocationType, v8::internal::AllocationOrigin, v8::internal::AllocationAlignment) [/usr/bin/node]
+ 8: 0x10c4a56 v8::internal::Factory::NewFillerObject(int, v8::internal::AllocationAlignment, v8::internal::AllocationType, v8::internal::AllocationOrigin) [/usr/bin/node]
+ 9: 0x1520596 v8::internal::Runtime_AllocateInYoungGeneration(int, unsigned long*, v8::internal::Isolate*) [/usr/bin/node]
+10: 0x1959ef6  [/usr/bin/node]
+root@msk-1-vm-soga:/var/www/ecomap#
