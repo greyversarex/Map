@@ -223,7 +223,7 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
         pdf.setFont("NotoSans", "bold");
         pdf.setFontSize(14);
         pdf.setTextColor(33, 33, 33);
-        pdf.text(`${location.area} m2`, statX, statY + 8);
+        pdf.text(`${location.area} м²`, statX, statY + 8);
       }
       
       yPos += 35;
