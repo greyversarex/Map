@@ -1,5 +1,6 @@
 import jsPDF from "jspdf";
 import type { Location, LocationType } from "@shared/schema";
+import { robotoRegular } from "./roboto-font";
 
 interface PDFGeneratorOptions {
   locations: Location[];
@@ -98,6 +99,10 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
     format: "a4",
   });
 
+  pdf.addFileToVFS("Roboto-Regular.ttf", robotoRegular);
+  pdf.addFont("Roboto-Regular.ttf", "Roboto", "normal");
+  pdf.addFont("Roboto-Regular.ttf", "Roboto", "bold");
+
   const pageWidth = pdf.internal.pageSize.getWidth();
   const pageHeight = pdf.internal.pageSize.getHeight();
   const margin = 20;
@@ -120,13 +125,13 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
     generatedOn: language === 'ru' ? 'Создано' : language === 'en' ? 'Generated on' : 'Сохта шуд',
   };
 
-  pdf.setFont("helvetica", "bold");
+  pdf.setFont("Roboto", "bold");
   pdf.setFontSize(24);
   pdf.setTextColor(33, 33, 33);
   pdf.text(labels.title, pageWidth / 2, 40, { align: "center" });
   
   pdf.setFontSize(12);
-  pdf.setFont("helvetica", "normal");
+  pdf.setFont("Roboto", "normal");
   pdf.setTextColor(100, 100, 100);
   const date = new Date().toLocaleDateString(language === 'ru' ? 'ru-RU' : language === 'en' ? 'en-US' : 'tg-TJ');
   pdf.text(`${labels.generatedOn}: ${date}`, pageWidth / 2, 50, { align: "center" });
@@ -145,14 +150,14 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
 
     yPos += 15;
 
-    pdf.setFont("helvetica", "bold");
+    pdf.setFont("Roboto", "bold");
     pdf.setFontSize(20);
     pdf.setTextColor(33, 33, 33);
     const name = getLocalizedName(location, language);
     pdf.text(name, margin, yPos);
     yPos += 8;
 
-    pdf.setFont("helvetica", "normal");
+    pdf.setFont("Roboto", "normal");
     pdf.setFontSize(11);
     pdf.setTextColor(100, 100, 100);
     const typeName = getLocalizedTypeName(locationType, language);
@@ -187,11 +192,11 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
       const statY = yPos + 10;
       
       if (location.foundedYear) {
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont("Roboto", "normal");
         pdf.setFontSize(9);
         pdf.setTextColor(120, 120, 120);
         pdf.text(labels.founded, statX, statY);
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont("Roboto", "bold");
         pdf.setFontSize(14);
         pdf.setTextColor(33, 33, 33);
         pdf.text(String(location.foundedYear), statX, statY + 8);
@@ -199,11 +204,11 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
       }
       
       if (location.workerCount) {
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont("Roboto", "normal");
         pdf.setFontSize(9);
         pdf.setTextColor(120, 120, 120);
         pdf.text(labels.workers, statX, statY);
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont("Roboto", "bold");
         pdf.setFontSize(14);
         pdf.setTextColor(33, 33, 33);
         pdf.text(String(location.workerCount), statX, statY + 8);
@@ -211,11 +216,11 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
       }
       
       if (location.area) {
-        pdf.setFont("helvetica", "normal");
+        pdf.setFont("Roboto", "normal");
         pdf.setFontSize(9);
         pdf.setTextColor(120, 120, 120);
         pdf.text(labels.area, statX, statY);
-        pdf.setFont("helvetica", "bold");
+        pdf.setFont("Roboto", "bold");
         pdf.setFontSize(14);
         pdf.setTextColor(33, 33, 33);
         pdf.text(`${location.area} m2`, statX, statY + 8);
@@ -226,13 +231,13 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
 
     const description = getLocalizedDescription(location, language);
     if (description) {
-      pdf.setFont("helvetica", "bold");
+      pdf.setFont("Roboto", "bold");
       pdf.setFontSize(12);
       pdf.setTextColor(33, 33, 33);
       pdf.text(labels.description, margin, yPos);
       yPos += 7;
       
-      pdf.setFont("helvetica", "normal");
+      pdf.setFont("Roboto", "normal");
       pdf.setFontSize(10);
       pdf.setTextColor(60, 60, 60);
       
@@ -243,7 +248,7 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
       pdf.text(displayLines, margin, yPos);
     }
 
-    pdf.setFont("helvetica", "normal");
+    pdf.setFont("Roboto", "normal");
     pdf.setFontSize(9);
     pdf.setTextColor(150, 150, 150);
     pdf.text(`${labels.page} ${i + 1} / ${locations.length}`, pageWidth / 2, pageHeight - 10, { align: "center" });
