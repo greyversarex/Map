@@ -278,11 +278,69 @@ export default function MapPage() {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       <div className="pointer-events-none absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
-        <div className="pointer-events-auto">
-          <h1 className="font-display text-4xl font-bold text-white tracking-wider drop-shadow-lg">
-            TAJIKISTAN
-          </h1>
-          <p className="text-white/60 text-sm font-light tracking-widest mt-1">{t("map.title")}</p>
+        <div className="pointer-events-auto flex items-center gap-6">
+          <div>
+            <h1 className="font-display text-4xl font-bold text-white tracking-wider drop-shadow-lg">
+              TAJIKISTAN
+            </h1>
+            <p className="text-white/60 text-sm font-light tracking-widest mt-1">{t("map.title")}</p>
+          </div>
+          
+          <div className="relative">
+            <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-lg border border-gray-200">
+              <Search className="h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                placeholder={language === 'ru' ? 'Поиск локации...' : language === 'en' ? 'Search location...' : 'Ҷустуҷӯи макон...'}
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setSearchOpen(true);
+                }}
+                onFocus={() => setSearchOpen(true)}
+                className="bg-transparent border-none outline-none text-sm text-gray-800 placeholder:text-gray-400 w-48 focus:w-64 transition-all"
+                data-testid="input-search-location"
+              />
+              {searchQuery && (
+                <button 
+                  onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+            
+            {searchOpen && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 mt-2 w-72 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50">
+                {searchResults.map((location) => (
+                  <button
+                    key={location.id}
+                    onClick={() => handleSelectSearchResult(location)}
+                    className="w-full flex items-center gap-3 px-3 py-2 hover:bg-gray-100 transition-colors text-left"
+                    data-testid={`search-result-${location.id}`}
+                  >
+                    <LocationMarker 
+                      locationType={location.locationType} 
+                      size="sm" 
+                      customColor={locationTypeMap[location.locationType || 'kmz']?.color}
+                      customBgColor={locationTypeMap[location.locationType || 'kmz']?.bgColor}
+                      customBorderColor={locationTypeMap[location.locationType || 'kmz']?.borderColor}
+                      customIconUrl={locationTypeMap[location.locationType || 'kmz']?.iconUrl}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-gray-800 truncate">
+                        {getLocalizedName(location, language)}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {locationTypeMap[location.locationType || 'kmz']?.nameRu || location.locationType}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         <div className="pointer-events-auto">
           <LanguageSwitcher />
@@ -290,7 +348,7 @@ export default function MapPage() {
       </div>
 
       {/* Filter Panel and Books Button - Top Left */}
-      <div className="absolute left-4 top-28 z-50 flex gap-2">
+      <div className="absolute left-4 top-28 z-50 flex flex-col gap-2">
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors"
@@ -309,7 +367,7 @@ export default function MapPage() {
         
         <Link href="/books">
           <button
-            className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors"
+            className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors w-full"
             data-testid="button-books"
           >
             <BookOpen className="h-4 w-4 text-foreground" />
@@ -318,66 +376,10 @@ export default function MapPage() {
             </span>
           </button>
         </Link>
-
-        <div className="relative">
-          <div className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border">
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder={language === 'ru' ? 'Поиск локации...' : language === 'en' ? 'Search location...' : 'Ҷустуҷӯи макон...'}
-              value={searchQuery}
-              onChange={(e) => {
-                setSearchQuery(e.target.value);
-                setSearchOpen(true);
-              }}
-              onFocus={() => setSearchOpen(true)}
-              className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground w-40 focus:w-56 transition-all"
-              data-testid="input-search-location"
-            />
-            {searchQuery && (
-              <button 
-                onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
-          
-          {searchOpen && searchResults.length > 0 && (
-            <div className="absolute top-full left-0 mt-2 w-72 bg-background/95 backdrop-blur-sm rounded-lg shadow-xl border border-border overflow-hidden z-50">
-              {searchResults.map((location) => (
-                <button
-                  key={location.id}
-                  onClick={() => handleSelectSearchResult(location)}
-                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors text-left"
-                  data-testid={`search-result-${location.id}`}
-                >
-                  <LocationMarker 
-                    locationType={location.locationType} 
-                    size="sm" 
-                    customColor={locationTypeMap[location.locationType || 'kmz']?.color}
-                    customBgColor={locationTypeMap[location.locationType || 'kmz']?.bgColor}
-                    customBorderColor={locationTypeMap[location.locationType || 'kmz']?.borderColor}
-                    customIconUrl={locationTypeMap[location.locationType || 'kmz']?.iconUrl}
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-foreground truncate">
-                      {getLocalizedName(location, language)}
-                    </p>
-                    <p className="text-xs text-muted-foreground truncate">
-                      {locationTypeMap[location.locationType || 'kmz']?.nameRu || location.locationType}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
       </div>
       
       {/* Filter Panel Content */}
-      <div className="absolute left-4 top-40 z-50">
+      <div className="absolute left-4 top-52 z-50">
         
         {filtersOpen && (
           <div className="mt-2 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[220px]">
