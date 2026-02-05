@@ -7,6 +7,27 @@ interface PDFGeneratorOptions {
   language: string;
 }
 
+async function getLocationImageUrl(location: Location): Promise<string | null> {
+  if (location.imageUrl && location.imageUrl.trim() !== '') {
+    return location.imageUrl;
+  }
+  
+  try {
+    const response = await fetch(`/api/locations/${location.id}/media`);
+    if (response.ok) {
+      const media = await response.json();
+      const primaryPhoto = media.find((m: any) => m.mediaType === 'photo' && m.isPrimary);
+      if (primaryPhoto?.url) return primaryPhoto.url;
+      const anyPhoto = media.find((m: any) => m.mediaType === 'photo');
+      if (anyPhoto?.url) return anyPhoto.url;
+    }
+  } catch (e) {
+    console.log('Could not fetch media for location:', location.id);
+  }
+  
+  return null;
+}
+
 function getLocalizedName(location: Location, language: string): string {
   if (language === 'ru' && location.nameRu) return location.nameRu;
   if (language === 'en' && location.nameEn) return location.nameEn;
@@ -142,9 +163,10 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
     pdf.text(`${labels.coordinates}: ${location.lat.toFixed(4)}° N, ${location.lng.toFixed(4)}° E`, margin, yPos);
     yPos += 12;
 
-    if (location.imageUrl) {
+    const imageUrl = await getLocationImageUrl(location);
+    if (imageUrl) {
       try {
-        const imageData = await loadImageAsBase64(location.imageUrl);
+        const imageData = await loadImageAsBase64(imageUrl);
         if (imageData) {
           const imgWidth = contentWidth;
           const imgHeight = 80;
@@ -152,7 +174,7 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
           yPos += imgHeight + 10;
         }
       } catch (e) {
-        console.log('Could not load image:', location.imageUrl);
+        console.log('Could not load image:', imageUrl);
       }
     }
 
