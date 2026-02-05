@@ -408,19 +408,21 @@ export default function AdminPage() {
             </div>
           )}
 
-          <div className="bg-white rounded-xl shadow-lg p-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-              <Input 
-                placeholder="Поиск локаций..." 
-                className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
+          {activeTab === "locations" && (
+            <div className="bg-white rounded-xl shadow-lg p-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <Input 
+                  placeholder="Поиск локаций..." 
+                  className="pl-10 h-11 bg-gray-50 border-gray-200 text-black placeholder:text-gray-400 focus:border-gray-500 focus:ring-gray-500"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
-          {(dbLocationTypes || []).map((locType) => {
+          {activeTab === "locations" && (dbLocationTypes || []).map((locType) => {
             const staticConfig = LOCATION_TYPE_CONFIG[locType.slug];
             const Icon = staticConfig?.icon || DEFAULT_ICONS[locType.slug] || MapPin;
             const typeLocations = locationsByType[locType.slug] || [];

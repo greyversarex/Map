@@ -30,13 +30,12 @@ const localUpload = multer({
   }),
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|webm/;
+    const allowedTypes = /jpeg|jpg|png|gif|webp|mp4|webm|pdf|doc|docx|xls|xlsx|ppt|pptx|txt|rtf/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype);
-    if (extname && mimetype) {
+    if (extname) {
       return cb(null, true);
     }
-    cb(new Error('Only images and videos are allowed'));
+    cb(new Error('File type not allowed'));
   }
 });
 
