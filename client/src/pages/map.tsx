@@ -279,7 +279,7 @@ export default function MapPage() {
     <div className="relative h-screen w-full overflow-hidden bg-black">
       <div className="pointer-events-none absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
         <div className="pointer-events-auto flex items-center gap-6">
-          <div>
+          <div className="pt-1">
             <h1 className="font-display text-4xl font-bold text-white tracking-wider drop-shadow-lg">
               TAJIKISTAN
             </h1>
