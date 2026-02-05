@@ -252,6 +252,20 @@ export function BookForm({ book, onSuccess }: BookFormProps) {
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="descriptionEn"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-black">Описание (EN)</FormLabel>
+              <FormControl>
+                <Textarea {...field} value={field.value || ""} className="text-black" rows={3} data-testid="input-book-description-en" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="space-y-2">
           <FormLabel className="text-black">Обложка</FormLabel>
           <div className="flex items-center gap-2">
@@ -292,12 +306,12 @@ export function BookForm({ book, onSuccess }: BookFormProps) {
         </div>
 
         <div className="space-y-2">
-          <FormLabel className="text-black">Документ (PDF)</FormLabel>
+          <FormLabel className="text-black">Документ</FormLabel>
           <div className="flex items-center gap-2">
             <input
               ref={documentInputRef}
               type="file"
-              accept=".pdf,.doc,.docx"
+              accept="*/*"
               className="hidden"
               onChange={handleDocumentUpload}
             />
@@ -311,7 +325,7 @@ export function BookForm({ book, onSuccess }: BookFormProps) {
               data-testid="button-upload-document"
             >
               {isUploadingDocument ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
-              Загрузить PDF
+              Загрузить файл
             </Button>
             {documentUrl && (
               <div className="flex items-center gap-2">
