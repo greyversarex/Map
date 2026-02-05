@@ -6,8 +6,10 @@ import { useLocations } from "@/hooks/use-locations";
 import { useLocationTypes } from "@/hooks/use-location-types";
 import { useLocationMedia } from "@/hooks/use-location-media";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin, BookOpen } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin, BookOpen, Download } from "lucide-react";
 import { Link } from "wouter";
+import { useState as useStateReact } from "react";
+import { generateLocationsPDF } from "@/lib/pdf-generator";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
@@ -145,7 +147,24 @@ export default function MapPage() {
   const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
   const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
   const { t, language } = useLanguage();
+
+  const handleDownloadPDF = async () => {
+    if (!filteredLocations.length || !dbLocationTypes) return;
+    setIsGeneratingPDF(true);
+    try {
+      await generateLocationsPDF({
+        locations: filteredLocations,
+        locationTypes: dbLocationTypes,
+        language,
+      });
+    } catch (error) {
+      console.error('PDF generation failed:', error);
+    } finally {
+      setIsGeneratingPDF(false);
+    }
+  };
   
   const { data: locationMedia } = useLocationMedia(selectedLocation?.id || 0);
 
@@ -338,6 +357,27 @@ export default function MapPage() {
                   </label>
                 );
               })}
+              
+              <div className="border-t border-border pt-3 mt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-muted-foreground">
+                    {language === "ru" ? "Всего" : language === "en" ? "Total" : "Ҳамагӣ"}: {filteredLocations.length}
+                  </span>
+                </div>
+                <button
+                  onClick={handleDownloadPDF}
+                  disabled={isGeneratingPDF || !filteredLocations.length}
+                  className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-3 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  data-testid="button-download-pdf"
+                >
+                  {isGeneratingPDF ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  {language === "ru" ? "Скачать PDF" : language === "en" ? "Download PDF" : "Боргирии PDF"}
+                </button>
+              </div>
             </div>
           </div>
         )}
