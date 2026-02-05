@@ -27,16 +27,42 @@ function getLocalizedTypeName(locationType: LocationType | undefined, language: 
 }
 
 async function loadImageAsBase64(url: string): Promise<string | null> {
+  if (!url || url.trim() === '') return null;
+  
   try {
     const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
-    const response = await fetch(fullUrl);
-    if (!response.ok) return null;
-    const blob = await response.blob();
+    
     return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = () => resolve(null);
-      reader.readAsDataURL(blob);
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      img.onload = () => {
+        try {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.naturalWidth || img.width;
+          canvas.height = img.naturalHeight || img.height;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            resolve(null);
+            return;
+          }
+          ctx.drawImage(img, 0, 0);
+          const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          resolve(dataUrl);
+        } catch (e) {
+          console.log('Canvas error for:', url);
+          resolve(null);
+        }
+      };
+      
+      img.onerror = () => {
+        console.log('Image load failed:', url);
+        resolve(null);
+      };
+      
+      setTimeout(() => resolve(null), 5000);
+      
+      img.src = fullUrl;
     });
   } catch (e) {
     console.error('Image load error:', e);
