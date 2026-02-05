@@ -28,7 +28,7 @@ function BookCard({ book, language, onClick }: { book: Book; language: string; o
   
   return (
     <div 
-      className="group relative cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2"
+      className="group relative cursor-pointer transition-all duration-300 hover:scale-105 hover:-translate-y-2 flex flex-col items-center"
       onClick={onClick}
       data-testid={`book-card-${book.id}`}
     >
@@ -49,20 +49,20 @@ function BookCard({ book, language, onClick }: { book: Book; language: string; o
         
         <div className="absolute bottom-0 left-0 right-0 h-4 bg-gradient-to-t from-black/20 to-transparent" />
         <div className="absolute inset-x-0 bottom-0 h-1 bg-amber-900/30" />
+        
+        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-3 pt-8">
+          <p className="text-sm font-semibold text-white line-clamp-2 leading-tight text-center">
+            {title}
+          </p>
+          {book.author && (
+            <p className="text-xs text-white/70 mt-1 line-clamp-1 text-center">
+              {book.author}
+            </p>
+          )}
+        </div>
       </div>
       
       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-40 h-2 bg-black/10 rounded-full blur-sm group-hover:w-44 transition-all" />
-      
-      <div className="mt-4 w-44 text-center">
-        <p className="text-sm font-semibold text-white line-clamp-2 leading-tight drop-shadow-md">
-          {title}
-        </p>
-        {book.author && (
-          <p className="text-xs text-white/70 mt-1 line-clamp-1">
-            {book.author}
-          </p>
-        )}
-      </div>
     </div>
   );
 }
@@ -268,19 +268,18 @@ export default function BooksPage() {
                   </p>
                 )}
                 {selectedBook?.year && (
-                  <p className="text-stone-300">
+                  <p className="text-stone-300 mb-2">
                     <span className="text-stone-400">{labels.year}:</span> {selectedBook.year}
+                  </p>
+                )}
+                {selectedBook && getLocalizedDescription(selectedBook, language) && (
+                  <p className="text-stone-300 leading-relaxed text-sm">
+                    {getLocalizedDescription(selectedBook, language)}
                   </p>
                 )}
               </div>
             </div>
           </DialogHeader>
-          
-          {selectedBook && getLocalizedDescription(selectedBook, language) && (
-            <DialogDescription className="text-stone-300 mt-4 leading-relaxed">
-              {getLocalizedDescription(selectedBook, language)}
-            </DialogDescription>
-          )}
           
           {selectedBook?.documentUrl && (
             <div className="flex gap-3 mt-6">
