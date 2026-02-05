@@ -278,15 +278,15 @@ export default function MapPage() {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-black">
       <div className="pointer-events-none absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
-        <div className="pointer-events-auto flex items-center gap-6">
-          <div className="pt-1">
+        <div className="pointer-events-auto flex items-start gap-6">
+          <div>
             <h1 className="font-display text-4xl font-bold text-white tracking-wider drop-shadow-lg">
               TAJIKISTAN
             </h1>
             <p className="text-white/60 text-sm font-light tracking-widest mt-1">{t("map.title")}</p>
           </div>
           
-          <div className="relative">
+          <div className="relative mt-1">
             <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-lg border border-gray-200">
               <Search className="h-4 w-4 text-gray-400" />
               <input
