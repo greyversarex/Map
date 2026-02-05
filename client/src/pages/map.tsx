@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import Map, { Marker, Popup, NavigationControl, FullscreenControl, ScaleControl, Source, Layer } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -6,7 +6,7 @@ import { useLocations } from "@/hooks/use-locations";
 import { useLocationTypes } from "@/hooks/use-location-types";
 import { useLocationMedia } from "@/hooks/use-location-media";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin, BookOpen, Download } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin, BookOpen, Download, Search, X } from "lucide-react";
 import { Link } from "wouter";
 import { generateLocationsPDF } from "@/lib/pdf-generator";
 import { type Location } from "@shared/schema";
@@ -147,7 +147,31 @@ export default function MapPage() {
   const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [downloadingCategory, setDownloadingCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
+  const mapRef = useRef<any>(null);
   const { t, language } = useLanguage();
+
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim() || !locations) return [];
+    const query = searchQuery.toLowerCase();
+    return locations.filter(loc => 
+      loc.name.toLowerCase().includes(query) ||
+      loc.nameRu?.toLowerCase().includes(query) ||
+      loc.nameEn?.toLowerCase().includes(query)
+    ).slice(0, 8);
+  }, [searchQuery, locations]);
+
+  const handleSelectSearchResult = (location: Location) => {
+    setSearchQuery("");
+    setSearchOpen(false);
+    setSelectedLocation(location);
+    mapRef.current?.flyTo({
+      center: [location.lng, location.lat],
+      zoom: 12,
+      duration: 1500
+    });
+  };
 
   const handleDownloadCategoryPDF = async (categorySlug: string) => {
     if (!locations || !dbLocationTypes) return;
@@ -294,6 +318,62 @@ export default function MapPage() {
             </span>
           </button>
         </Link>
+
+        <div className="relative">
+          <div className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              placeholder={language === 'ru' ? 'Поиск локации...' : language === 'en' ? 'Search location...' : 'Ҷустуҷӯи макон...'}
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setSearchOpen(true);
+              }}
+              onFocus={() => setSearchOpen(true)}
+              className="bg-transparent border-none outline-none text-sm text-foreground placeholder:text-muted-foreground w-40 focus:w-56 transition-all"
+              data-testid="input-search-location"
+            />
+            {searchQuery && (
+              <button 
+                onClick={() => { setSearchQuery(""); setSearchOpen(false); }}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+          
+          {searchOpen && searchResults.length > 0 && (
+            <div className="absolute top-full left-0 mt-2 w-72 bg-background/95 backdrop-blur-sm rounded-lg shadow-xl border border-border overflow-hidden z-50">
+              {searchResults.map((location) => (
+                <button
+                  key={location.id}
+                  onClick={() => handleSelectSearchResult(location)}
+                  className="w-full flex items-center gap-3 px-3 py-2 hover:bg-muted/50 transition-colors text-left"
+                  data-testid={`search-result-${location.id}`}
+                >
+                  <LocationMarker 
+                    locationType={location.locationType} 
+                    size="sm" 
+                    customColor={locationTypeMap[location.locationType || 'kmz']?.color}
+                    customBgColor={locationTypeMap[location.locationType || 'kmz']?.bgColor}
+                    customBorderColor={locationTypeMap[location.locationType || 'kmz']?.borderColor}
+                    customIconUrl={locationTypeMap[location.locationType || 'kmz']?.iconUrl}
+                  />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">
+                      {getLocalizedName(location, language)}
+                    </p>
+                    <p className="text-xs text-muted-foreground truncate">
+                      {locationTypeMap[location.locationType || 'kmz']?.nameRu || location.locationType}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Filter Panel Content */}
@@ -416,6 +496,7 @@ export default function MapPage() {
       </div>
 
       <Map
+        ref={mapRef}
         initialViewState={TAJIKISTAN_VIEWSTATE}
         style={{ width: "100%", height: "100%" }}
         mapStyle={MAP_STYLES[mapStyle].style}
