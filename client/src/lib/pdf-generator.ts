@@ -28,7 +28,9 @@ function getLocalizedTypeName(locationType: LocationType | undefined, language: 
 
 async function loadImageAsBase64(url: string): Promise<string | null> {
   try {
-    const response = await fetch(url);
+    const fullUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+    const response = await fetch(fullUrl);
+    if (!response.ok) return null;
     const blob = await response.blob();
     return new Promise((resolve) => {
       const reader = new FileReader();
@@ -36,7 +38,8 @@ async function loadImageAsBase64(url: string): Promise<string | null> {
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(blob);
     });
-  } catch {
+  } catch (e) {
+    console.error('Image load error:', e);
     return null;
   }
 }
@@ -167,7 +170,7 @@ export async function generateLocationsPDF({ locations, locationTypes, language 
         pdf.setFont("helvetica", "bold");
         pdf.setFontSize(14);
         pdf.setTextColor(33, 33, 33);
-        pdf.text(`${location.area} м²`, statX, statY + 8);
+        pdf.text(`${location.area} m2`, statX, statY + 8);
       }
       
       yPos += 35;
