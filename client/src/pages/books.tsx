@@ -44,19 +44,6 @@ function BookCard({ book, language, onClick }: { book: Book; language: string; o
         ) : (
           <div className="flex flex-col items-center justify-center h-full p-4 text-center">
             <BookOpen className="h-12 w-12 text-amber-700 mb-3" />
-            <p className="text-sm font-semibold text-amber-900 line-clamp-3 leading-tight">
-              {title}
-            </p>
-            {book.author && (
-              <p className="text-xs text-amber-700 mt-2 line-clamp-2">
-                {book.author}
-              </p>
-            )}
-            {book.year && (
-              <p className="text-xs text-amber-600 mt-1">
-                {book.year}
-              </p>
-            )}
           </div>
         )}
         
@@ -65,6 +52,17 @@ function BookCard({ book, language, onClick }: { book: Book; language: string; o
       </div>
       
       <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-40 h-2 bg-black/10 rounded-full blur-sm group-hover:w-44 transition-all" />
+      
+      <div className="mt-4 w-44 text-center">
+        <p className="text-sm font-semibold text-white line-clamp-2 leading-tight drop-shadow-md">
+          {title}
+        </p>
+        {book.author && (
+          <p className="text-xs text-white/70 mt-1 line-clamp-1">
+            {book.author}
+          </p>
+        )}
+      </div>
     </div>
   );
 }
