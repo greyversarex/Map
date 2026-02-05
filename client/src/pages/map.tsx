@@ -8,7 +8,6 @@ import { useLocationMedia } from "@/hooks/use-location-media";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin, BookOpen, Download } from "lucide-react";
 import { Link } from "wouter";
-import { useState as useStateReact } from "react";
 import { generateLocationsPDF } from "@/lib/pdf-generator";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
@@ -147,22 +146,25 @@ export default function MapPage() {
   const [mapStyle, setMapStyle] = useState<MapStyleType>('osm');
   const [activeFilters, setActiveFilters] = useState<Record<string, boolean>>({});
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [downloadingCategory, setDownloadingCategory] = useState<string | null>(null);
   const { t, language } = useLanguage();
 
-  const handleDownloadPDF = async () => {
-    if (!filteredLocations.length || !dbLocationTypes) return;
-    setIsGeneratingPDF(true);
+  const handleDownloadCategoryPDF = async (categorySlug: string) => {
+    if (!locations || !dbLocationTypes) return;
+    const categoryLocations = locations.filter(l => l.locationType === categorySlug);
+    if (!categoryLocations.length) return;
+    
+    setDownloadingCategory(categorySlug);
     try {
       await generateLocationsPDF({
-        locations: filteredLocations,
+        locations: categoryLocations,
         locationTypes: dbLocationTypes,
         language,
       });
     } catch (error) {
       console.error('PDF generation failed:', error);
     } finally {
-      setIsGeneratingPDF(false);
+      setDownloadingCategory(null);
     }
   };
   
@@ -354,29 +356,31 @@ export default function MapPage() {
                        (locType.nameEn || locType.name).split(" (")[0]}
                     </span>
                     <span className="text-xs text-muted-foreground">({count})</span>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleDownloadCategoryPDF(locType.slug);
+                      }}
+                      disabled={downloadingCategory === locType.slug || count === 0}
+                      className="p-1 hover:bg-muted rounded transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                      data-testid={`download-${locType.slug}`}
+                      title={language === "ru" ? "Скачать PDF" : language === "en" ? "Download PDF" : "Боргирии PDF"}
+                    >
+                      {downloadingCategory === locType.slug ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                      ) : (
+                        <Download className="h-3.5 w-3.5 text-muted-foreground hover:text-foreground" />
+                      )}
+                    </button>
                   </label>
                 );
               })}
               
-              <div className="border-t border-border pt-3 mt-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground">
-                    {language === "ru" ? "Всего" : language === "en" ? "Total" : "Ҳамагӣ"}: {filteredLocations.length}
-                  </span>
-                </div>
-                <button
-                  onClick={handleDownloadPDF}
-                  disabled={isGeneratingPDF || !filteredLocations.length}
-                  className="w-full flex items-center justify-center gap-2 rounded-lg bg-primary text-primary-foreground px-3 py-2 text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                  data-testid="button-download-pdf"
-                >
-                  {isGeneratingPDF ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                  {language === "ru" ? "Скачать PDF" : language === "en" ? "Download PDF" : "Боргирии PDF"}
-                </button>
+              <div className="border-t border-border pt-2 mt-2">
+                <span className="text-xs text-muted-foreground">
+                  {language === "ru" ? "Всего" : language === "en" ? "Total" : "Ҳамагӣ"}: {filteredLocations.length}
+                </span>
               </div>
             </div>
           </div>
