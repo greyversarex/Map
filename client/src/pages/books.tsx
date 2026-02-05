@@ -244,7 +244,7 @@ export default function BooksPage() {
       </div>
       
       <Dialog open={!!selectedBook} onOpenChange={(open) => !open && setSelectedBook(null)}>
-        <DialogContent className="max-w-2xl bg-gradient-to-br from-stone-800 via-stone-900 to-stone-800 border-stone-700 text-white">
+        <DialogContent className="max-w-2xl bg-gradient-to-br from-slate-600 via-slate-700 to-slate-800 border border-slate-500/50 text-white shadow-2xl shadow-black/50">
           <DialogHeader>
             <div className="flex gap-6">
               {selectedBook?.coverUrl ? (
@@ -264,16 +264,16 @@ export default function BooksPage() {
                 </DialogTitle>
                 {selectedBook?.author && (
                   <p className="text-amber-400 mb-1">
-                    <span className="text-stone-400">{labels.author}:</span> {selectedBook.author}
+                    <span className="text-slate-400">{labels.author}:</span> {selectedBook.author}
                   </p>
                 )}
                 {selectedBook?.year && (
-                  <p className="text-stone-300 mb-2">
-                    <span className="text-stone-400">{labels.year}:</span> {selectedBook.year}
+                  <p className="text-slate-200 mb-2">
+                    <span className="text-slate-400">{labels.year}:</span> {selectedBook.year}
                   </p>
                 )}
                 {selectedBook && getLocalizedDescription(selectedBook, language) && (
-                  <p className="text-stone-300 leading-relaxed text-sm">
+                  <p className="text-slate-200 leading-relaxed text-sm">
                     {getLocalizedDescription(selectedBook, language)}
                   </p>
                 )}
@@ -298,7 +298,7 @@ export default function BooksPage() {
                 href={selectedBook.documentUrl}
                 download
               >
-                <Button variant="outline" className="border-stone-600 text-stone-300 hover:bg-stone-700" data-testid="button-download-document">
+                <Button variant="outline" className="border-slate-500 text-slate-200 hover:bg-slate-600" data-testid="button-download-document">
                   <Download className="h-4 w-4" />
                 </Button>
               </a>
