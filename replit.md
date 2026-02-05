@@ -126,3 +126,27 @@ Preferred communication style: Simple, everyday language.
 - `client/src/pages/admin-location-types.tsx` - Admin type management
 - `client/src/hooks/use-location-types.ts` - Location types API hooks
 - `client/src/hooks/use-location-media.ts` - Location media API hooks
+
+## Recent Changes (February 2026)
+
+### Books/Documents Library Feature
+- New `books` table in database for storing documents and publications
+- **Map Page**: Added "Книги" (Books) button next to Filters button that navigates to library
+- **Books Page** (`/books`): Beautiful bookshelf design with:
+  - Wooden shelf appearance with realistic shadows
+  - Book cards with hover animations (scale up and lift)
+  - Search functionality for books and documents
+  - Modal dialog for viewing book details
+  - Download/Open buttons for documents
+  - Multi-language support (Tajik, Russian, English)
+- **Admin Panel**: New "Книги" (Books) tab for managing library:
+  - Add/Edit/Delete books
+  - Upload cover images and PDF documents
+  - Multi-language titles and descriptions
+  - Sort order control
+
+### Key Files for Books Feature
+- `client/src/pages/books.tsx` - Public bookshelf library page
+- `client/src/components/book-form.tsx` - Admin form for book management
+- `client/src/hooks/use-books.ts` - Books API hooks
+- `shared/schema.ts` - Books table definition

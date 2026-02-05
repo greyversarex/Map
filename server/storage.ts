@@ -3,6 +3,7 @@ import {
   locations,
   locationTypes,
   locationMedia,
+  books,
   type CreateLocationRequest,
   type UpdateLocationRequest,
   type LocationResponse,
@@ -11,6 +12,9 @@ import {
   type LocationTypeResponse,
   type CreateLocationMediaRequest,
   type LocationMediaResponse,
+  type CreateBookRequest,
+  type UpdateBookRequest,
+  type BookResponse,
 } from "@shared/schema";
 import { eq, asc } from "drizzle-orm";
 import { authStorage, type IAuthStorage } from "./replit_integrations/auth/storage";
@@ -37,6 +41,13 @@ export interface IStorage extends IAuthStorage {
   updateLocationMedia(id: number, updates: Partial<CreateLocationMediaRequest>): Promise<LocationMediaResponse>;
   deleteLocationMedia(id: number): Promise<void>;
   deleteLocationMediaByLocationId(locationId: number): Promise<void>;
+  
+  // Books
+  getBooks(): Promise<BookResponse[]>;
+  getBook(id: number): Promise<BookResponse | undefined>;
+  createBook(book: CreateBookRequest): Promise<BookResponse>;
+  updateBook(id: number, updates: UpdateBookRequest): Promise<BookResponse>;
+  deleteBook(id: number): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -135,6 +146,34 @@ export class DatabaseStorage implements IStorage {
 
   async deleteLocationMediaByLocationId(locationId: number): Promise<void> {
     await db.delete(locationMedia).where(eq(locationMedia.locationId, locationId));
+  }
+
+  // Books Storage Implementation
+  async getBooks(): Promise<BookResponse[]> {
+    return await db.select().from(books).orderBy(asc(books.sortOrder));
+  }
+
+  async getBook(id: number): Promise<BookResponse | undefined> {
+    const [book] = await db.select().from(books).where(eq(books.id, id));
+    return book;
+  }
+
+  async createBook(book: CreateBookRequest): Promise<BookResponse> {
+    const [newBook] = await db.insert(books).values(book).returning();
+    return newBook;
+  }
+
+  async updateBook(id: number, updates: UpdateBookRequest): Promise<BookResponse> {
+    const [updated] = await db
+      .update(books)
+      .set(updates)
+      .where(eq(books.id, id))
+      .returning();
+    return updated;
+  }
+
+  async deleteBook(id: number): Promise<void> {
+    await db.delete(books).where(eq(books.id, id));
   }
 }
 

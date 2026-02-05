@@ -8,11 +8,13 @@ import NotFound from "@/pages/not-found";
 import MapPage from "@/pages/map";
 import AdminPage from "@/pages/admin";
 import AdminLogin from "@/pages/admin-login";
+import BooksPage from "@/pages/books";
 
 function Router() {
   return (
     <Switch>
       <Route path="/" component={MapPage} />
+      <Route path="/books" component={BooksPage} />
       <Route path="/admin" component={AdminPage} />
       <Route path="/admin/login" component={AdminLogin} />
       <Route component={NotFound} />

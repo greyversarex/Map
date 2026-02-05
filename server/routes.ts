@@ -3,7 +3,7 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
-import { insertLocationTypeSchema, insertLocationMediaSchema } from "@shared/schema";
+import { insertLocationTypeSchema, insertLocationMediaSchema, insertBookSchema } from "@shared/schema";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 import multer from "multer";
 import path from "path";
@@ -268,6 +268,60 @@ export async function registerRoutes(
 
   app.delete("/api/media/:id", isAuthenticated, async (req, res) => {
     await storage.deleteLocationMedia(Number(req.params.id));
+    res.status(204).send();
+  });
+
+  // Books API
+  app.get("/api/books", async (req, res) => {
+    const booksList = await storage.getBooks();
+    res.json(booksList);
+  });
+
+  app.get("/api/books/:id", async (req, res) => {
+    const book = await storage.getBook(Number(req.params.id));
+    if (!book) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    res.json(book);
+  });
+
+  app.post("/api/books", isAuthenticated, async (req, res) => {
+    try {
+      const input = insertBookSchema.parse(req.body);
+      const book = await storage.createBook(input);
+      res.status(201).json(book);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      throw err;
+    }
+  });
+
+  app.put("/api/books/:id", isAuthenticated, async (req, res) => {
+    try {
+      const input = insertBookSchema.partial().parse(req.body);
+      const book = await storage.updateBook(Number(req.params.id), input);
+      if (!book) {
+        return res.status(404).json({ message: "Book not found" });
+      }
+      res.json(book);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join("."),
+        });
+      }
+      throw err;
+    }
+  });
+
+  app.delete("/api/books/:id", isAuthenticated, async (req, res) => {
+    await storage.deleteBook(Number(req.params.id));
     res.status(204).send();
   });
 

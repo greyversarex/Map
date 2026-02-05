@@ -6,7 +6,8 @@ import { useLocations } from "@/hooks/use-locations";
 import { useLocationTypes } from "@/hooks/use-location-types";
 import { useLocationMedia } from "@/hooks/use-location-media";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin } from "lucide-react";
+import { Loader2, Map as MapIcon, Layers, Filter, ChevronDown, ChevronUp, Navigation, ExternalLink, MapPin, BookOpen } from "lucide-react";
+import { Link } from "wouter";
 import { type Location } from "@shared/schema";
 import { tajikistanOSMBorder } from "@/data/tajikistan-accurate";
 import { useLanguage } from "@/lib/i18n";
@@ -243,8 +244,8 @@ export default function MapPage() {
         </div>
       </div>
 
-      {/* Filter Panel - Top Left, Collapsible */}
-      <div className="absolute left-4 top-28 z-50">
+      {/* Filter Panel and Books Button - Top Left */}
+      <div className="absolute left-4 top-28 z-50 flex gap-2">
         <button
           onClick={() => setFiltersOpen(!filtersOpen)}
           className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors"
@@ -260,6 +261,22 @@ export default function MapPage() {
             <ChevronDown className="h-4 w-4 text-muted-foreground" />
           )}
         </button>
+        
+        <Link href="/books">
+          <button
+            className="flex items-center gap-2 rounded-lg bg-background/90 backdrop-blur-sm px-3 py-2 shadow-lg border border-border hover:bg-muted/50 transition-colors"
+            data-testid="button-books"
+          >
+            <BookOpen className="h-4 w-4 text-foreground" />
+            <span className="text-sm font-medium text-foreground">
+              {language === 'ru' ? 'Книги' : language === 'en' ? 'Books' : 'Китобҳо'}
+            </span>
+          </button>
+        </Link>
+      </div>
+      
+      {/* Filter Panel Content */}
+      <div className="absolute left-4 top-40 z-50">
         
         {filtersOpen && (
           <div className="mt-2 rounded-lg bg-background/90 backdrop-blur-sm p-3 shadow-lg border border-border max-w-[220px]">

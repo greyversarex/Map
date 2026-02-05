@@ -116,3 +116,33 @@ export type LocationTypeResponse = LocationType;
 export type LocationTypesListResponse = LocationType[];
 export type LocationMediaResponse = LocationMedia;
 export type LocationMediaListResponse = LocationMedia[];
+
+// Books/Documents table
+export const books = pgTable("books", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  titleRu: text("title_ru"),
+  titleEn: text("title_en"),
+  author: text("author"),
+  description: text("description"),
+  descriptionRu: text("description_ru"),
+  descriptionEn: text("description_en"),
+  coverUrl: text("cover_url"),
+  documentUrl: text("document_url"),
+  category: text("category").default("general"),
+  year: integer("year"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertBookSchema = createInsertSchema(books).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Book = typeof books.$inferSelect;
+export type InsertBook = z.infer<typeof insertBookSchema>;
+export type CreateBookRequest = InsertBook;
+export type UpdateBookRequest = Partial<InsertBook>;
+export type BookResponse = Book;
+export type BooksListResponse = Book[];

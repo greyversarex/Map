@@ -2,9 +2,11 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useAdminAuth } from "@/hooks/use-admin-auth";
 import { useLocations, useDeleteLocation } from "@/hooks/use-locations";
 import { useLocationTypes, useDeleteLocationType } from "@/hooks/use-location-types";
+import { useBooks, useDeleteBook } from "@/hooks/use-books";
 import earthBackground from "@assets/earth-depicted-anime-style_1769019104987.jpg";
 import { LocationForm } from "@/components/location-form";
 import { LocationTypeForm } from "@/components/location-type-form";
+import { BookForm } from "@/components/book-form";
 import {
   Dialog,
   DialogContent,
@@ -26,9 +28,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video, Settings, ChevronDown, ChevronUp } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Map as MapIcon, Search, LogOut, User, Image, Video, Settings, ChevronDown, ChevronUp, BookOpen } from "lucide-react";
 import { Link, useLocation as useWouterLocation } from "wouter";
-import type { Location, LocationType as LocationTypeDB } from "@shared/schema";
+import type { Location, LocationType as LocationTypeDB, Book } from "@shared/schema";
 import { LocationMarker, LOCATION_TYPE_CONFIG, DEFAULT_ICONS } from "@/components/location-icons";
 import { MapPin } from "lucide-react";
 
@@ -36,8 +38,10 @@ export default function AdminPage() {
   const { isAdmin, user, isLoading: authLoading, logout } = useAdminAuth();
   const { data: locations, isLoading: locationsLoading } = useLocations();
   const { data: dbLocationTypes, isLoading: typesLoading } = useLocationTypes();
+  const { data: books, isLoading: booksLoading } = useBooks();
   const deleteMutation = useDeleteLocation();
   const deleteTypeMutation = useDeleteLocationType();
+  const deleteBookMutation = useDeleteBook();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingLocation, setEditingLocation] = useState<Location | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
@@ -45,6 +49,9 @@ export default function AdminPage() {
   const [isTypeDialogOpen, setIsTypeDialogOpen] = useState(false);
   const [editingType, setEditingType] = useState<LocationTypeDB | null>(null);
   const [typeManagementExpanded, setTypeManagementExpanded] = useState(false);
+  const [isBookDialogOpen, setIsBookDialogOpen] = useState(false);
+  const [editingBook, setEditingBook] = useState<Book | null>(null);
+  const [activeTab, setActiveTab] = useState<"locations" | "books">("locations");
   
   const sectionRefs = useRef<Record<string, HTMLElement | null>>({});
 
@@ -126,8 +133,51 @@ export default function AdminPage() {
               Открыть карту
             </Button>
           </Link>
+
+          <div className="flex gap-1 mb-4">
+            <Button 
+              variant={activeTab === "locations" ? "default" : "ghost"} 
+              size="sm"
+              className={`flex-1 ${activeTab === "locations" ? "bg-gray-800 text-white" : "text-black"}`}
+              onClick={() => setActiveTab("locations")}
+              data-testid="tab-locations"
+            >
+              <MapIcon className="h-4 w-4 mr-1" />
+              Локации
+            </Button>
+            <Button 
+              variant={activeTab === "books" ? "default" : "ghost"} 
+              size="sm"
+              className={`flex-1 ${activeTab === "books" ? "bg-gray-800 text-white" : "text-black"}`}
+              onClick={() => setActiveTab("books")}
+              data-testid="tab-books"
+            >
+              <BookOpen className="h-4 w-4 mr-1" />
+              Книги
+            </Button>
+          </div>
+
+          {activeTab === "books" && (
+            <div className="space-y-1 mb-4">
+              <p className="text-xs text-gray-400 uppercase tracking-wider font-semibold px-3 py-2">
+                Библиотека ({books?.length || 0})
+              </p>
+              {books?.map((book) => (
+                <div
+                  key={book.id}
+                  className="flex items-center justify-between py-1.5 px-3 rounded-lg hover:bg-gray-100 group"
+                >
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
+                    <BookOpen className="h-4 w-4 text-amber-600 flex-shrink-0" />
+                    <span className="text-sm text-gray-700 truncate">{book.titleRu || book.title}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
           
-          <div className="pt-2 border-t border-gray-100">
+          {activeTab === "locations" && (
+            <div className="pt-2 border-t border-gray-100">
             <button
               onClick={() => setTypeManagementExpanded(!typeManagementExpanded)}
               className="w-full flex items-center justify-between px-3 py-2 text-xs text-gray-400 uppercase tracking-wider font-semibold hover:bg-gray-50 rounded-lg"
@@ -250,7 +300,8 @@ export default function AdminPage() {
                 </button>
               );
             })}
-          </div>
+            </div>
+          )}
         </nav>
 
         <div className="p-4 border-t border-gray-100 bg-gray-50">
@@ -286,44 +337,76 @@ export default function AdminPage() {
         <div className="absolute inset-0 bg-black/30 pointer-events-none"></div>
         <div className="max-w-6xl mx-auto space-y-8 relative z-10">
           
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-              <h2 className="text-3xl font-bold text-white drop-shadow-lg">Локации</h2>
-              <p className="text-gray-200">Управление точками на 3D карте</p>
+          {activeTab === "locations" ? (
+            <>
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                  <h2 className="text-3xl font-bold text-white drop-shadow-lg">Локации</h2>
+                  <p className="text-gray-200">Управление точками на 3D карте</p>
+                </div>
+                
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button 
+                      onClick={openCreate} 
+                      className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg shadow-gray-400/50"
+                    >
+                      <Plus className="mr-2 h-4 w-4" /> Добавить
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white">
+                    <DialogHeader>
+                      <DialogTitle className="text-black">{editingLocation ? "Редактировать" : "Новая локация"}</DialogTitle>
+                    </DialogHeader>
+                    <LocationForm 
+                      location={editingLocation || undefined} 
+                      onSuccess={() => setIsDialogOpen(false)} 
+                    />
+                  </DialogContent>
+                </Dialog>
+                
+                <Dialog open={isTypeDialogOpen} onOpenChange={setIsTypeDialogOpen}>
+                  <DialogContent className="sm:max-w-[400px] max-h-[90vh] overflow-y-auto bg-white">
+                    <DialogHeader>
+                      <DialogTitle className="text-black">{editingType ? "Редактировать тип" : "Новый тип локации"}</DialogTitle>
+                    </DialogHeader>
+                    <LocationTypeForm 
+                      locationType={editingType || undefined} 
+                      onSuccess={() => setIsTypeDialogOpen(false)} 
+                    />
+                  </DialogContent>
+                </Dialog>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="text-3xl font-bold text-white drop-shadow-lg">Книги и документы</h2>
+                <p className="text-gray-200">Управление библиотекой</p>
+              </div>
+              
+              <Dialog open={isBookDialogOpen} onOpenChange={setIsBookDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button 
+                    onClick={() => { setEditingBook(null); setIsBookDialogOpen(true); }} 
+                    className="bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white shadow-lg"
+                    data-testid="button-add-book"
+                  >
+                    <Plus className="mr-2 h-4 w-4" /> Добавить книгу
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white">
+                  <DialogHeader>
+                    <DialogTitle className="text-black">{editingBook ? "Редактировать книгу" : "Новая книга"}</DialogTitle>
+                  </DialogHeader>
+                  <BookForm 
+                    book={editingBook || undefined} 
+                    onSuccess={() => setIsBookDialogOpen(false)} 
+                  />
+                </DialogContent>
+              </Dialog>
             </div>
-            
-            <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  onClick={openCreate} 
-                  className="bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-white shadow-lg shadow-gray-400/50"
-                >
-                  <Plus className="mr-2 h-4 w-4" /> Добавить
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto bg-white">
-                <DialogHeader>
-                  <DialogTitle className="text-black">{editingLocation ? "Редактировать" : "Новая локация"}</DialogTitle>
-                </DialogHeader>
-                <LocationForm 
-                  location={editingLocation || undefined} 
-                  onSuccess={() => setIsDialogOpen(false)} 
-                />
-              </DialogContent>
-            </Dialog>
-            
-            <Dialog open={isTypeDialogOpen} onOpenChange={setIsTypeDialogOpen}>
-              <DialogContent className="sm:max-w-[400px] max-h-[90vh] overflow-y-auto bg-white">
-                <DialogHeader>
-                  <DialogTitle className="text-black">{editingType ? "Редактировать тип" : "Новый тип локации"}</DialogTitle>
-                </DialogHeader>
-                <LocationTypeForm 
-                  locationType={editingType || undefined} 
-                  onSuccess={() => setIsTypeDialogOpen(false)} 
-                />
-              </DialogContent>
-            </Dialog>
-          </div>
+          )}
 
           <div className="bg-white rounded-xl shadow-lg p-4">
             <div className="relative">
@@ -459,9 +542,99 @@ export default function AdminPage() {
             );
           })}
 
-          {filteredLocations?.length === 0 && (
+          {activeTab === "locations" && filteredLocations?.length === 0 && (
             <div className="text-center py-12 text-white">
               Локации не найдены
+            </div>
+          )}
+
+          {activeTab === "books" && (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              {books?.map((book) => (
+                <Card key={book.id} className="bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+                  {book.coverUrl ? (
+                    <div className="h-40 overflow-hidden bg-gradient-to-br from-amber-50 to-amber-100">
+                      <img 
+                        src={book.coverUrl} 
+                        alt={book.title}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  ) : (
+                    <div className="h-40 bg-gradient-to-br from-amber-50 to-amber-100 flex items-center justify-center">
+                      <BookOpen className="h-16 w-16 text-amber-300" />
+                    </div>
+                  )}
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <h4 className="font-semibold text-black truncate mb-1">{book.titleRu || book.title}</h4>
+                        {book.author && (
+                          <p className="text-sm text-gray-600 mb-1">{book.author}</p>
+                        )}
+                        {book.year && (
+                          <p className="text-xs text-gray-500">{book.year}</p>
+                        )}
+                        {book.documentUrl && (
+                          <span className="inline-flex items-center gap-1 text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full mt-2">
+                            PDF
+                          </span>
+                        )}
+                      </div>
+                      
+                      <div className="flex flex-col gap-1">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => { setEditingBook(book); setIsBookDialogOpen(true); }}
+                          className="h-8 w-8 text-black bg-gray-100 hover:bg-gray-200"
+                          data-testid={`button-edit-book-${book.id}`}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              className="h-8 w-8 text-gray-600 hover:text-red-600 hover:bg-red-50"
+                              data-testid={`button-delete-book-${book.id}`}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent className="bg-white">
+                            <AlertDialogHeader>
+                              <AlertDialogTitle className="text-black">Удалить книгу?</AlertDialogTitle>
+                              <AlertDialogDescription className="text-gray-600">
+                                Книга "{book.titleRu || book.title}" будет удалена навсегда.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel className="text-black">Отмена</AlertDialogCancel>
+                              <AlertDialogAction 
+                                onClick={() => deleteBookMutation.mutate(book.id)}
+                                className="bg-red-600 hover:bg-red-700 text-white"
+                              >
+                                Удалить
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {books?.length === 0 && (
+                <div className="col-span-full text-center py-12">
+                  <BookOpen className="h-16 w-16 text-white/30 mx-auto mb-4" />
+                  <p className="text-white/70">Книги не найдены</p>
+                  <p className="text-white/50 text-sm mt-1">Нажмите "Добавить книгу" для создания</p>
+                </div>
+              )}
             </div>
           )}
         </div>
