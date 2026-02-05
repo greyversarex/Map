@@ -164,7 +164,14 @@ export default function BooksPage() {
   const labels = getLabels();
   
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-900 via-stone-800 to-stone-900">
+    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900 via-black to-black relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-amber-950/20 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_var(--tw-gradient-stops))] from-slate-800/30 via-transparent to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-full opacity-30">
+        <div className="absolute top-20 left-1/4 w-96 h-96 bg-amber-900/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-1/4 w-80 h-80 bg-slate-700/10 rounded-full blur-3xl" />
+      </div>
+      <div className="relative z-10">
       <div className="pointer-events-none absolute left-0 top-0 z-50 flex w-full items-center justify-between p-6 bg-gradient-to-b from-black/80 to-transparent">
         <div className="pointer-events-auto flex items-center gap-4">
           <Link href="/">
@@ -302,6 +309,7 @@ export default function BooksPage() {
           )}
         </DialogContent>
       </Dialog>
+      </div>
     </div>
   );
 }
