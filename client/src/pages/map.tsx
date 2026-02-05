@@ -286,7 +286,7 @@ export default function MapPage() {
             <p className="text-white/60 text-sm font-light tracking-widest mt-1">{t("map.title")}</p>
           </div>
           
-          <div className="relative mt-1">
+          <div className="relative mt-3">
             <div className="flex items-center gap-2 rounded-lg bg-white px-3 py-2 shadow-lg border border-gray-200">
               <Search className="h-4 w-4 text-gray-400" />
               <input
