@@ -75,7 +75,7 @@ export function MediaCarousel({ media, fallbackImageUrl, fallbackVideoUrl, class
           <img
             src={currentMedia.url}
             alt=""
-            className="w-full h-full object-contain"
+            className="w-full h-full object-cover"
           />
         ) : isYouTube(currentMedia.url) ? (
           <iframe
