@@ -35,28 +35,43 @@ async function getCroppedImg(imageSrc: string, pixelCrop: Area, isRound: boolean
     throw new Error("No 2d context");
   }
 
-  const size = Math.min(pixelCrop.width, pixelCrop.height);
-  canvas.width = size;
-  canvas.height = size;
-
   if (isRound) {
+    const size = Math.min(pixelCrop.width, pixelCrop.height);
+    canvas.width = size;
+    canvas.height = size;
+
     ctx.beginPath();
     ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
     ctx.closePath();
     ctx.clip();
-  }
 
-  ctx.drawImage(
-    image,
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height,
-    0,
-    0,
-    size,
-    size
-  );
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      size,
+      size
+    );
+  } else {
+    canvas.width = pixelCrop.width;
+    canvas.height = pixelCrop.height;
+
+    ctx.drawImage(
+      image,
+      pixelCrop.x,
+      pixelCrop.y,
+      pixelCrop.width,
+      pixelCrop.height,
+      0,
+      0,
+      pixelCrop.width,
+      pixelCrop.height
+    );
+  }
 
   return new Promise((resolve, reject) => {
     canvas.toBlob((blob) => {
