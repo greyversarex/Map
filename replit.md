@@ -1,152 +1,268 @@
-# Tajikistan Interactive Map
+# Интерактивная 3D Карта Таджикистана
 
-## Production Deployment Info
+## О проекте
 
-**ВАЖНО: Сайт развёрнут на облачном сервере Timeweb**
+Это веб-приложение — интерактивная геоинформационная система для Таджикистана. Разработано для государственной организации (КМЗ — Комитет по Международным Зелёным Зонам / структура, управляющая природными ресурсами). На карте отображаются точки — головные управления, филиалы, заповедники, ледники, рыбоводства, питомники — с мультиязычной поддержкой и цифровой библиотекой документов.
 
-### Рабочий процесс
-- Replit используется ТОЛЬКО для разработки и улучшения сайта
-- После изменений делаем push в репозиторий из Replit
-- Затем обновляем код на продакшн сервере через командную строку
-- **КРИТИЧЕСКИ ВАЖНО**: При обновлениях НИКОГДА не стирать и не повреждать данные на продакшене!
-
-### Продакшн сервер
-- **Путь**: `/var/www/ecomap`
-- **Хост**: `msk-1-vm-soga` (Timeweb)
-
-### Переменные окружения продакшена
-```
-DATABASE_URL=postgresql://ecomap_user:eco2026@localhost:5432/ecomap
-SESSION_SECRET=ecomap_secret_key_2024_secure
-ADMIN_USERNAME=admin
-ADMIN_PASSWORD=admin123
-NODE_ENV=production
-PORT=3000
-```
-
-### Безопасное обновление продакшена
-1. Делаем изменения в Replit
-2. Тестируем локально
-3. `git push` из Replit
-4. На сервере: `git pull` + restart приложения
-5. НЕ запускать миграции которые удаляют данные!
+**Рабочий процесс:** код улучшается на Replit → пушится в GitHub репозиторий → обновляется production сервер на Timeweb.
 
 ---
 
-## Overview
+## Стек технологий
 
-This is an interactive map application for exploring locations in Tajikistan. The project features a public-facing map view where users can browse points of interest, and an admin panel for managing location data. Built with React on the frontend and Express on the backend, it uses MapLibre GL for map rendering and PostgreSQL for data persistence.
+### Frontend
+- **React 18** + **TypeScript** + **Vite**
+- **react-map-gl** / **maplibre-gl** — интерактивная 3D карта с рельефом
+- **Tailwind CSS** + **Radix UI** / **shadcn/ui** — UI компоненты
+- **TanStack Query v5** — fetching и кэш данных
+- **Wouter** — клиентский роутинг
+- **Framer Motion** — анимации
+- **jsPDF + jspdf-autotable** — генерация PDF отчётов
+- **Lucide React** — иконки
+- **Cinzel + Inter** (Google Fonts) — типографика
 
-## User Preferences
+### Backend
+- **Node.js + Express** — REST API сервер
+- **Drizzle ORM** + **PostgreSQL (pg)** — база данных
+- **Multer** — загрузка файлов (фото, видео, PDF), лимит 200MB
+- **express-session** — сессии для авторизации администратора
+- **Passport.js** — аутентификация (базовая сессионная для админа)
 
-Preferred communication style: Simple, everyday language.
+### Инфраструктура
+- **Replit Object Storage** — хранение файлов (через Replit интеграцию)
+- Локальная папка `/uploads/` — резервное хранилище файлов
+- Порт **5000** — единый порт для backend API + Vite frontend (dev: middleware, prod: static)
 
-## System Architecture
+---
 
-### Frontend Architecture
-- **Framework**: React 18 with TypeScript
-- **Routing**: Wouter (lightweight router)
-- **State Management**: TanStack React Query for server state
-- **UI Components**: shadcn/ui component library with Radix UI primitives
-- **Styling**: Tailwind CSS with custom CSS variables for theming
-- **Map Rendering**: MapLibre GL JS with react-map-gl wrapper
-- **Forms**: React Hook Form with Zod validation
+## Архитектура файлов
 
-### Backend Architecture
-- **Framework**: Express.js with TypeScript
-- **Build Tool**: Vite for frontend, esbuild for server bundling
-- **API Design**: RESTful endpoints under `/api` prefix
-- **Session Management**: express-session with simple credential-based admin auth
+```
+├── client/
+│   ├── src/
+│   │   ├── App.tsx                    — Роутинг, провайдеры
+│   │   ├── index.css                  — Глобальные стили, CSS анимации маркеров
+│   │   ├── pages/
+│   │   │   ├── map.tsx                — Главная страница с 3D картой
+│   │   │   ├── books.tsx              — Страница библиотеки документов
+│   │   │   ├── admin.tsx              — Админ панель (управление локациями/книгами)
+│   │   │   ├── admin-login.tsx        — Страница входа в админку
+│   │   │   └── not-found.tsx          — 404 страница
+│   │   ├── components/
+│   │   │   ├── location-icons.tsx     — Иконки/маркеры, конфиги типов, эффекты
+│   │   │   ├── location-form.tsx      — Форма создания/редактирования локации
+│   │   │   ├── location-type-form.tsx — Форма типа локации
+│   │   │   ├── book-form.tsx          — Форма книги/документа
+│   │   │   ├── multi-media-uploader.tsx — Загрузка нескольких фото/видео
+│   │   │   ├── media-carousel.tsx     — Карусель медиа в детальном попапе
+│   │   │   ├── image-cropper.tsx      — Обрезка изображений
+│   │   │   ├── language-switcher.tsx  — Переключатель языка
+│   │   │   ├── ObjectUploader.tsx     — Загрузчик через Replit Object Storage
+│   │   │   └── ui/                    — shadcn/ui компоненты
+│   │   ├── hooks/
+│   │   │   ├── use-locations.ts       — CRUD локаций (TanStack Query)
+│   │   │   ├── use-location-types.ts  — CRUD типов локаций
+│   │   │   ├── use-location-media.ts  — CRUD медиа локаций
+│   │   │   ├── use-books.ts           — CRUD книг
+│   │   │   ├── use-admin-auth.ts      — Авторизация администратора
+│   │   │   └── use-upload.ts          — Загрузка файлов
+│   │   ├── lib/
+│   │   │   ├── i18n.tsx               — Мультиязычность (ru/tj/en), LanguageProvider
+│   │   │   ├── pdf-generator.ts       — Генерация PDF отчётов по категориям
+│   │   │   ├── queryClient.ts         — TanStack Query клиент + apiRequest helper
+│   │   │   ├── auth-utils.ts          — Утилиты авторизации
+│   │   │   └── noto-font.ts           — Шрифт для PDF (поддержка кириллицы/таджикского)
+│   │   └── data/
+│   │       ├── tajikistan-accurate.ts — GeoJSON граница Таджикистана (OSM)
+│   │       └── tajikistan-border.ts   — Дополнительные данные границы
+├── server/
+│   ├── index.ts                       — Точка входа Express, session middleware
+│   ├── routes.ts                      — Все API маршруты, multer, seed данные
+│   ├── storage.ts                     — DatabaseStorage класс, IStorage интерфейс
+│   ├── db.ts                          — Drizzle + PostgreSQL подключение
+│   ├── vite.ts                        — Vite dev middleware (только development)
+│   ├── static.ts                      — Статика (только production)
+│   └── replit_integrations/
+│       ├── auth/                      — Replit Auth интеграция
+│       └── object_storage/            — Replit Object Storage интеграция
+├── shared/
+│   ├── schema.ts                      — Drizzle схемы, Zod схемы, TypeScript типы
+│   └── routes.ts                      — API контракты (типизированные маршруты)
+├── uploads/                           — Загруженные файлы (локально)
+├── attached_assets/                   — Статичные ассеты (фоны и т.д.)
+└── script/build.ts                    — Production build скрипт
+```
 
-### Data Layer
-- **Database**: PostgreSQL
-- **ORM**: Drizzle ORM with drizzle-zod for schema validation
-- **Schema Location**: `shared/schema.ts` contains all table definitions
-- **Migrations**: Drizzle Kit with `db:push` command
+---
 
-### Authentication
-- **Admin Auth**: Simple username/password authentication stored in environment variables (`ADMIN_USERNAME`, `ADMIN_PASSWORD`)
-- **Session Storage**: Server-side sessions with express-session
-- **Replit Auth Integration**: Optional OIDC-based auth exists in `server/replit_integrations/auth/` for user accounts
+## База данных (PostgreSQL + Drizzle ORM)
 
-### Key Design Patterns
-- **Shared Types**: The `shared/` directory contains schemas and types used by both frontend and backend
-- **API Contract**: Route definitions in `shared/routes.ts` define request/response schemas
-- **Storage Layer**: `server/storage.ts` implements a DatabaseStorage class that abstracts database operations
+### Таблицы
 
-## External Dependencies
+**`location_types`** — Типы/категории локаций (управляются из админки)
+- `id`, `slug` (уникальный), `name` (tj), `nameRu`, `nameEn`
+- `iconUrl` — кастомная иконка (URL)
+- `color`, `bgColor`, `borderColor` — цвета маркера
+- `markerEffect` — анимация маркера (`none | pulse | ring | ringSlow | glow | frost`)
+- `sortOrder`, `createdAt`
 
-### Database
-- **PostgreSQL**: Primary database, connection via `DATABASE_URL` environment variable
-- **connect-pg-simple**: Session storage in PostgreSQL
+**`locations`** — Точки на карте
+- `id`, `name` (tj), `nameRu`, `nameEn`
+- `description` (tj), `descriptionRu`, `descriptionEn`
+- `lat`, `lng` — координаты (doublePrecision)
+- `imageUrl`, `videoUrl` — устаревшие поля (заменены на `location_media`)
+- `locationType` (slug, текстовый FK), `locationTypeId` (числовой FK)
+- `foundedYear`, `workerCount`, `area`
+- `createdAt`
 
-### Map Services
-- **OpenStreetMap Tiles**: Default raster tile source for colored map style
-- **Carto Basemaps**: Positron style for minimal map appearance
-- **No API key required**: Uses open map tile providers
+**`location_media`** — Медиа файлы для локаций (несколько фото/видео на локацию)
+- `id`, `locationId`, `mediaType` (`photo | video`)
+- `url`, `thumbnailUrl`, `caption`
+- `sortOrder`, `isPrimary`, `createdAt`
 
-### Environment Variables Required
-- `DATABASE_URL`: PostgreSQL connection string
-- `SESSION_SECRET`: Secret for session encryption
-- `ADMIN_USERNAME`: Admin login username (defaults to "admin")
-- `ADMIN_PASSWORD`: Admin login password (defaults to "admin123")
+**`books`** — Документы/книги библиотеки
+- `id`, `title` (tj), `titleRu`, `titleEn`
+- `author`, `description` (tj), `descriptionRu`, `descriptionEn`
+- `coverUrl`, `documentUrl`
+- `category`, `year`, `sortOrder`, `createdAt`
 
-### Frontend Libraries
-- **MapLibre GL**: Open-source map rendering engine
-- **Radix UI**: Accessible component primitives
-- **Lucide React**: Icon library
+### Seed данные (при первом запуске)
+При пустой БД автоматически создаются 6 типов локаций (КМЗ, Шуъбахо, Мамнунгох, Пиряххо, Мохипарвари, Нихолхона) и 3 тестовые локации.
 
-### Development Tools
-- **Vite**: Frontend dev server with HMR
-- **tsx**: TypeScript execution for server
-- **Drizzle Kit**: Database schema management
+---
 
-## Recent Changes (January 2026)
+## API маршруты
 
-### Database-Driven Location Types
-- New `location_types` table for customizable location categories
-- Circular icons with custom colors uploaded via admin panel
-- Admin page at `/admin/location-types` for CRUD operations
-- ImageCropper component using react-easy-crop for circular cropping
+### Публичные (без авторизации)
+| Метод | Путь | Описание |
+|-------|------|----------|
+| GET | `/api/locations` | Список всех локаций |
+| GET | `/api/locations/:id` | Одна локация |
+| GET | `/api/locations/:id/media` | Медиа локации |
+| GET | `/api/location-types` | Список типов локаций |
+| GET | `/api/location-types/:id` | Один тип |
+| GET | `/api/books` | Список книг |
+| GET | `/api/books/:id` | Одна книга |
+| GET | `/api/admin/session` | Проверка сессии |
 
-### Multiple Media per Location
-- New `location_media` table for storing multiple photos/videos per location
-- MediaCarousel component with arrow navigation for viewing gallery
-- MultiMediaUploader component in location form for managing media:
-  - Upload multiple photos/videos
-  - Set primary media (shown first)
-  - Reorder media items
-  - Remove unwanted media
-- Backward compatible: Falls back to legacy imageUrl/videoUrl if no media records
+### Защищённые (требуют авторизации `isAdmin`)
+| Метод | Путь | Описание |
+|-------|------|----------|
+| POST | `/api/admin/login` | Вход в админку |
+| POST | `/api/admin/logout` | Выход |
+| POST | `/api/upload` | Загрузка файла (Multer) |
+| POST/PUT/DELETE | `/api/locations` | CRUD локаций |
+| POST/PUT/DELETE | `/api/location-types` | CRUD типов |
+| POST/PUT/DELETE | `/api/locations/:id/media` | CRUD медиа |
+| PUT/DELETE | `/api/media/:id` | Обновление/удаление медиа |
+| POST/PUT/DELETE | `/api/books` | CRUD книг |
 
-### Key Files for New Features
-- `client/src/components/image-cropper.tsx` - Circular image cropping
-- `client/src/components/media-carousel.tsx` - Multi-media carousel viewer
-- `client/src/components/multi-media-uploader.tsx` - Upload manager
-- `client/src/pages/admin-location-types.tsx` - Admin type management
-- `client/src/hooks/use-location-types.ts` - Location types API hooks
-- `client/src/hooks/use-location-media.ts` - Location media API hooks
+### Авторизация
+- Простая сессионная: `ADMIN_USERNAME` / `ADMIN_PASSWORD` (env vars, дефолт: `admin` / `admin123`)
+- Сессии в памяти (express-session)
 
-## Recent Changes (February 2026)
+---
 
-### Books/Documents Library Feature
-- New `books` table in database for storing documents and publications
-- **Map Page**: Added "Книги" (Books) button next to Filters button that navigates to library
-- **Books Page** (`/books`): Beautiful bookshelf design with:
-  - Wooden shelf appearance with realistic shadows
-  - Book cards with hover animations (scale up and lift)
-  - Search functionality for books and documents
-  - Modal dialog for viewing book details
-  - Download/Open buttons for documents
-  - Multi-language support (Tajik, Russian, English)
-- **Admin Panel**: New "Книги" (Books) tab for managing library:
-  - Add/Edit/Delete books
-  - Upload cover images and PDF documents
-  - Multi-language titles and descriptions
-  - Sort order control
+## Страницы
 
-### Key Files for Books Feature
-- `client/src/pages/books.tsx` - Public bookshelf library page
-- `client/src/components/book-form.tsx` - Admin form for book management
-- `client/src/hooks/use-books.ts` - Books API hooks
-- `shared/schema.ts` - Books table definition
+### `/` — Карта (map.tsx)
+- MapLibre GL карта Таджикистана с 3D рельефом (pitch: 45°, exaggeration: 1.5)
+- 2 стиля карты: **Цветная** (OpenStreetMap тайлы) / **Минимал** (CartoCDN Positron)
+- Красная линия границы Таджикистана (GeoJSON)
+- Маркеры с CSS анимациями по типу локации
+- Hover попап с фото/видео превью, именем, данными
+- Клик → детальный диалог с медиа каруселью, описанием, координатами
+- Поиск по локациям (имя на 3 языках) с выпадающим списком + flyTo на карте
+- Фильтры по типам локаций (чекбоксы) с возможностью скачать PDF для каждой категории
+- Кнопка перехода в библиотеку `/books`
+- Переключатель языка (ru/tj/en)
+
+### `/books` — Библиотека (books.tsx)
+- UI книжной полки (3D эффект книг)
+- Поиск по названию и автору
+- Книги группируются по 5 на полку
+- Клик → детальный диалог с обложкой, автором, годом, описанием
+- Кнопки: открыть документ (новая вкладка) / скачать
+- Фоновое изображение библиотеки
+
+### `/admin` — Админ панель (admin.tsx)
+- Sidebar с навигацией, управлением типами, выходом
+- 2 вкладки: **Локации** и **Книги**
+- Список локаций сгруппирован по типам, поиск по названию
+- CRUD локаций через диалоговые формы (LocationForm)
+- CRUD типов локаций (название на 3 языках, цвета, иконка, эффект маркера)
+- CRUD книг (BookForm)
+- Фоновое изображение (earth-anime style)
+
+### `/admin/login` — Вход в админку
+
+---
+
+## Мультиязычность (i18n)
+
+- **3 языка**: Русский (`ru`), Таджикский (`tj`), Английский (`en`)
+- Дефолтный язык: `ru`, сохраняется в `localStorage`
+- `LanguageProvider` + хук `useLanguage()` с `t(key)` функцией
+- Переводы: статические строки в `client/src/lib/i18n.tsx`
+- Данные из БД: у каждой локации/типа/книги есть поля `name`, `nameRu`, `nameEn`
+
+---
+
+## Анимации маркеров
+
+6 статических эффектов для дефолтных типов (CSS классы в `index.css`):
+- `marker-pulse-kmz` — зелёное пульсирующее кольцо
+- `marker-pulse-branch` — серое свечение (glow)
+- `marker-pulse-reserve` — изумрудная медленная волна
+- `marker-pulse-glacier` — голубое мерцание (frost)
+- `marker-pulse-fishery` — синяя рябь
+- `marker-pulse-nursery` — лаймовое свечение
+
+6 динамических эффектов для кастомных типов (CSS custom property `--marker-color`):
+- `none`, `pulse`, `ring`, `ringSlow`, `glow`, `frost`
+
+---
+
+## Загрузка файлов
+
+- **Multer** (локально): `/api/upload` → файлы в `./uploads/`, URL `/uploads/<filename>`
+- **Replit Object Storage**: отдельные маршруты через `replit_integrations/object_storage`
+- Лимит размера: 200MB
+- Разрешённые типы: jpeg, jpg, png, gif, webp, mp4, webm, pdf, doc, docx, xls, xlsx, ppt, pptx, txt, rtf
+- Видео поддерживает streaming (заголовок `Accept-Ranges: bytes`)
+
+---
+
+## Команды
+
+```bash
+npm run dev      # Dev сервер (Express + Vite) на порту 5000
+npm run build    # Production сборка (tsx script/build.ts)
+npm run start    # Запуск production сервера (dist/index.cjs)
+npm run check    # TypeScript проверка
+npm run db:push  # Синхронизация схемы Drizzle с БД
+```
+
+---
+
+## Переменные окружения
+
+| Переменная | Описание | Дефолт |
+|-----------|----------|--------|
+| `DATABASE_URL` | PostgreSQL строка подключения | обязателен |
+| `ADMIN_USERNAME` | Логин администратора | `admin` |
+| `ADMIN_PASSWORD` | Пароль администратора | `admin123` |
+| `SESSION_SECRET` | Секрет для сессий | `tajikistan-map-secret-key` |
+| `UPLOADS_DIR` | Путь к папке загрузок | `./uploads` |
+| `PORT` | Порт сервера | `5000` |
+
+---
+
+## Важные технические детали
+
+1. **Двойной FK на тип локации** — в `locations` есть и `locationType` (текстовый slug) и `locationTypeId` (числовой). Текстовый используется для фильтрации/отображения.
+2. **Устаревшие поля** — `locations.imageUrl` и `locations.videoUrl` существуют для обратной совместимости, но основное медиа хранится в `location_media`.
+3. **Нет soft-delete** — удаление реальное. При удалении локации автоматически удаляется всё её медиа (`deleteLocationMediaByLocationId`).
+4. **PDF генерация** — через jsPDF, поддержка кириллицы через Noto шрифт (`client/src/lib/noto-font.ts`).
+5. **GeoJSON граница** — данные OSM для отрисовки красной линии границы Таджикистана (`tajikistan-accurate.ts`).
+6. **terrain source** — в OSM стиле нет terrain source, но `terrain` пропс передаётся в Map. При Minimal стиле рельеф подтягивается из CartoCDN.
