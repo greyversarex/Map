@@ -2,6 +2,8 @@ import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Upload, X, Image, Video, Star, GripVertical, Crop } from "lucide-react";
 import { ImageCropper } from "./image-cropper";
+import { useToast } from "@/hooks/use-toast";
+import { compressImage, compressBlob } from "@/lib/image-compress";
 
 export interface MediaItem {
   id?: number;
@@ -28,12 +30,12 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
   const photoInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const handleFileSelect = async (files: FileList | null, type: "photo" | "video") => {
     if (!files || files.length === 0) return;
 
     if (type === "video") {
-      // Videos don't need cropping
       setIsUploading(true);
       try {
         const newMedia: MediaItem[] = [];
@@ -51,16 +53,22 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
         }
         onChange([...media, ...newMedia]);
       } catch (error) {
-        console.error("Error uploading files:", error);
+        console.error("Error uploading video:", error);
+        toast({
+          title: "Ошибка загрузки видео",
+          description: error instanceof Error ? error.message : "Не удалось загрузить видео. Попробуйте ещё раз.",
+          variant: "destructive",
+        });
       } finally {
         setIsUploading(false);
+        if (videoInputRef.current) videoInputRef.current.value = "";
       }
     } else {
       // Photos go through cropper one by one
       const fileArray = Array.from(files);
       setPendingFiles(fileArray);
       setCurrentFileIndex(0);
-      
+
       const reader = new FileReader();
       reader.onload = () => {
         setImageToCrop(reader.result as string);
@@ -73,10 +81,13 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
   const handleCropComplete = async (croppedBlob: Blob) => {
     setShowCropper(false);
     setIsUploading(true);
-    
+
     try {
-      const url = await onUpload(new File([croppedBlob], `photo-${Date.now()}.png`, { type: "image/png" }));
-      
+      const originalName = pendingFiles[currentFileIndex]?.name || "photo.jpg";
+      const compressedFile = await compressBlob(croppedBlob, `photo-${Date.now()}.jpg`);
+
+      const url = await onUpload(compressedFile);
+
       const newItem: MediaItem = {
         url,
         mediaType: "photo",
@@ -84,9 +95,9 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
         sortOrder: media.length,
         isNew: true,
       };
-      
+
       onChange([...media, newItem]);
-      
+
       // Process next file if any
       const nextIndex = currentFileIndex + 1;
       if (nextIndex < pendingFiles.length) {
@@ -100,9 +111,18 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
       } else {
         setPendingFiles([]);
         setCurrentFileIndex(0);
+        if (photoInputRef.current) photoInputRef.current.value = "";
       }
     } catch (error) {
       console.error("Error uploading cropped image:", error);
+      toast({
+        title: "Ошибка загрузки фото",
+        description: error instanceof Error ? error.message : "Не удалось загрузить фотографию. Проверьте подключение и попробуйте снова.",
+        variant: "destructive",
+      });
+      setPendingFiles([]);
+      setCurrentFileIndex(0);
+      if (photoInputRef.current) photoInputRef.current.value = "";
     } finally {
       setIsUploading(false);
     }
@@ -111,7 +131,7 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
   const handleCropCancel = () => {
     setShowCropper(false);
     setImageToCrop(null);
-    
+
     // Process next file if any
     const nextIndex = currentFileIndex + 1;
     if (nextIndex < pendingFiles.length) {
@@ -126,7 +146,7 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
       setPendingFiles([]);
       setCurrentFileIndex(0);
     }
-    
+
     if (photoInputRef.current) photoInputRef.current.value = "";
   };
 
@@ -148,11 +168,11 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
 
   const moveMedia = (fromIndex: number, toIndex: number) => {
     if (toIndex < 0 || toIndex >= media.length) return;
-    
+
     const newMedia = [...media];
     const [movedItem] = newMedia.splice(fromIndex, 1);
     newMedia.splice(toIndex, 0, movedItem);
-    
+
     onChange(newMedia.map((m, i) => ({ ...m, sortOrder: i })));
   };
 
@@ -165,149 +185,156 @@ export function MultiMediaUploader({ media, onChange, onUpload, disabled }: Mult
           onCropComplete={handleCropComplete}
           onClose={handleCropCancel}
           cropShape="rect"
-          aspectRatio={16/9}
+          aspectRatio={16 / 9}
         />
       )}
-      
+
       <div className="space-y-4">
         <div className="flex gap-2">
           <input
             ref={photoInputRef}
             type="file"
-          accept="image/*"
-          multiple
-          onChange={(e) => handleFileSelect(e.target.files, "photo")}
-          className="hidden"
-        />
-        <input
-          ref={videoInputRef}
-          type="file"
-          accept="video/*"
-          multiple
-          onChange={(e) => handleFileSelect(e.target.files, "video")}
-          className="hidden"
-        />
-        
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={disabled || isUploading}
-          onClick={() => photoInputRef.current?.click()}
-          className="flex-1 text-black border-gray-300"
-          data-testid="button-add-photos"
-        >
-          {isUploading ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Image className="h-4 w-4 mr-2" />
-          )}
-          Добавить фото
-        </Button>
-        
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          disabled={disabled || isUploading}
-          onClick={() => videoInputRef.current?.click()}
-          className="flex-1 text-black border-gray-300"
-          data-testid="button-add-videos"
-        >
-          {isUploading ? (
-            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-          ) : (
-            <Video className="h-4 w-4 mr-2" />
-          )}
-          Добавить видео
-        </Button>
-      </div>
+            accept="image/*"
+            multiple
+            onChange={(e) => handleFileSelect(e.target.files, "photo")}
+            className="hidden"
+          />
+          <input
+            ref={videoInputRef}
+            type="file"
+            accept="video/*"
+            multiple
+            onChange={(e) => handleFileSelect(e.target.files, "video")}
+            className="hidden"
+          />
 
-      {media.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-xs text-gray-500">
-            Нажмите на звезду чтобы выбрать главное медиа. Перетаскивайте для изменения порядка.
-          </p>
-          <div className="grid grid-cols-3 gap-2">
-            {media.map((item, index) => (
-              <div
-                key={item.id || `new-${index}`}
-                className={`relative group rounded-lg overflow-hidden border-2 ${
-                  item.isPrimary ? "border-yellow-400 ring-2 ring-yellow-200" : "border-gray-200"
-                }`}
-              >
-                {item.mediaType === "photo" ? (
-                  <img
-                    src={item.url}
-                    alt=""
-                    className="w-full h-20 object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-20 bg-gray-800 flex items-center justify-center">
-                    <Video className="h-6 w-6 text-white" />
-                  </div>
-                )}
-                
-                <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-white hover:text-yellow-400"
-                    onClick={() => setPrimary(index)}
-                    data-testid={`button-primary-${index}`}
-                  >
-                    <Star className={`h-4 w-4 ${item.isPrimary ? "fill-yellow-400 text-yellow-400" : ""}`} />
-                  </Button>
-                  
-                  {index > 0 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 text-white"
-                      onClick={() => moveMedia(index, index - 1)}
-                      data-testid={`button-move-up-${index}`}
-                    >
-                      <span className="text-xs">←</span>
-                    </Button>
-                  )}
-                  
-                  {index < media.length - 1 && (
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-6 w-6 text-white"
-                      onClick={() => moveMedia(index, index + 1)}
-                      data-testid={`button-move-down-${index}`}
-                    >
-                      <span className="text-xs">→</span>
-                    </Button>
-                  )}
-                  
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-white hover:text-red-400"
-                    onClick={() => removeMedia(index)}
-                    data-testid={`button-remove-media-${index}`}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={disabled || isUploading}
+            onClick={() => photoInputRef.current?.click()}
+            className="flex-1 text-black border-gray-300"
+            data-testid="button-add-photos"
+          >
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Image className="h-4 w-4 mr-2" />
+            )}
+            Добавить фото
+          </Button>
 
-                {item.isPrimary && (
-                  <div className="absolute top-1 left-1 bg-yellow-400 text-yellow-900 text-xs px-1 rounded">
-                    Главное
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={disabled || isUploading}
+            onClick={() => videoInputRef.current?.click()}
+            className="flex-1 text-black border-gray-300"
+            data-testid="button-add-videos"
+          >
+            {isUploading ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Video className="h-4 w-4 mr-2" />
+            )}
+            Добавить видео
+          </Button>
         </div>
-      )}
+
+        {isUploading && (
+          <div className="flex items-center gap-2 text-sm text-gray-500 bg-gray-50 rounded-lg px-3 py-2 border border-gray-200">
+            <Loader2 className="h-4 w-4 animate-spin flex-shrink-0" />
+            <span>Загрузка и сжатие изображения...</span>
+          </div>
+        )}
+
+        {media.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs text-gray-500">
+              Нажмите на звезду чтобы выбрать главное медиа. Перетаскивайте для изменения порядка.
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {media.map((item, index) => (
+                <div
+                  key={item.id || `new-${index}`}
+                  className={`relative group rounded-lg overflow-hidden border-2 ${
+                    item.isPrimary ? "border-yellow-400 ring-2 ring-yellow-200" : "border-gray-200"
+                  }`}
+                >
+                  {item.mediaType === "photo" ? (
+                    <img
+                      src={item.url}
+                      alt=""
+                      className="w-full h-20 object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-20 bg-gray-800 flex items-center justify-center">
+                      <Video className="h-6 w-6 text-white" />
+                    </div>
+                  )}
+
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-white hover:text-yellow-400"
+                      onClick={() => setPrimary(index)}
+                      data-testid={`button-primary-${index}`}
+                    >
+                      <Star className={`h-4 w-4 ${item.isPrimary ? "fill-yellow-400 text-yellow-400" : ""}`} />
+                    </Button>
+
+                    {index > 0 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-white"
+                        onClick={() => moveMedia(index, index - 1)}
+                        data-testid={`button-move-up-${index}`}
+                      >
+                        <span className="text-xs">←</span>
+                      </Button>
+                    )}
+
+                    {index < media.length - 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 text-white"
+                        onClick={() => moveMedia(index, index + 1)}
+                        data-testid={`button-move-down-${index}`}
+                      >
+                        <span className="text-xs">→</span>
+                      </Button>
+                    )}
+
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-white hover:text-red-400"
+                      onClick={() => removeMedia(index)}
+                      data-testid={`button-remove-media-${index}`}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+
+                  {item.isPrimary && (
+                    <div className="absolute top-1 left-1 bg-yellow-400 text-yellow-900 text-xs px-1 rounded">
+                      Главное
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {media.length === 0 && (
           <div className="text-center py-4 text-gray-500 text-sm border border-dashed border-gray-300 rounded-lg">

@@ -70,17 +70,27 @@ export async function registerRoutes(
   }, expressModule.static(UPLOADS_DIR));
 
   // Local file upload endpoint (works on any server)
-  app.post("/api/upload", isAuthenticated, localUpload.single('file'), (req, res) => {
-    try {
-      if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' });
+  app.post("/api/upload", isAuthenticated, (req, res, next) => {
+    localUpload.single('file')(req, res, (err) => {
+      if (err) {
+        console.error('Multer upload error:', err.message, err.code);
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(413).json({ error: 'Файл слишком большой. Максимальный размер — 200 МБ.' });
+        }
+        if (err.message === 'File type not allowed') {
+          return res.status(415).json({ error: 'Неподдерживаемый формат файла.' });
+        }
+        return res.status(500).json({ error: `Ошибка загрузки: ${err.message}` });
       }
+
+      if (!req.file) {
+        return res.status(400).json({ error: 'Файл не был получен сервером.' });
+      }
+
       const fileUrl = `/uploads/${req.file.filename}`;
+      console.log(`File uploaded: ${req.file.originalname} → ${fileUrl} (${req.file.size} bytes)`);
       res.json({ url: fileUrl, filename: req.file.filename });
-    } catch (error) {
-      console.error('Upload error:', error);
-      res.status(500).json({ error: 'Upload failed' });
-    }
+    });
   });
 
   // Simple admin login

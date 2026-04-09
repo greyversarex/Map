@@ -1,0 +1,41 @@
+root@msk-1-vm-soga:/var/www/ecomap# pm2 logs
+[TAILING] Tailing last 15 lines for [all] processes (change the value with --lines option)
+/root/.pm2/pm2.log last 15 lines:
+PM2        | 2026-03-30T06:21:23: PM2 log: Node.js version      : 20.20.0
+PM2        | 2026-03-30T06:21:23: PM2 log: Current arch         : x64
+PM2        | 2026-03-30T06:21:23: PM2 log: PM2 home             : /root/.pm2
+PM2        | 2026-03-30T06:21:23: PM2 log: PM2 PID file         : /root/.pm2/pm2.pid
+PM2        | 2026-03-30T06:21:23: PM2 log: RPC socket file      : /root/.pm2/rpc.sock
+PM2        | 2026-03-30T06:21:23: PM2 log: BUS socket file      : /root/.pm2/pub.sock
+PM2        | 2026-03-30T06:21:23: PM2 log: Application log path : /root/.pm2/logs
+PM2        | 2026-03-30T06:21:23: PM2 log: Worker Interval      : 30000
+PM2        | 2026-03-30T06:21:23: PM2 log: Process dump file    : /root/.pm2/dump.pm2
+PM2        | 2026-03-30T06:21:23: PM2 log: Concurrent actions   : 2
+PM2        | 2026-03-30T06:21:23: PM2 log: SIGTERM timeout      : 1600
+PM2        | 2026-03-30T06:21:23: PM2 log: Runtime Binary       : /usr/bin/node
+PM2        | 2026-03-30T06:21:23: PM2 log: ===============================================================================
+PM2        | 2026-03-30T06:21:23: PM2 log: App [ecomap:0] starting in -fork mode-
+PM2        | 2026-03-30T06:21:23: PM2 log: App [ecomap:0] online
+
+/root/.pm2/logs/ecomap-error.log last 15 lines:
+0|ecomap   |     at p (/var/www/ecomap/dist/index.cjs:17:423975)
+0|ecomap   |     at IncomingMessage.g (/var/www/ecomap/dist/index.cjs:17:424519)
+0|ecomap   |     at IncomingMessage.emit (node:events:524:28)
+0|ecomap   |     at endReadableNT (node:internal/streams/readable:1698:12)
+0|ecomap   |     at process.processTicksAndRejections (node:internal/process/task_queues:82:21)
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+0|ecomap   | Error: Parse Error: Invalid method encountered
+0|ecomap   | Warning: connect.session() MemoryStore is not
+0|ecomap   | designed for a production environment, as it will leak
+0|ecomap   | memory, and will not scale past a single process.
+
+/root/.pm2/logs/ecomap-out.log last 15 lines:
+0|ecomap   | are eroded by water and 0 ha are eroded by wind, 145 ha are swampy, 1245 ha are forested, 107 544 ha are pastures, ___-__ ha are deserted and 9070 ha are lands under roads, streets, buildings, fields, forests, mountains, canals, streams and drainages.\n5. State of natural resources by type: Mineral extraction 0 units, rare animals 0 units, fish 0 species, including 0 in natural state and 0 artificially grown, plants included in the Red Book 0 units,\n6. Number of landfills and sewage facilities: Sewage facilities 2 units with an area of ​​6 ha, solid household landfill 0 units with an area of ​​0 ha, construction 0 units with an area of ​​0 ha, toxic chemicals 0 units with an area of ​​0 ha, solid household waste collection points 0 units, 1 unit of waste transport, 11 units of abandoned waste and 0 units of waste processing plants.\n7. Names of natural and historical sites: 0 nature reserves with an area of ​​0 ha, 0 nurseries with an area of ​​0 ha, 1 national and cultural park with an area of ​​4 ha, 6 historical sites with an area of ​​8.0 ha, 0 glaciers with an area of ​​0 km2, 1 river with a length of 110 km, 0 lakes, 0 reservoirs with an area of ​​0 km2, 0 waterfalls with a height of 0 meters, 0 medicinal springs, 0 natural springs, and 0 water wells.\n8. Number of nature users: 594 nature users, including; 0 mining operations (____ gold, ____silver, _____copper, coal, and _______etc.), 4 KMSU extraction operations, 0 baked bricks, 8 gas stations, 2 markets, 563 shops, restaurants, and other businesses, and 17 small manufacturing enterprises.","lat":37.26629,"lng":68.13767,"imageUrl":"","videoUrl":"","locationType":"branch","locationTypeId":null,"foundedYear":1930,"workerCount":null,"area":"1500 км2","createdAt":"2026-01-26T05:06:45.934Z"}]
+0|ecomap   | 2:17:41 PM [express] GET /api/location-types 304 in 3ms :: [{"id":18,"slug":"otdely_i_podrazdeleniya","name":"Шуъба ва бахшҳо","nameRu":"Отделы и подразделения","nameEn":"Departments and divisions","iconUrl":"/uploads/1775729332463-770239350.png","color":"#10b981","bgColor":"#ecfdf5","borderColor":"#ffffff","markerEffect":"pulse","sortOrder":0,"createdAt":"2026-04-06T13:21:39.240Z"},{"id":20,"slug":"rybovodstvo","name":"Моҳипарварӣ","nameRu":"Рыбоводство","nameEn":"Fishery","iconUrl":"/uploads/1775729053911-550078422.png","color":"#10b981","bgColor":"#ecfdf5","borderColor":"#ffffff","markerEffect":"ringSlow","sortOrder":0,"createdAt":"2026-04-09T10:06:32.855Z"},{"id":19,"slug":"pitomniki_rasteniya","name":"Ниҳолхонаҳо","nameRu":"Питомники (растения)","nameEn":"Nursery (plant)","iconUrl":"/uploads/1775728527653-171433985.png","color":"#10b981","bgColor":"#ecfdf5","borderColor":"#ffffff","markerEffect":"ring","sortOrder":0,"createdAt":"2026-04-09T06:36:46.781Z"}]
+0|ecomap   | 2:17:41 PM [express] GET /api/books 304 in 2ms :: []
+0|ecomap   | 2:35:20 PM [express] GET /api/locations/264/media 200 in 13ms :: []
