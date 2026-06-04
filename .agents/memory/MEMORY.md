@@ -1,1 +1,1 @@
-- [maplibre text selection](maplibre-text-selection.md) — maplibre leaks inline `user-select:none` on <html> after interrupted map drag; only an `!important` rule fixes it.
+- [text selection "bug"](maplibre-text-selection.md) — selection actually works; reports come from stale Timeweb build / canvas-iframe embed / horizontal-mid-drag test artifact, not code.

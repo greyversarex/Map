@@ -1,33 +1,52 @@
 ---
-name: maplibre breaks text selection app-wide
-description: Why inputs/text become unselectable after interacting with the map, and the only fix that works
+name: text selection "bug" in the Tajikistan map app
+description: Reports that text can't be selected/copied are almost always a testing-surface artifact, not an app bug — selection actually works
 ---
 
-# maplibre-gl leaks `user-select: none` onto `<html>`
+# Text selection in this app actually works — verify before "fixing"
 
-## Symptom
-After clicking a marker or interacting with the MapLibre map, text in form
-fields (admin edit dialog inputs/textarea) and elsewhere can no longer be
-selected/copied/deleted. Typing still works; only selection is blocked.
+## Conclusion (verified with a real headless browser + real mouse drags)
+Text IS selectable everywhere in the running dev app: the map detail popup
+(`<p>` description) and admin form fields like "Описание" (textarea).
+Verified via Chromium + puppeteer hitting the real dev URL: diagonal drag selects
+full text, double-click selects a word, triple-click selects the paragraph,
+textarea drag/dbl-click select text. `user-select` computes to `auto`/`text`
+on every element and its whole ancestor chain. Nothing in JS prevents it:
+no `preventDefault` on any event during the drag, no `selectstart` prevention,
+no `removeAllRanges`/`collapse`/`setPosition`, no pointer capture, no DOM
+mutation/re-render of the text node.
 
-## Root cause
-maplibre-gl's `DOM.disableDrag()` sets `document.documentElement.style[selectProp] = "none"`
-(i.e. inline `user-select: none` on `<html>`) at drag start and restores it in
-`enableDrag()` on mouseup. When a drag is interrupted — e.g. clicking a marker
-opens a Radix Dialog so the mouseup never reaches the map — `enableDrag()` never
-fires and `<html>` stays stuck with inline `user-select: none`. That value is
-inherited everywhere.
+## Why users still report it as broken — two real causes (NOT the code)
+1. **Stale production build on Timeweb.** The repo commits a prebuilt client in
+   `production-build/` (git-tracked, 4 files). The live site serves that until
+   you rebuild + push to GitHub + redeploy. Source/dev fixes never show up live
+   until then. (`npm run build` outputs to `dist/public`; sync that into
+   `production-build/` before pushing.)
+2. **Testing inside the Canvas iframe embed.** When the app is embedded as a
+   tldraw canvas shape, the canvas intercepts mouse drags (pan/select), so text
+   selection inside the embedded iframe feels broken. That's the canvas tool,
+   not the site. Test in a real separate browser tab instead.
 
-## Why the obvious fix fails
-A plain stylesheet rule like `input { user-select: text }` does NOT fix it for
-the root element, because an **inline** style beats a normal (non-important)
-stylesheet rule. The fix MUST use `!important` to win against the inline style.
+## Trap that wasted a lot of time (test-methodology artifact)
+A purely **horizontal** drag through the **vertical middle** of a *multi-line
+wrapping* `<p>` lands in the gap between lines and produces an EMPTY selection,
+which looks exactly like "selection is blocked." It is not. Use a diagonal drag
+(top-left → bottom-right) or per-line horizontal drag, or double/triple-click,
+to test wrapped text. Short single-line elements never show this artifact.
 
-**The rule lives in `client/src/index.css` @layer base:** `html, body { user-select: auto !important }`
-plus `input,textarea,select,[contenteditable] { user-select: text !important }`.
+**How to apply:** Before changing CSS/JS for a "can't select text" report,
+reproduce with a real browser drag (diagonal/word/paragraph), and confirm WHERE
+the user tested (live Timeweb vs canvas embed vs real browser tab).
 
-## Why this is safe
-maplibre's body-level disableDrag is redundant with its own scoped
-`.maplibregl-canvas-container.maplibregl-interactive { user-select: none }` on the
-`<canvas>` (which has no selectable text), so forcing html/body selectable does
-not cause text to be selected while panning the map in practice.
+## Note on the earlier `user-select: ... !important` CSS
+`client/src/index.css` @layer base has `html,body{user-select:auto!important}` and
+`input,textarea,select,[contenteditable]{user-select:text!important}`. It is
+harmless/defensive (guards against maplibre's `disableDrag` leaving inline
+`user-select:none` on `<html>` if a drag is interrupted), but it was NOT the
+actual fix for the user's complaint — selection already worked without relying on it.
+
+## Tooling note
+A headless browser is available for this kind of verification: nix `chromium`
+(installed; binary under `/nix/store/*-chromium-*/bin/chromium`) + puppeteer.
+Launch with `--no-sandbox`. This is the fastest way to settle "is selection
+really blocked" questions instead of reasoning in circles.
