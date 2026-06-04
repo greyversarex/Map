@@ -1,0 +1,1 @@
+- [maplibre text selection](maplibre-text-selection.md) — maplibre leaks inline `user-select:none` on <html> after interrupted map drag; only an `!important` rule fixes it.

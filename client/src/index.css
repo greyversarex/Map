@@ -52,14 +52,25 @@
     font-family: var(--font-display);
     @apply tracking-tight;
   }
+  /* maplibre-gl leaves an inline `user-select: none` on <html> when a map
+     drag is interrupted (e.g. clicking a marker opens a dialog so the mouseup
+     never reaches the map). An inline style beats normal stylesheet rules, so
+     !important is required here to keep text/inputs selectable everywhere. */
+  html,
+  body {
+    -webkit-user-select: auto !important;
+    -moz-user-select: auto !important;
+    -ms-user-select: auto !important;
+    user-select: auto !important;
+  }
   input,
   textarea,
   select,
   [contenteditable="true"] {
-    -webkit-user-select: text;
-    -moz-user-select: text;
-    -ms-user-select: text;
-    user-select: text;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
   }
 }
 
