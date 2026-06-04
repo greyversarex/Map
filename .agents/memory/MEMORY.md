@@ -1,1 +1,1 @@
-- [text selection "bug"](maplibre-text-selection.md) — selection actually works; reports come from stale Timeweb build / canvas-iframe embed / horizontal-mid-drag test artifact, not code.
+- [text selection "bug"](maplibre-text-selection.md) — selection worked all along; highlight was invisible (`selection:bg-primary/20` with near-white --primary). Fixed via visible `::selection` color.

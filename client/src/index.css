@@ -45,8 +45,19 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased selection:bg-primary/20;
+    @apply bg-background text-foreground antialiased;
     font-family: var(--font-body);
+  }
+  /* Visible text-selection highlight. The previous `selection:bg-primary/20`
+     used --primary (near-white) at 20% opacity, which was invisible on the
+     light dialogs/forms, making selection look broken even though it worked. */
+  ::selection {
+    background-color: hsl(212 95% 55% / 0.55) !important;
+    color: inherit !important;
+  }
+  ::-moz-selection {
+    background-color: hsl(212 95% 55% / 0.55) !important;
+    color: inherit !important;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-display);

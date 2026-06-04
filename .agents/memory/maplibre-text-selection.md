@@ -1,11 +1,28 @@
 ---
 name: text selection "bug" in the Tajikistan map app
-description: Reports that text can't be selected/copied are almost always a testing-surface artifact, not an app bug — selection actually works
+description: "Can't select text" was an invisible selection-highlight color, not blocked selection. Root cause + how it was confirmed.
 ---
 
-# Text selection in this app actually works — verify before "fixing"
+# ROOT CAUSE: the selection highlight was invisible (not blocked selection)
 
-## Conclusion (verified with a real headless browser + real mouse drags)
+`client/src/index.css` had `body { @apply ... selection:bg-primary/20 }`, which
+emits a global `::selection { background-color: hsl(var(--primary)/.2) }`. But
+`--primary: 210 40% 98%` is **near-white**, so at 20% opacity the highlight was
+invisible on the light dialogs/forms (and barely visible elsewhere). Text WAS
+being selected the whole time — users just saw no highlight and reported "can't
+select / copy / delete." Same CSS shipped to production, so it failed there too.
+
+**Fix:** removed `selection:bg-primary/20` from `body` and added an explicit
+visible rule in `@layer base`:
+`::selection { background-color: hsl(212 95% 55% / 0.55) !important; color: inherit !important }`
+(plus `::-moz-selection`). Then rebuild and sync into `production-build/`.
+
+**Lesson:** for "can't select text" reports, check the `::selection` highlight
+COLOR/opacity first (esp. Tailwind `selection:bg-*` variants tied to theme vars
+like --primary), not just `user-select`. Verify whether `getSelection()`
+actually returns text — if it does, the problem is visibility, not selection.
+
+## Earlier conclusion (still valid context, verified with headless browser + real mouse drags)
 Text IS selectable everywhere in the running dev app: the map detail popup
 (`<p>` description) and admin form fields like "Описание" (textarea).
 Verified via Chromium + puppeteer hitting the real dev URL: diagonal drag selects
