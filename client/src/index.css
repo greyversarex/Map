@@ -52,6 +52,15 @@
     font-family: var(--font-display);
     @apply tracking-tight;
   }
+  input,
+  textarea,
+  select,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    user-select: text;
+  }
 }
 
 /* Custom Map Marker Animations */
