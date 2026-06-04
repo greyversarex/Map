@@ -531,8 +531,8 @@ export default function MapPage() {
       </Map>
 
       <Dialog open={!!selectedLocation} onOpenChange={(open) => !open && setSelectedLocation(null)}>
-        <DialogContent className="max-w-3xl bg-gradient-to-br from-white via-gray-50 to-gray-200 border-gray-300 shadow-2xl">
-          <DialogHeader>
+        <DialogContent className="w-[calc(100vw-2rem)] max-w-2xl max-h-[88vh] flex flex-col p-0 gap-0 overflow-hidden bg-gradient-to-br from-white via-gray-50 to-gray-200 border-gray-300 shadow-2xl">
+          <DialogHeader className="shrink-0 px-6 pt-6 pb-4 border-b border-gray-200/70">
             <div className="flex items-center gap-3">
               <LocationMarker 
                 locationType={selectedLocation?.locationType} 
@@ -542,18 +542,18 @@ export default function MapPage() {
                 customBorderColor={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.borderColor : undefined}
                 customIconUrl={selectedLocation ? locationTypeMap[selectedLocation.locationType || 'kmz']?.iconUrl : undefined}
               />
-              <div>
-                <DialogTitle className="font-display text-3xl tracking-wide text-gray-900">
+              <div className="min-w-0">
+                <DialogTitle className="font-display text-2xl sm:text-3xl tracking-wide text-gray-900 leading-tight">
                   {selectedLocation && getLocalizedName(selectedLocation, language)}
                 </DialogTitle>
-                <DialogDescription className="text-base text-gray-600">
+                <DialogDescription className="text-sm sm:text-base text-gray-600">
                   {getLocationTypeLabel(selectedLocation?.locationType, language)} | {t("map.coordinates")}: {selectedLocation?.lat.toFixed(4)}° N, {selectedLocation?.lng.toFixed(4)}° E
                 </DialogDescription>
               </div>
             </div>
           </DialogHeader>
           
-          <div className="mt-4 space-y-6">
+          <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-5">
             {selectedLocation && (locationMedia?.length || selectedLocation.imageUrl || selectedLocation.videoUrl) && (
               <MediaCarousel
                 media={locationMedia || []}
@@ -562,38 +562,40 @@ export default function MapPage() {
               />
             )}
 
-            <div className="grid grid-cols-3 gap-4">
-              {selectedLocation?.foundedYear && (
-                <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Год основания' : language === 'tj' ? 'Соли таъсис' : 'Founded'}</p>
-                  <p className="text-xl font-bold text-gray-900">{selectedLocation.foundedYear}</p>
-                </div>
-              )}
-              {selectedLocation?.workerCount && (
-                <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}</p>
-                  <p className="text-xl font-bold text-gray-900">{selectedLocation.workerCount}</p>
-                </div>
-              )}
-              {selectedLocation?.area && (
-                <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
-                  <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}</p>
-                  <p className="text-xl font-bold text-gray-900">{selectedLocation.area} м²</p>
-                </div>
-              )}
-            </div>
+            {selectedLocation && (selectedLocation.foundedYear || selectedLocation.workerCount || selectedLocation.area) && (
+              <div className="grid grid-cols-3 gap-3">
+                {selectedLocation?.foundedYear && (
+                  <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Год основания' : language === 'tj' ? 'Соли таъсис' : 'Founded'}</p>
+                    <p className="text-xl font-bold text-gray-900">{selectedLocation.foundedYear}</p>
+                  </div>
+                )}
+                {selectedLocation?.workerCount && (
+                  <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Работников' : language === 'tj' ? 'Корбар' : 'Workers'}</p>
+                    <p className="text-xl font-bold text-gray-900">{selectedLocation.workerCount}</p>
+                  </div>
+                )}
+                {selectedLocation?.area && (
+                  <div className="bg-white/60 rounded-lg p-3 border border-gray-200">
+                    <p className="text-xs text-gray-500 uppercase tracking-wide">{language === 'ru' ? 'Площадь' : language === 'tj' ? 'Масоҳат' : 'Area'}</p>
+                    <p className="text-xl font-bold text-gray-900">{selectedLocation.area} м²</p>
+                  </div>
+                )}
+              </div>
+            )}
 
             {selectedLocation && getLocalizedDescription(selectedLocation, language) && (
               <div className="bg-white/50 rounded-xl p-4 border border-gray-200">
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">{t("map.description")}</h3>
-                <div className="max-h-[7.5rem] overflow-y-auto">
-                  <p className="text-base leading-relaxed text-gray-700">
-                    {getLocalizedDescription(selectedLocation, language)}
-                  </p>
-                </div>
+                <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
+                  {getLocalizedDescription(selectedLocation, language)}
+                </p>
               </div>
             )}
+          </div>
 
+          <div className="shrink-0 px-6 py-4 border-t border-gray-200/70 bg-white/40">
             <a
               href={`https://www.google.com/maps/dir/?api=1&destination=${selectedLocation?.lat},${selectedLocation?.lng}`}
               target="_blank"
